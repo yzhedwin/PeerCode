@@ -1,0 +1,35 @@
+version: '3'
+services:
+    express:
+        image: cs3219_express
+        container_name: cs3219_express
+        restart: always
+        build:
+            context: ./backend
+            dockerfile: Dockerfile
+        command: node server.js
+        ports:
+            - 5000:5000
+        # environment:
+        networks:
+            - network
+    react:
+      image: cs3219_react
+      container_name: cs3219_react
+      restart: always
+      build:
+        context: ./frontend/cs3219-react
+        dockerfile: Dockerfile
+      command: npm start
+      ports:
+          - 3000:3000
+      # environment:
+      # volumes:
+      depends_on:
+        - express
+      networks:
+          - network
+
+networks:
+    network:
+# volumes:
