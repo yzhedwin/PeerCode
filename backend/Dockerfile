@@ -1,11 +1,14 @@
-FROM node:18
+FROM python:3.10
+
 WORKDIR /backend
 
-COPY package*.json ./
-COPY . .
+COPY ./requirements.txt /backend/requirements.txt
 
-RUN npm install
-# RUN npm ci --omit=dev
+RUN pip install -r requirements.txt
+
+COPY ./app /backend/app
+COPY ./run.sh /backend/run.sh
 
 EXPOSE 5000
-CMD ["node", "server.js"]
+
+CMD bash run.sh

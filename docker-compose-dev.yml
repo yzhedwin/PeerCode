@@ -1,37 +1,5 @@
 version: '3'
 services:
-    server:
-        image: cs3219_server
-        container_name: cs3219_server
-        restart: always
-        build:
-            context: ./backend
-            dockerfile: Dockerfile
-        command: bash run.sh
-        ports:
-            - 5000:5000
-        depends_on:
-            - peerprep_kafka
-        # environment:
-        networks:
-            - network
-    react:
-      image: cs3219_react
-      container_name: cs3219_react
-      restart: always
-      build:
-        context: ./frontend
-        dockerfile: Dockerfile
-      command: npm start
-      ports:
-          - 3000:3000
-      # environment:
-      # volumes:
-      depends_on:
-        - server
-      networks:
-          - network
-          
     peerprep_kafka:
         image: confluentinc/cp-kafka:7.0.0
         container_name: peerprep_kafka

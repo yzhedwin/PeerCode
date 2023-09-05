@@ -1,5 +1,5 @@
 FROM node:18
-WORKDIR /cs3219-react
+WORKDIR /frontend
 
 COPY package*.json ./
 COPY . .

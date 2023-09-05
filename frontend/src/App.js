@@ -8,8 +8,7 @@ function App() {
   const getMessage = async () => {
     try {
       const response = await axios.get("http://localhost:5000/");
-
-      setData(response.data);
+      setData(response.data.message);
     } catch (e) {
       console.log(e);
     }
