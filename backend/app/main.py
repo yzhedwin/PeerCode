@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from confluent_kafka.admin import AdminClient, NewTopic, KafkaError
 from config import get_config
+from router import question_router
+from database.mongodb_utils import connect_to_mongo, close_mongo_connection
 
 app = FastAPI()
 config = get_config()
@@ -13,6 +15,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(question_router.router)
+app.add_event_handler("startup", connect_to_mongo)
+app.add_event_handler("shutdown", close_mongo_connection)
 
 @app.on_event("startup")
 async def startup_event():
@@ -34,9 +40,11 @@ async def startup_event():
             else:
                 print("Failed to create topic {}: {}".format(topic, e))
 
+
 @app.on_event("shutdown")
 async def shutdown_event():
     pass
+
 
 @app.get("/")
 def read_root():

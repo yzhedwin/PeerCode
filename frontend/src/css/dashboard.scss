@@ -1,0 +1,51 @@
+@import "./colors.scss";
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+}
+.dashboard-container-top {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  background-color: white;
+  height: 150px;
+  margin-inline: 100px;
+  margin-top: 100px;
+  margin-bottom: 50px;
+}
+.questionOTD-container {
+  flex: 1;
+  color: white;
+  background-color: $primary-color;
+  margin-right: 5px;
+  text-align: center;
+}
+.match-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  flex: 2;
+  color: white;
+  background-color: $primary-color;
+  margin-left: 5px;
+  text-align: center;
+}
+.match-container-title {
+  font-size: x-large;
+}
+.match-difficulty-container {
+  display: flex;
+  justify-content: space-around;
+}
+.questionOTD-container-title {
+  margin-top: 10px;
+  font-size: x-large;
+}
+.questionOTD-container {
+  display: flex;
+  flex-direction: column;
+}
+.questionOTD-btn {
+  margin-top: 25px;
+}

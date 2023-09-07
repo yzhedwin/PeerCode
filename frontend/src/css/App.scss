@@ -1,3 +1,9 @@
+@import "./dashboard.scss";
+@import "./_colors.scss";
+@import "ag-grid-community/styles/ag-grid.css";
+@import "ag-grid-community/styles/ag-theme-alpine.css";
+@import "./question.scss";
+
 .App {
   text-align: center;
 }
