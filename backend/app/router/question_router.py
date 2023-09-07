@@ -29,7 +29,7 @@ async def get_questions(db: AsyncIOMotorClient = Depends(get_database)):
     return response
 
 
-@router.get("/{title}", response_model=Question)
+@router.get("/title/{title}", response_model=Question)
 async def get_question_by_title(title, db: AsyncIOMotorClient = Depends(get_database)):
     response = await fetch_one_question(db, title)
     if response:
@@ -112,6 +112,46 @@ async def add_questions_from_leetcode(db: AsyncIOMotorClient = Depends(get_datab
         
     return "Successfully added questions from Leetcode"
 
-
-
-
+@router.get("/day")
+async def get_question_of_the_day():
+    transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+    query = gql("""query questionOfToday {
+  activeDailyCodingChallengeQuestion {
+    date
+    userStatus
+    link
+    question {
+      acRate
+      difficulty
+      freqBar
+      frontendQuestionId: questionFrontendId
+      isFavor
+      paidOnly: isPaidOnly
+      status
+      title
+      titleSlug
+      hasVideoSolution
+      hasSolution
+      topicTags {
+        name
+        id
+        slug
+      }
+    }
+  }
+}""")
+    r1 = await client.execute_async(
+            query
+        )
+    query = gql("""query questionContent($titleSlug: String!) {
+    question(titleSlug: $titleSlug) {
+        content
+        mysqlSchemas
+    }
+    }""")
+    r2 = await client.execute_async(
+        query, {"titleSlug":  r1["activeDailyCodingChallengeQuestion"]["question"]["titleSlug"]})
+    r1["activeDailyCodingChallengeQuestion"]["question"]["problem"] = r2["question"]["content"]
+    return Question(**r1["activeDailyCodingChallengeQuestion"]["question"])
+   
