@@ -2,7 +2,6 @@
   display: flex;
   margin-top: 2vh;
   margin-inline: 1vw;
-  background-color: red;
   height: 90vh;
 }
 
@@ -13,10 +12,10 @@
 .editor-container {
   flex: 1;
   background-color: green;
-  overflow: scroll;
   flex-direction: column;
+  overflow: hidden;
 }
 .console-and-chat-container {
-  background-color: yellow;
+  background-color: grey;
   height: 100%;
 }

@@ -25,7 +25,7 @@ function ProblemPage(props) {
         </div>
         <div className="editor-container">
           <Editor
-            height="60%"
+            height="70%"
             language="javascript"
             theme="vs-dark"
             value={code}
