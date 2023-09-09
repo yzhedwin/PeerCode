@@ -5,14 +5,72 @@ services:
         container_name: cs3219_server
         restart: always
         build:
-            context: ./backend
+            context: ./backend/server
             dockerfile: Dockerfile
         command: bash run.sh
         ports:
             - 5000:5000
+        environment:
+            MONGO_PEERPREP_HOST_NAME: ${MONGO_PEERPREP_HOST_NAME}
+            MONGO_PEERPREP_DATABASE_NAME: ${MONGO_PEERPREP_DATABASE_NAME}
+            MONGO_PEERPREP_DATABASE_USER: ${MONGO_PEERPREP_DATABASE_USER}
+            MONGO_PEERPREP_DATABASE_PASSWORD: ${MONGO_PEERPREP_DATABASE_PASSWORD}
+            KAFKA_SERVER_NAME: ${KAFKA_SERVER_NAME}
+            KAFKA_TOPICS: ${KAFKA_TOPICS}
+            KAFKA_TOPIC_QUESTION_SERVICE: ${KAFKA_TOPIC_QUESTION_SERVICE}
+            KAFKA_TOPIC_QUESTION_BANK: ${KAFKA_TOPIC_QUESTION_BANK}
+            KAFKA_TOPIC_QUESTION_OF_THE_DAY: ${KAFKA_TOPIC_QUESTION_OF_THE_DAY}
+            KAFKA_GROUP_SERVER: ${KAFKA_GROUP_SERVER}
+        networks:
+            - network
+    question_service:
+        image: cs3219_question_service
+        container_name: cs3219_question_service
+        restart: always
+        build:
+            context: ./backend/question_service
+            dockerfile: Dockerfile
+        command: bash run.sh
+        ports:
+            - 5001:5000
         depends_on:
             - peerprep_kafka
-        # environment:
+            - server
+        environment:
+            MONGO_PEERPREP_HOST_NAME: ${MONGO_PEERPREP_HOST_NAME}
+            MONGO_PEERPREP_DATABASE_NAME: ${MONGO_PEERPREP_DATABASE_NAME}
+            MONGO_PEERPREP_DATABASE_USER: ${MONGO_PEERPREP_DATABASE_USER}
+            MONGO_PEERPREP_DATABASE_PASSWORD: ${MONGO_PEERPREP_DATABASE_PASSWORD}
+            KAFKA_SERVER_NAME: ${KAFKA_SERVER_NAME}
+            KAFKA_TOPICS: ${KAFKA_TOPICS}
+            KAFKA_TOPIC_QUESTION_SERVICE: ${KAFKA_TOPIC_QUESTION_SERVICE}
+            KAFKA_TOPIC_QUESTION_BANK: ${KAFKA_TOPIC_QUESTION_BANK}
+            KAFKA_TOPIC_QUESTION_OF_THE_DAY: ${KAFKA_TOPIC_QUESTION_OF_THE_DAY}
+            KAFKA_GROUP_QUESTION_SERVICE: ${KAFKA_GROUP_QUESTION_SERVICE}
+        networks:
+            - network
+    leetcode_service:
+        image: cs3219_leetcode_service
+        container_name: cs3219_leetcode_service
+        restart: always
+        build:
+            context: ./backend/leetcode_service
+            dockerfile: Dockerfile
+        command: bash run.sh
+        depends_on:
+            - peerprep_kafka
+            - server
+        environment:
+            MONGO_PEERPREP_HOST_NAME: ${MONGO_PEERPREP_HOST_NAME}
+            MONGO_PEERPREP_DATABASE_NAME: ${MONGO_PEERPREP_DATABASE_NAME}
+            MONGO_PEERPREP_DATABASE_USER: ${MONGO_PEERPREP_DATABASE_USER}
+            MONGO_PEERPREP_DATABASE_PASSWORD: ${MONGO_PEERPREP_DATABASE_PASSWORD}
+            KAFKA_SERVER_NAME: ${KAFKA_SERVER_NAME}
+            KAFKA_TOPICS: ${KAFKA_TOPICS}
+            KAFKA_TOPIC_QUESTION_SERVICE: ${KAFKA_TOPIC_QUESTION_SERVICE}
+            KAFKA_TOPIC_QUESTION_BANK: ${KAFKA_TOPIC_QUESTION_BANK}
+            KAFKA_TOPIC_QUESTION_OF_THE_DAY: ${KAFKA_TOPIC_QUESTION_OF_THE_DAY}
+            KAFKA_GROUP_LEETCODE_SERVICE: ${KAFKA_GROUP_LEETCODE_SERVICE}
         networks:
             - network
     react:

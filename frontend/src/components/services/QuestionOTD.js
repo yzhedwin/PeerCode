@@ -4,7 +4,9 @@ import axios from "axios";
 function QuestionOTD() {
   const [qotd, setQOTD] = useState({});
   const getQOTD = async () => {
-    const { data } = await axios.get("http://localhost:5000/api/question/day");
+    const { data } = await axios.get(
+      "http://localhost:5000/api/v1/question/day"
+    );
     setQOTD(data);
   };
   useEffect(() => {

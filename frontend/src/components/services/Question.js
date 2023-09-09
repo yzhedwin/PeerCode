@@ -38,7 +38,7 @@ function Question() {
   }, []);
 
   const onGridReady = useCallback(async (params) => {
-    const { data } = await axios.get("http://localhost:5000/api/question");
+    const { data } = await axios.get("http://localhost:5000/api/v1/question");
     setRowData(data);
   }, []);
 
