@@ -1,0 +1,22 @@
+.problem-page-container {
+  display: flex;
+  margin-top: 2vh;
+  margin-inline: 1vw;
+  background-color: red;
+  height: 90vh;
+}
+
+.problem-description-container {
+  flex: 1;
+  overflow: scroll;
+}
+.editor-container {
+  flex: 1;
+  background-color: green;
+  overflow: scroll;
+  flex-direction: column;
+}
+.console-and-chat-container {
+  background-color: yellow;
+  height: 100%;
+}

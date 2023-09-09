@@ -5,6 +5,10 @@ import Header from "./components/common/Header";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { green, orange, red } from "@mui/material/colors";
 import "ag-grid-enterprise";
+import { QuestionProvider } from "./contexts/QuestionContext";
+import ProblemPage from "./pages/Problem";
+import { BrowserRouter as Router } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 
 const theme = createTheme({
   palette: {
@@ -44,28 +48,18 @@ const theme = createTheme({
 });
 
 function App() {
-  // const [data, setData] = useState();
-
-  // const getMessage = async () => {
-  //   try {
-  //     const response = await axios.get("http://localhost:5000/");
-  //     setData(response.data.message);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // };
-
-  useEffect(() => {
-    // getMessage();
-  }, []);
-
   return (
-    <ThemeProvider theme={theme}>
-      <div>
-        <Header />
-        <Dashboard />
-      </div>
-    </ThemeProvider>
+    <Router>
+      <ThemeProvider theme={theme}>
+        <QuestionProvider>
+          <Header />
+          <Routes>
+            <Route exact path="/" element={<Dashboard />} />
+            <Route exact path="/problem" element={<ProblemPage />} />
+          </Routes>
+        </QuestionProvider>
+      </ThemeProvider>
+    </Router>
   );
 }
 

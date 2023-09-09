@@ -1,7 +1,12 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import { AgGridReact } from "ag-grid-react"; // the AG Grid React Component
 import axios from "axios";
+import { QuestionContext } from "../../contexts/QuestionContext";
+import { useNavigate } from "react-router-dom";
+
 function Question() {
+  const navigate = useNavigate();
+  const { setQuestion } = useContext(QuestionContext);
   const gridRef = useRef(); // Optional - for accessing Grid's API
   const [rowData, setRowData] = useState(); // Set rowData to Array of Objects, one Object per Row
   // Each Column Definition results in one Column.
@@ -34,12 +39,17 @@ function Question() {
   };
 
   const cellClickedListener = useCallback((event) => {
-    console.log("cellClicked", event);
+    setQuestion(event.data);
+    navigate("/problem");
   }, []);
 
   const onGridReady = useCallback(async (params) => {
-    const { data } = await axios.get("http://localhost:5000/api/v1/question");
-    setRowData(data);
+    try {
+      const { data } = await axios.get("http://localhost:5000/api/v1/question");
+      setRowData(data);
+    } catch (e) {
+      console.log(e);
+    }
   }, []);
 
   return (
