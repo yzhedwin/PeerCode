@@ -26,7 +26,7 @@ Run `docker-compose -f docker-compose-dev.yml build`
 
 ### Run
 
-Run `bash start-dev-sh` in project root directory
+Run `bash start-dev.sh` in project root directory
 
 Go to `backend/server` folder
 
