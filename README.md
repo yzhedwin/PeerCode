@@ -22,6 +22,8 @@ Go to `frontend` folder
 
 ### Build
 
+Rename `example-docker-compose.env` to `docker-compose.env`
+
 Run `docker-compose -f docker-compose-dev.yml build`
 
 ### Run
