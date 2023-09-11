@@ -1,5 +1,4 @@
 import "./css/App.scss";
-import { useEffect, useState } from "react";
 import Dashboard from "./pages/Dashboard";
 import Header from "./components/common/Header";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
@@ -8,7 +7,8 @@ import "ag-grid-enterprise";
 import { QuestionProvider } from "./contexts/QuestionContext";
 import ProblemPage from "./pages/Problem";
 import { BrowserRouter as Router } from "react-router-dom";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
+import Profile from "./pages/Profile";
 
 const theme = createTheme({
   palette: {
@@ -24,7 +24,7 @@ const theme = createTheme({
       light: green[300],
       dark: green[800],
       contrastText: "#fff",
-      main: green[500],
+      main: "#20900D",
     },
     question_medium: {
       light: orange[300],
@@ -36,7 +36,7 @@ const theme = createTheme({
       light: red[300],
       dark: red[800],
       contrastText: "#fff",
-      main: red[500],
+      main: "#E70000",
     },
     question_OTD: {
       main: "#9747FF",
@@ -56,6 +56,7 @@ function App() {
           <Routes>
             <Route exact path="/" element={<Dashboard />} />
             <Route exact path="/problem" element={<ProblemPage />} />
+            <Route exact path="/profile" element={<Profile />} />
           </Routes>
         </QuestionProvider>
       </ThemeProvider>

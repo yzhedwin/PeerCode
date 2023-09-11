@@ -16,7 +16,7 @@ function Match() {
           size="large"
           color="question_easy"
         >
-          Easy
+          <div className="match-difficulty-text">Easy</div>
         </Button>
         <Button
           style={{
@@ -29,7 +29,7 @@ function Match() {
           size="large"
           color="question_medium"
         >
-          Medium
+          <div className="match-difficulty-text">Medium</div>
         </Button>
         <Button
           style={{
@@ -42,7 +42,7 @@ function Match() {
           size="large"
           color="question_hard"
         >
-          Hard
+          <div className="match-difficulty-text">Hard</div>
         </Button>
       </div>
     </div>
