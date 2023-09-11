@@ -8,13 +8,15 @@
 
 ### Backend
 
-Go to each of the `backend` sub folders
+Go to `backend` folder
 
 - Run `pip install -r ./requirements.txt` in your virtual environment
 
 ### Frontend
 
 Go to `frontend` folder
+
+- Node version - 16.18.0
 
 - Run `npm i` to install the required node modules
 
@@ -30,17 +32,9 @@ Run `docker-compose -f docker-compose-dev.yml build`
 
 Run `bash start-dev.sh` in project root directory
 
-Go to `backend/server` folder
+Go to `backend/` folder
 
-- Run `bash run-dev.sh` to start server
-
-Go to `backend/leetcode_service` folder
-
-- Run `bash run-dev.sh` to start leetcode service
-
-Go to `backend/question_service` folder
-
-- run `bash run-dev.sh` to start question service
+- Run `bash run-dev-all.sh` to start all services
 
 Go to `frontend` folder
 

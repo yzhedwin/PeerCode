@@ -1,6 +1,3 @@
 # read env var from dev env file
-set -o allexport
-source ../../docker-compose.env
-set +o allexport
-
+cd question_service
 uvicorn main:app --reload --port 5001 --host localhost
