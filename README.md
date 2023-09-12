@@ -34,7 +34,7 @@ Run `bash start-dev.sh` in project root directory
 
 Go to `backend/` folder
 
-- Run `bash run-dev-all.sh` to start all services
+- Run `bash run-dev.sh` in each of the subfolders to start all services
 
 Go to `frontend` folder
 
