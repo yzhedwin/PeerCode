@@ -1,0 +1,66 @@
+version: '3'
+services:
+    peerprep_kafka:
+        image: confluentinc/cp-kafka:7.0.0
+        container_name: peerprep_kafka
+        ports:
+            - "9092:9092"
+            - "19092:19092"
+        restart: always
+        environment:
+            KAFKA_BROKER_ID: 1
+            KAFKA_ZOOKEEPER_CONNECT: 'peerprep_zookeeper:2181'
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://peerprep_kafka:9092,PLAINTEXT_INTERNAL://broker:29092,PLAINTEXT_HOST://localhost:19092
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+            KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+            KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+        depends_on:
+            - peerprep_zookeeper
+        networks:
+            - network
+
+    peerprep_zookeeper:
+        image: confluentinc/cp-zookeeper:7.0.0
+        container_name: peerprep_zookeeper
+        ports:
+            - "2181:2181"
+        restart: always
+        environment:
+            ZOOKEEPER_CLIENT_PORT: 2181
+            ZOOKEEPER_TICK_TIME: 2000
+        networks:
+            - network
+    peerprep_mongo:
+        image: mongo:6
+        container_name: peerprep_mongo
+        restart: always
+        ports:
+            - 27017:27017
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+            MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+            MONGO_PEERPREP_DATABASE_NAME: ${MONGO_PEERPREP_DATABASE_NAME}
+            MONGO_PEERPREP_DATABASE_USER: ${MONGO_PEERPREP_DATABASE_USER}
+            MONGO_PEERPREP_DATABASE_PASSWORD: ${MONGO_PEERPREP_DATABASE_PASSWORD}
+        volumes:
+            - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+        networks:
+            - network
+    peerprep_mongo_express:
+        image: mongo-express:1.0.0-alpha
+        container_name: peerprep_mongo_express
+        restart: always
+        ports:
+            - 8081:8081
+        environment:
+            ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_ROOT_USER}
+            ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ROOT_PASSWORD}
+            ME_CONFIG_MONGODB_URL: mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@peerprep_mongo:27017/
+        depends_on:
+            - peerprep_mongo
+        networks:
+            - network
+networks:
+    network:
+# volumes:
