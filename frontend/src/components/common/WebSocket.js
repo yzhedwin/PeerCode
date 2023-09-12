@@ -24,11 +24,11 @@ export default function WebSocket() {
     console.log("client is disconnected");
     setIsConnected(false);
   }
-  function onMatch(msg) {
+  function onMatch(room) {
     setSB({ msg: "Found a match!", severity: "success" });
     setOpenSnackBar(true);
-    socket.emit("join_room", msg);
-    setMatch(msg);
+    socket.emit("join_room", room);
+    setMatch(room);
   }
 
   useEffect(() => {

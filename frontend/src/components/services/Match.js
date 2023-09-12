@@ -87,11 +87,17 @@ function Match() {
 
   useEffect(() => {
     if (match) {
+      //match is either false or room_id
       clearTimeout(timeout_id_easy);
       clearTimeout(timeout_id_medium);
       clearTimeout(timeout_id_hard);
+      //TODO:
+      //fetch random question from question repo based on difficulty selected
+      //(can be obtained from match)
+      //Then navigate to problem page
     }
   }, [match]);
+
   return (
     <div className="match-container">
       <div className="match-container-title">Match</div>
@@ -162,7 +168,7 @@ function Match() {
             socket.emit("rooms");
           }}
         >
-          room
+          debug button
         </Button>
       </div>
     </div>
