@@ -9,6 +9,7 @@ import ProblemPage from "./pages/Problem";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Route, Routes } from "react-router-dom";
 import Profile from "./pages/Profile";
+import WebSocket from "./components/common/WebSocket";
 
 const theme = createTheme({
   palette: {
@@ -52,6 +53,7 @@ function App() {
     <Router>
       <ThemeProvider theme={theme}>
         <QuestionProvider>
+          <WebSocket />
           <Header />
           <Routes>
             <Route exact path="/" element={<Dashboard />} />

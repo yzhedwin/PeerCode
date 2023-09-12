@@ -13,12 +13,13 @@ async def question_bank_consume():
     try:
         # consume messages
         async for msg in question_bank_consumer:
-            question = json.loads(msg.value.decode('utf-8'))
+            questions = json.loads(msg.value.decode('utf-8'))
             db = await get_database()
-            exist = await check_exist_question(db, question["title"])
-            if not exist:
-                q = Question(**question)
-                await create_question(db, q.dict())
+            for question in questions:
+                exist = await check_exist_question(db, question["title"])
+                if not exist:
+                    q = Question(**question)
+                    await create_question(db, q.dict())
     except Exception as e:
         print(e)
     finally:

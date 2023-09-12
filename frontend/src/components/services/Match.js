@@ -1,4 +1,36 @@
 import Button from "@mui/material/Button";
+import { socket } from "../common/WebSocket";
+
+const match_easy = async () => {
+  try {
+    const response = await socket
+      .timeout(1000)
+      .emitWithAck("match_easy", socket.id);
+    console.log(response);
+  } catch (err) {
+    console.log("no match");
+  }
+};
+const match_medium = async () => {
+  try {
+    const response = await socket
+      .timeout(1000)
+      .emitWithAck("match_medium", socket.id);
+    console.log(response);
+  } catch (err) {
+    console.log("no match");
+  }
+};
+const match_hard = async () => {
+  try {
+    const response = await socket
+      .timeout(1000)
+      .emitWithAck("match_hard", socket.id);
+    console.log(response);
+  } catch (err) {
+    console.log("no match");
+  }
+};
 
 function Match() {
   return (
@@ -15,6 +47,7 @@ function Match() {
           variant="contained"
           size="large"
           color="question_easy"
+          onClick={match_easy}
         >
           <div className="match-difficulty-text">Easy</div>
         </Button>
@@ -28,6 +61,7 @@ function Match() {
           variant="contained"
           size="large"
           color="question_medium"
+          onClick={match_medium}
         >
           <div className="match-difficulty-text">Medium</div>
         </Button>
@@ -41,6 +75,7 @@ function Match() {
           variant="contained"
           size="large"
           color="question_hard"
+          onClick={match_hard}
         >
           <div className="match-difficulty-text">Hard</div>
         </Button>

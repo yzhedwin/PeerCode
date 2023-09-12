@@ -21,6 +21,11 @@ async def get_question_by_title(title):
     response = requests.get(config.question_service_url + f"/title/{title}")
     return response.json()
 
+@router.get("/problem/{titleSlug}")
+async def get_question_problem(titleSlug):
+    response = requests.get(config.question_service_url + f"/problem/{titleSlug}")
+    return response.json()
+
 
 @router.delete("/{title}")
 async def delete_question(title):

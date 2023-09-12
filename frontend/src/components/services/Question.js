@@ -38,8 +38,11 @@ function Question() {
     }
   };
 
-  const cellClickedListener = useCallback((event) => {
-    setQuestion(event.data);
+  const cellClickedListener = useCallback(async (event) => {
+    const { data } = await axios.get(
+      `http://localhost:5000/api/v1/question/problem/${event.data["titleSlug"]}`
+    );
+    setQuestion({ problem: data });
     navigate("/problem");
   }, []);
 
