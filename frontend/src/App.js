@@ -10,6 +10,8 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { Route, Routes } from "react-router-dom";
 import Profile from "./pages/Profile";
 import WebSocket from "./components/common/WebSocket";
+import { SnackBarProvider } from "./contexts/SnackBarContext";
+import { MatchProvider } from "./contexts/MatchContext";
 
 const theme = createTheme({
   palette: {
@@ -52,15 +54,19 @@ function App() {
   return (
     <Router>
       <ThemeProvider theme={theme}>
-        <QuestionProvider>
-          <WebSocket />
-          <Header />
-          <Routes>
-            <Route exact path="/" element={<Dashboard />} />
-            <Route exact path="/problem" element={<ProblemPage />} />
-            <Route exact path="/profile" element={<Profile />} />
-          </Routes>
-        </QuestionProvider>
+        <SnackBarProvider>
+          <QuestionProvider>
+            <MatchProvider>
+              <WebSocket />
+              <Header />
+              <Routes>
+                <Route exact path="/" element={<Dashboard />} />
+                <Route exact path="/problem" element={<ProblemPage />} />
+                <Route exact path="/profile" element={<Profile />} />
+              </Routes>
+            </MatchProvider>
+          </QuestionProvider>
+        </SnackBarProvider>
       </ThemeProvider>
     </Router>
   );
