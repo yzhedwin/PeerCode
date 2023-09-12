@@ -1,5 +1,5 @@
 from typing import Union
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 from config import get_config
 
 config = get_config()

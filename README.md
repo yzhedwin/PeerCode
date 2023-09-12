@@ -10,7 +10,7 @@
 
 Go to `backend` folder
 
-- Run `pip install -r ./requirements.txt` in your virtual environment
+- Run `pip install -r ./requirements-dev.txt` in your virtual environment. We are using this compiled requirements file for development so its easier to manage without the hassle of creating multiple environments.
 
 ### Frontend
 
