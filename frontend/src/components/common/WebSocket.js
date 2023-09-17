@@ -1,8 +1,8 @@
-import { Button } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { SnackBarContext } from "../../contexts/SnackBarContext";
 import { MatchContext } from "../../contexts/MatchContext";
+import { CodeContext } from "../../contexts/CodeContext";
 
 const socketUrl = "http://localhost:5002";
 export const socket = io(socketUrl, {
@@ -13,6 +13,7 @@ export default function WebSocket() {
   // eslint-disable-next-line no-unused-vars
   const [isConnected, setIsConnected] = useState(socket.connected);
   const { setMatch } = useContext(MatchContext);
+  const { setCode } = useContext(CodeContext);
   const { setOpenSnackBar, setSB } = useContext(SnackBarContext);
 
   function onConnect() {
@@ -30,12 +31,16 @@ export default function WebSocket() {
     socket.emit("join_room", room);
     setMatch(room);
   }
+  function onChatMessage(msg) {
+    setCode(msg);
+  }
 
   useEffect(() => {
     socket.connect();
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("match", onMatch);
+    socket.on("chatroom", onChatMessage);
 
     return () => {
       socket.off("connect", onConnect);

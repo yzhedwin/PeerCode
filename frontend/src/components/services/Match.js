@@ -4,6 +4,9 @@ import { SnackBarContext } from "../../contexts/SnackBarContext";
 import { useContext, useEffect, useState } from "react";
 import { MatchContext } from "../../contexts/MatchContext";
 import { CircularProgress } from "@mui/material";
+import { QuestionContext } from "../../contexts/QuestionContext";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 var timeout_id_easy = null;
 var timeout_id_medium = null;
@@ -14,6 +17,7 @@ function Match() {
   const [loadingMedium, setLoadingMedium] = useState(false);
   const [loadingHard, setLoadingHard] = useState(false);
   const { setOpenSnackBar, setSB } = useContext(SnackBarContext);
+  const { setQuestion } = useContext(QuestionContext);
   const {
     match,
     findMatchEasy,
@@ -24,6 +28,7 @@ function Match() {
     setFindMatchMedium,
     setFindMatchHard,
   } = useContext(MatchContext);
+  const navigate = useNavigate();
 
   const match_easy = () => {
     socket.emit("match_easy", socket.id);
@@ -85,16 +90,20 @@ function Match() {
     }
   }, [findMatchHard]);
 
+  const getRandomEasyQuestion = async () => {
+    const { data } = await axios.get(
+      `http://localhost:5000/api/v1/question/problem/3Sum`
+    );
+    setQuestion({ problem: data });
+    navigate("/match");
+  };
   useEffect(() => {
     if (match) {
       //match is either false or room_id
       clearTimeout(timeout_id_easy);
       clearTimeout(timeout_id_medium);
       clearTimeout(timeout_id_hard);
-      //TODO:
-      //fetch random question from question repo based on difficulty selected
-      //(can be obtained from match)
-      //Then navigate to problem page
+      getRandomEasyQuestion();
     }
   }, [match]);
 

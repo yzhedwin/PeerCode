@@ -18,6 +18,8 @@ async def question_bank_consume():
             for question in questions:
                 exist = await check_exist_question(db, question["title"])
                 if not exist:
+                    if question["status"] == None:
+                        question["status"] = "Not Attempted"
                     q = Question(**question)
                     await create_question(db, q.dict())
     except Exception as e:
