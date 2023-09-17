@@ -66,8 +66,8 @@ io.on("connection", (socket) => {
     console.log("cancel_hard", sid);
     waiting_hard = null;
   });
-  socket.on("message-to-room", (room_id, message) => {
-    socket.to(room_id).emit("chatroom", message);
+  socket.on("code-changes", (room_id, code) => {
+    socket.to(room_id).emit("chatroom-code", code);
   });
 });
 

@@ -31,16 +31,19 @@ export default function WebSocket() {
     socket.emit("join_room", room);
     setMatch(room);
   }
-  function onChatMessage(msg) {
-    setCode(msg);
+  function onCodeChanged(code) {
+    setCode(code);
   }
-
+  function onChatChanged(code) {
+    //TODO: Chat feature
+  }
   useEffect(() => {
     socket.connect();
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("match", onMatch);
-    socket.on("chatroom", onChatMessage);
+    socket.on("chatroom-code", onCodeChanged);
+    socket.on("chatroom-chat", onChatChanged);
 
     return () => {
       socket.off("connect", onConnect);

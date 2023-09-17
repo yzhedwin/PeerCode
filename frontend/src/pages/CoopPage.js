@@ -24,7 +24,7 @@ function CoopPage(props) {
   }
 
   useEffect(() => {
-    socket.emit("message-to-room", match, code);
+    socket.emit("code-changes", match, code);
   }, [code]);
 
   return (
