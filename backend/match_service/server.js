@@ -6,7 +6,7 @@ const cors = require("cors");
 const app = express();
 app.use(cors());
 const httpServer = createServer(app);
-
+const PORT = process.env.MATCH_SERVICE_PORT;
 const io = new Server(httpServer, {
   cors: {
     origin: "http://localhost:3000",
@@ -74,4 +74,4 @@ io.on("connection", (socket) => {
   });
 });
 
-httpServer.listen(5002);
+httpServer.listen(PORT);
