@@ -12,7 +12,7 @@ config = get_config()
 @router.post("/submission")
 async def add_submission(data: Judge):
     try:
-        response = requests.post(config.judge_service_url + "/submissions", json=data.dict())
+        response = requests.post(config.judge_service_url + "/submissions?wait=true", json=data.dict())
         response.raise_for_status()
         return response.json()
     except Exception:
@@ -24,6 +24,7 @@ async def get_submission(token:str):
     try:
         response = requests.get(config.judge_service_url + f"/submissions/{token}?base64_encoded=true")
         response.raise_for_status()
+        print(response.json())
         return response.json()
     except Exception:
         return response.reason
@@ -43,3 +44,11 @@ async def get_all_languages():
     response = requests.get(config.judge_service_url + "/languages")
     return response.json()
 
+@router.post("authorize")
+async def authorize():
+    try:
+        response = requests.post(config.judge_service_url + "/authorize")
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        return response.reason

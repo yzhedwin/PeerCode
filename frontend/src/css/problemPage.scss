@@ -25,9 +25,20 @@
   transition-property: height;
   transition-duration: 0.5s;
   transition-timing-function: linear;
+  display: flex;
+  flex-direction: column;
 }
 .chat-message-container {
   height: 70%;
   background-color: $text-white;
   overflow-y: scroll;
+}
+.console-options {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.console-message {
+  flex: 1;
+  border: black solid 1px;
 }
