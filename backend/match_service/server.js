@@ -69,6 +69,9 @@ io.on("connection", (socket) => {
   socket.on("code-changes", (room_id, code) => {
     socket.to(room_id).emit("chatroom-code", code);
   });
+  socket.on("room-message", (room_id, msg) => {
+    socket.to(room_id).emit("chatroom-chat", msg);
+  });
 });
 
 httpServer.listen(5002);

@@ -11,11 +11,23 @@
 }
 .editor-container {
   flex: 1;
-  background-color: green;
-  flex-direction: column;
+  height: 100%;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.editor-component {
+  flex: 1;
+  background-color: green;
 }
 .console-and-chat-container {
   background-color: grey;
-  height: 100%;
+  transition-property: height;
+  transition-duration: 0.5s;
+  transition-timing-function: linear;
+}
+.chat-message-container {
+  height: 70%;
+  background-color: white;
+  overflow-y: scroll;
 }
