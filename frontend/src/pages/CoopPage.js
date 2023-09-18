@@ -40,7 +40,7 @@ function CoopPage(props) {
     if (e.keyCode === 13) {
       let currentMessage = [...message];
       currentMessage.push({
-        user: "me", //change to username
+        user: "me",
         data: e.target.value,
       });
       setMessage(currentMessage);
@@ -94,13 +94,14 @@ function CoopPage(props) {
             )}
             {!hide && (
               <>
-                <Button variant="contained" onClick={onHide}>
+                <Button variant="contained" color="secondary" onClick={onHide}>
                   Hide
                 </Button>
                 <div className="chat-message-container">
                   <ChatBox />
                 </div>
                 <TextField
+                  style={{ backgroundColor: "#cccccc" }}
                   fullWidth
                   size="small"
                   onKeyDown={onSubmitChat}
