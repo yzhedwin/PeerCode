@@ -3,7 +3,7 @@ import { socket } from "../common/WebSocket";
 import { SnackBarContext } from "../../contexts/SnackBarContext";
 import { useContext, useEffect, useState } from "react";
 import { MatchContext } from "../../contexts/MatchContext";
-import { CircularProgress } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { QuestionContext } from "../../contexts/QuestionContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -108,7 +108,13 @@ function Match() {
   }, [match]);
 
   return (
-    <div className="match-container">
+    <Box
+      className="match-container"
+      sx={{
+        backgroundColor: "secondary.main",
+        color: "secondary.contrastText",
+      }}
+    >
       <div className="match-container-title">Match</div>
       <div className="match-difficulty-container">
         <Button
@@ -171,16 +177,8 @@ function Match() {
             <div className="match-difficulty-text">Hard</div>
           )}
         </Button>
-        <Button
-          variant="contained"
-          onClick={() => {
-            socket.emit("rooms");
-          }}
-        >
-          debug button
-        </Button>
       </div>
-    </div>
+    </Box>
   );
 }
 

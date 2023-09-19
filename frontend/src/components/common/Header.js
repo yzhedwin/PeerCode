@@ -14,6 +14,10 @@ import { useNavigate } from "react-router-dom";
 import { useCallback, useContext, useState } from "react";
 import axios from "axios";
 import { SnackBarContext } from "../../contexts/SnackBarContext";
+import { ModeContext } from "../../contexts/ModeContext";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
+import { useTheme } from "@mui/material";
 
 const pages = ["Hello"];
 const settings = ["Profile", "Get Question", "Logout"];
@@ -22,7 +26,9 @@ function Header() {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const { setOpenSnackBar, setSB } = useContext(SnackBarContext);
+  const { mode, setMode } = useContext(ModeContext);
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -34,11 +40,10 @@ function Header() {
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
-
   const handleCloseUserMenu = useCallback((setting) => {
     setAnchorElUser(null);
     if (typeof setting === "string") {
-      if (setting?.toLowerCase() == "get question") {
+      if (setting?.toLowerCase() === "get question") {
         axios.post("http://localhost:5000/api/v1/question");
         setSB({ msg: "Retrieve question from Leetcode", severity: "success" });
         setOpenSnackBar(true);
@@ -48,7 +53,10 @@ function Header() {
     }
     //if setting === logout => handleLogout()
   }, []);
-
+  const toggleColorMode = () => {
+    console.log(mode);
+    setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+  };
   return (
     <AppBar position="static" color="secondary">
       <Container maxWidth="xl">
@@ -71,7 +79,13 @@ function Header() {
           >
             PeerPrep
           </Typography>
-
+          <IconButton sx={{ ml: 1 }} onClick={toggleColorMode} color="inherit">
+            {theme.palette.mode === "dark" ? (
+              <Brightness7Icon />
+            ) : (
+              <Brightness4Icon />
+            )}
+          </IconButton>
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"

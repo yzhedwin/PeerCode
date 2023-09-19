@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 function QuestionOTD() {
@@ -22,14 +22,22 @@ function QuestionOTD() {
   };
 
   return (
-    <div className="questionOTD-container">
-      <div className="questionOTD-container-title">Question of the day</div>
+    <Box
+      className="questionOTD-container"
+      sx={{ backgroundColor: "secondary.main" }}
+    >
+      <Box
+        className="questionOTD-container-title"
+        sx={{ color: "secondary.contrastText" }}
+      >
+        Question of the day
+      </Box>
       <div className="questionOTD-btn">
         <Button variant="contained" color="question_OTD" onClick={handleClick}>
           {qotd?.title}
         </Button>
       </div>
-    </div>
+    </Box>
   );
 }
 

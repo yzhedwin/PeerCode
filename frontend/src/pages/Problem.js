@@ -1,13 +1,15 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { QuestionContext } from "../contexts/QuestionContext";
 import parse from "html-react-parser";
 import Editor from "@monaco-editor/react";
 import { Button } from "@mui/material";
 import SelectLanguage from "../components/common/SelectLanguage";
 import axios from "axios";
+import { ModeContext } from "../contexts/ModeContext";
 
 function ProblemPage(props) {
   const { question } = useContext(QuestionContext);
+  const { mode } = useContext(ModeContext);
   const [code, setCode] = useState("console.log('hello world')");
   const [consoleResult, setConsoleResult] = useState({});
   const [language, setLanguage] = useState({
@@ -15,7 +17,6 @@ function ProblemPage(props) {
     name: "JavaScript (Node.js 12.14.0)",
     raw: "javascript",
   });
-  const [theme, setTheme] = useState("vs-dark");
   const [hide, setHide] = useState(true);
   const [chatHeight, setChatHeight] = useState(5);
   const editorRef = useRef(null);
@@ -77,7 +78,7 @@ function ProblemPage(props) {
             <Editor
               height="100%"
               language={language.raw}
-              theme={theme}
+              theme={"vs-" + mode}
               value={code}
               onChange={setCode}
               onMount={handleEditorDidMount}
@@ -106,9 +107,11 @@ function ProblemPage(props) {
                     variant="contained"
                     color="secondary"
                     onClick={onHide}
+                    sx={{ marginInline: 1 }}
                   >
                     Hide
                   </Button>
+
                   <Button variant="contained" color="secondary" onClick={onRun}>
                     Run
                   </Button>

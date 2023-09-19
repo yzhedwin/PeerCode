@@ -1,8 +1,8 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { QuestionContext } from "../contexts/QuestionContext";
 import parse from "html-react-parser";
 import Editor from "@monaco-editor/react";
-import { Button, TextField } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import { socket } from "../components/common/WebSocket";
 import { MatchContext } from "../contexts/MatchContext";
 import ChatBox from "../components/common/ChatBox";
@@ -35,9 +35,9 @@ function CoopPage(props) {
     monacoRef.current = monaco;
   }
 
-  function showValue() {
-    console.log(editorRef.current.getPosition()); //get current position useful to show peer where you are currently at
-  }
+  // function getCursorPos() {
+  //   console.log(editorRef.current.getPosition()); //get current position useful to show peer where you are currently at
+  // }
   function onHide() {
     setHide(true);
     setChatHeight(5);
@@ -96,10 +96,10 @@ function CoopPage(props) {
     setLanguage(JSON.parse(event.target.value));
     socket.emit("code-language", match, event.target.value);
   }
-  useEffect(() => {
+  function handleCodeChanges(code) {
+    setCode(code);
     socket.emit("code-changes", match, code);
-    console.log(code);
-  }, [code]);
+  }
 
   return (
     <>
@@ -117,7 +117,7 @@ function CoopPage(props) {
               language={language?.raw}
               theme="vs-dark"
               value={code}
-              onChange={setCode}
+              onChange={handleCodeChanges}
               onMount={handleEditorDidMount}
               options={{
                 inlineSuggest: true,
@@ -144,6 +144,7 @@ function CoopPage(props) {
                     variant="contained"
                     color="secondary"
                     onClick={onHide}
+                    sx={{ marginInline: 1 }}
                   >
                     Hide
                   </Button>
@@ -171,7 +172,13 @@ function CoopPage(props) {
                 </div>
                 {showConsole ? (
                   <>
-                    <div className="console-message">
+                    <Box
+                      className="console-message"
+                      sx={{
+                        backgroundColor: "primary.console",
+                        color: "primary.contrastText",
+                      }}
+                    >
                       <div>
                         <div>
                           <strong>Status: </strong>
@@ -192,7 +199,7 @@ function CoopPage(props) {
                         <strong>Output: </strong>
                         {consoleResult?.stdout}
                       </div>
-                    </div>
+                    </Box>
                     <Button
                       variant="contained"
                       color="secondary"
