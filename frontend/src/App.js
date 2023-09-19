@@ -13,8 +13,7 @@ import WebSocket from "./components/common/WebSocket";
 import { SnackBarProvider } from "./contexts/SnackBarContext";
 import { MatchProvider } from "./contexts/MatchContext";
 import CoopPage from "./pages/CoopPage";
-import { CodeProvider } from "./contexts/CodeContext";
-import { MessageProvider } from "./contexts/MessageContext";
+import { CoopProvider } from "./contexts/CoopContext";
 
 const theme = createTheme({
   palette: {
@@ -60,18 +59,16 @@ function App() {
         <SnackBarProvider>
           <QuestionProvider>
             <MatchProvider>
-              <MessageProvider>
-                <CodeProvider>
-                  <WebSocket />
-                  <Header />
-                  <Routes>
-                    <Route exact path="/" element={<Dashboard />} />
-                    <Route exact path="/problem" element={<ProblemPage />} />
-                    <Route exact path="/match" element={<CoopPage />} />
-                    <Route exact path="/profile" element={<Profile />} />
-                  </Routes>
-                </CodeProvider>
-              </MessageProvider>
+              <CoopProvider>
+                <WebSocket />
+                <Header />
+                <Routes>
+                  <Route exact path="/" element={<Dashboard />} />
+                  <Route exact path="/problem" element={<ProblemPage />} />
+                  <Route exact path="/match" element={<CoopPage />} />
+                  <Route exact path="/profile" element={<Profile />} />
+                </Routes>
+              </CoopProvider>
             </MatchProvider>
           </QuestionProvider>
         </SnackBarProvider>

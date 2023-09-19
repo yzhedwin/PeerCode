@@ -62,9 +62,6 @@ function ProblemPage(props) {
       console.log(e.message);
     }
   };
-  useEffect(() => {
-    console.log(language);
-  }, []);
 
   return (
     <>
