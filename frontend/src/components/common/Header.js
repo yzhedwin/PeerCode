@@ -54,13 +54,21 @@ function Header() {
     navigate(e.target.textContent);
     setAnchorElNav(null);
   };
-  const handleCloseUserMenu = useCallback((setting) => {
+  const handleCloseUserMenu = useCallback(async (setting) => {
     setAnchorElUser(null);
     if (typeof setting === "string") {
       if (setting?.toLowerCase() === "get question") {
-        axios.post("http://localhost:5000/api/v1/question");
-        setSB({ msg: "Retrieve question from Leetcode", severity: "success" });
-        setOpenSnackBar(true);
+        try {
+          await axios.post("http://localhost:5000/api/v1/question");
+          setSB({
+            msg: "Retrieve question from Leetcode",
+            severity: "success",
+          });
+          setOpenSnackBar(true);
+        } catch (e) {
+          setSB({ msg: `Question Service: ${e.message}`, severity: "error" });
+          setOpenSnackBar(true);
+        }
       } else {
         navigate(setting?.toLowerCase());
       }
@@ -68,7 +76,6 @@ function Header() {
   }, []);
 
   const toggleColorMode = () => {
-    console.log(mode);
     setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
   };
   return (
