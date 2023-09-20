@@ -87,3 +87,5 @@ export const EDITOR_SUPPORTED_LANGUAGES = [
 ];
 
 export const EDITOR_SUPPORTED_THEMES = [];
+
+export const API_GATEWAY = "http://localhost:5000";

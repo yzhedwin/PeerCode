@@ -17,6 +17,7 @@ class Config(BaseSettings):
     kafka_group_server: str
     question_service_url:str
     judge_service_url:str
+    user_service_url: str
 
 
 def get_config():

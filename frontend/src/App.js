@@ -6,7 +6,7 @@ import { green, grey, orange, red } from "@mui/material/colors";
 import "ag-grid-enterprise";
 import { QuestionProvider } from "./contexts/QuestionContext";
 import ProblemPage from "./pages/Problem";
-import { BrowserRouter as Router } from "react-router-dom";
+import { Navigate, BrowserRouter as Router } from "react-router-dom";
 import { Route, Routes } from "react-router-dom";
 import Profile from "./pages/Profile";
 import WebSocket from "./components/common/WebSocket";
@@ -16,6 +16,11 @@ import CoopPage from "./pages/CoopPage";
 import { CoopProvider } from "./contexts/CoopContext";
 import { ModeContext } from "./contexts/ModeContext";
 import { useContext } from "react";
+import Login from "./pages/Login";
+import { Provider } from "react-redux";
+import store from "./store";
+import Register from "./pages/Register";
+import ProtectedRoute from "./components/routing/ProtectedRoutes";
 
 function App() {
   const { mode } = useContext(ModeContext);
@@ -108,27 +113,35 @@ function App() {
       },
     },
   });
+
   return (
-    <Router>
-      <ThemeProvider theme={theme}>
-        <SnackBarProvider>
-          <QuestionProvider>
-            <MatchProvider>
-              <CoopProvider>
-                <WebSocket />
-                <Header />
-                <Routes>
-                  <Route exact path="/" element={<Dashboard />} />
-                  <Route exact path="/problem" element={<ProblemPage />} />
-                  <Route exact path="/match" element={<CoopPage />} />
-                  <Route exact path="/profile" element={<Profile />} />
-                </Routes>
-              </CoopProvider>
-            </MatchProvider>
-          </QuestionProvider>
-        </SnackBarProvider>
-      </ThemeProvider>
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <ThemeProvider theme={theme}>
+          <SnackBarProvider>
+            <QuestionProvider>
+              <MatchProvider>
+                <CoopProvider>
+                  <WebSocket />
+                  <Header />
+                  <Routes>
+                    <Route element={<ProtectedRoute />}>
+                      <Route exact path="/dashboard" element={<Dashboard />} />
+                      <Route exact path="/problem" element={<ProblemPage />} />
+                      <Route exact path="/match" element={<CoopPage />} />
+                      <Route exact path="/profile" element={<Profile />} />
+                    </Route>
+                    <Route exact path="/" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                  </Routes>
+                </CoopProvider>
+              </MatchProvider>
+            </QuestionProvider>
+          </SnackBarProvider>
+        </ThemeProvider>
+      </Router>
+    </Provider>
   );
 }
 
