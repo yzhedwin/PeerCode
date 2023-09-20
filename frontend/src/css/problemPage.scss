@@ -1,3 +1,5 @@
+@import "./_colors.scss";
+
 .problem-page-container {
   display: flex;
   margin-top: 2vh;
@@ -11,11 +13,21 @@
 }
 .editor-container {
   flex: 1;
-  background-color: green;
-  flex-direction: column;
+  height: 100%;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.editor-component {
+  flex: 1;
 }
 .console-and-chat-container {
-  background-color: grey;
-  height: 100%;
+  transition-property: height;
+  transition-duration: 0.5s;
+  transition-timing-function: linear;
+}
+.chat-message-container {
+  height: 70%;
+  background-color: $text-white;
+  overflow-y: scroll;
 }

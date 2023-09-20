@@ -9,6 +9,12 @@ import ProblemPage from "./pages/Problem";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Route, Routes } from "react-router-dom";
 import Profile from "./pages/Profile";
+import WebSocket from "./components/common/WebSocket";
+import { SnackBarProvider } from "./contexts/SnackBarContext";
+import { MatchProvider } from "./contexts/MatchContext";
+import CoopPage from "./pages/CoopPage";
+import { CodeProvider } from "./contexts/CodeContext";
+import { MessageProvider } from "./contexts/MessageContext";
 import Homepage from "./pages/Homepage";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
@@ -55,44 +61,26 @@ function App() {
   return (
     <Router>
       <ThemeProvider theme={theme}>
-        <QuestionProvider>
-          <Header />
-          <Routes>
-            
-            <Route exact path="/" element={<SignUp /> } />
-            <Route exact path="/" element={<Login /> } /> 
-            <Route exact path="/" element={<Dashboard /> } />
-
-            <Route exact path="/" element={
-        
-                <Homepage />
-        
-            } />
-
-            <Route exact path="/signup" element={
-              <HomeHeader>
-                <SignUp />
-              </HomeHeader>
-            } /> 
-
-            <Route exact path="/login" element={
-              <HomeHeader>
-                <Login />
-              </HomeHeader>
-            } />
-
-            <Route exact path="/problem" element={
-              <Header>
-                <ProblemPage />
-              </Header>
-            } />
-            <Route exact path="/profile" element={
-              <Header>
-                <Profile />
-              </Header>
-            } />
-          </Routes>
-        </QuestionProvider>
+        <SnackBarProvider>
+          <QuestionProvider>
+            <MatchProvider>
+              <MessageProvider>
+                <CodeProvider>
+                  <WebSocket />
+                  <Header />
+                  <Routes>
+                    <Route exact path="/" element={<Login /> } />
+                    <Route exact path="/signup" element={<SignUp /> } />
+                    <Route exact path="/dashboard" element={<Dashboard />} />
+                    <Route exact path="/problem" element={<ProblemPage />} />
+                    <Route exact path="/match" element={<CoopPage />} />
+                    <Route exact path="/profile" element={<Profile />} />
+                  </Routes>
+                </CodeProvider>
+              </MessageProvider>
+            </MatchProvider>
+          </QuestionProvider>
+        </SnackBarProvider>
       </ThemeProvider>
     </Router>
   );

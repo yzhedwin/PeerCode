@@ -1,0 +1,66 @@
+import { useCallback, useContext, useEffect, useState } from "react";
+import { io } from "socket.io-client";
+import { SnackBarContext } from "../../contexts/SnackBarContext";
+import { MatchContext } from "../../contexts/MatchContext";
+import { CodeContext } from "../../contexts/CodeContext";
+import { MessageContext } from "../../contexts/MessageContext";
+
+const socketUrl = "http://localhost:5002";
+export const socket = io(socketUrl, {
+  autoConnect: false,
+});
+
+export default function WebSocket() {
+  // eslint-disable-next-line no-unused-vars
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  const { setMatch } = useContext(MatchContext);
+  const { setCode } = useContext(CodeContext);
+  const { message, setMessage } = useContext(MessageContext);
+  const { setOpenSnackBar, setSB } = useContext(SnackBarContext);
+  const [newMessage, setNewMessage] = useState({});
+
+  function onConnect() {
+    console.log("connected");
+    setIsConnected(true);
+  }
+
+  function onDisconnect() {
+    console.log("client is disconnected");
+    setIsConnected(false);
+  }
+  function onMatch(room) {
+    setSB({ msg: "Found a match!", severity: "success" });
+    setOpenSnackBar(true);
+    socket.emit("join_room", room);
+    setMatch(room);
+  }
+  const onCodeChanged = useCallback((code) => {
+    setCode(code);
+  }, []);
+
+  const onChatChanged = (msg) => {
+    setNewMessage(msg);
+  };
+
+  useEffect(() => {
+    let update = [...message];
+    update.push(newMessage);
+    setMessage(update);
+  }, [newMessage]);
+
+  useEffect(() => {
+    socket.connect();
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("match", onMatch);
+    socket.on("chatroom-code", onCodeChanged);
+    socket.on("chatroom-chat", onChatChanged);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("match", onMatch);
+      socket.disconnect();
+    };
+  }, []);
+}

@@ -3,10 +3,17 @@ import { QuestionContext } from "../contexts/QuestionContext";
 import parse from "html-react-parser";
 import Editor from "@monaco-editor/react";
 import { Button, TextField } from "@mui/material";
+import { socket } from "../components/common/WebSocket";
+import { MatchContext } from "../contexts/MatchContext";
+import { CodeContext } from "../contexts/CodeContext";
 import ChatBox from "../components/common/ChatBox";
-function ProblemPage(props) {
+import { MessageContext } from "../contexts/MessageContext";
+
+function CoopPage(props) {
   const { question } = useContext(QuestionContext);
-  const [code, setCode] = useState("console.log('hello world')");
+  const { match } = useContext(MatchContext);
+  const { code, setCode } = useContext(CodeContext);
+  const { message, setMessage } = useContext(MessageContext);
   const [hide, setHide] = useState(true);
   const [chatHeight, setChatHeight] = useState(5);
   const editorRef = useRef(null);
@@ -17,9 +24,9 @@ function ProblemPage(props) {
     monacoRef.current = monaco;
   }
 
-  // function showValue() {
-  //   console.log(editorRef.current.getPosition()); //get current position useful to show peer where you are currently at
-  // }
+  function showValue() {
+    console.log(editorRef.current.getPosition()); //get current position useful to show peer where you are currently at
+  }
   function onHide() {
     setHide(true);
     setChatHeight(5);
@@ -28,6 +35,24 @@ function ProblemPage(props) {
     setHide(false);
     setChatHeight(30);
   }
+
+  function onSubmitChat(e) {
+    if (e.keyCode === 13) {
+      let currentMessage = [...message];
+      currentMessage.push({
+        user: "me",
+        data: e.target.value,
+      });
+      setMessage(currentMessage);
+      socket.emit("room-message", match, {
+        user: "edwin", //change to username
+        data: e.target.value,
+      });
+    }
+  }
+  useEffect(() => {
+    socket.emit("code-changes", match, code);
+  }, [code]);
 
   return (
     <>
@@ -69,9 +94,18 @@ function ProblemPage(props) {
             )}
             {!hide && (
               <>
-                <Button variant="contained" onClick={onHide}>
+                <Button variant="contained" color="secondary" onClick={onHide}>
                   Hide
                 </Button>
+                <div className="chat-message-container">
+                  <ChatBox />
+                </div>
+                <TextField
+                  style={{ backgroundColor: "#cccccc" }}
+                  fullWidth
+                  size="small"
+                  onKeyDown={onSubmitChat}
+                ></TextField>
               </>
             )}
           </div>
@@ -81,4 +115,4 @@ function ProblemPage(props) {
   );
 }
 
-export default ProblemPage;
+export default CoopPage;

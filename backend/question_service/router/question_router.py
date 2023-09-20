@@ -34,6 +34,23 @@ async def get_question_by_title(title, db: AsyncIOMotorClient = Depends(get_data
         return response
     raise HTTPException(404, f"There is no question with the name {title}")
 
+@router.get("/problem/{titleSlug}")
+async def get_question_problem(titleSlug):
+    transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+    query = gql("""
+                    query questionContent($titleSlug: String!) {
+    question(titleSlug: $titleSlug) {
+    content
+    mysqlSchemas
+    }
+}""")
+    result = await client.execute_async(
+        query, {"titleSlug":  titleSlug}
+    )
+    if result.get("question") is None:
+        return "Question not found"
+    return result.get("question").get("content")
 
 @router.delete("/{title}")
 async def delete_question(title, db: AsyncIOMotorClient = Depends(get_database)):

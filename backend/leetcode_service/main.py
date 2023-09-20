@@ -1,21 +1,21 @@
 import json
 from config import logger, get_consumer,get_producer, get_config
-from threading import Thread
 import asyncio
 from gql import Client, gql
 from gql.transport.aiohttp import AIOHTTPTransport
 
 config = get_config()
 
-class QuestionService(Thread):
+class QuestionService():
     def __init__(self):
-        super().__init__()
         self.consumer = get_consumer(config.kafka_topic_question_service)
         self.producer = get_producer()
+        self.loop = asyncio.new_event_loop()
 
-    def get_questions_from_leetcode(self):
+
+    async def get_questions_from_leetcode(self):
         transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
-        client = Client(transport=transport, fetch_schema_from_transport=False)
+        client = Client(transport=transport, fetch_schema_from_transport=False, execute_timeout=None)
         query = gql(
             """query problemsetQuestionList($categorySlug: String, $limit: Int, $skip: Int, $filters: QuestionListFilterInput) {
     problemsetQuestionList: questionList(
@@ -47,25 +47,14 @@ class QuestionService(Thread):
     }
     """
         )
-        result = client.execute(
-            query, {"categorySlug": "", "skip": 0, "limit": 50, "filters": {}}
-        )
-        for q in dict(result)["problemsetQuestionList"]["questions"]:
-            query = gql("""
-                            query questionContent($titleSlug: String!) {
-            question(titleSlug: $titleSlug) {
-            content
-            mysqlSchemas
-            }
-        }""")
-            result =  client.execute(
-                query, {"titleSlug":  q["titleSlug"]}
+        for i in range(0, 3000, 500):
+            result = await client.execute_async(
+                query, {"categorySlug": "", "skip": i, "limit": i+500, "filters": {}}
             )
-            q["problem"] = result["question"]["content"]
-            self.producer.produce(config.kafka_topic_question_bank, json.dumps(q))
+            self.producer.produce(config.kafka_topic_question_bank, json.dumps(dict(result)["problemsetQuestionList"]["questions"][i:i+500]))
             self.producer.flush()
 
-    def run(self):
+    async def get_all_questions(self):
         try:
             count = 0
             while True:
@@ -84,15 +73,16 @@ class QuestionService(Thread):
                     logger.info(f"Consumed event from topic {msg.topic()}")
                     msg = json.loads(msg.value())
                     if msg == "GET QUESTIONS FROM LEETCODE":
-                        self.get_questions_from_leetcode()
+                        await self.get_questions_from_leetcode()
         except KeyboardInterrupt:
             self.consumer.close()
-        finally:
-            # Leave group and commit final offsets
-            self.consumer.close()
+            self.loop.stop()
+
 
 if __name__ == "__main__":
     qs = QuestionService()
-    qs.start()
-    qs.join()
+    asyncio.set_event_loop(qs.loop)
+    qs.loop.create_task(qs.get_all_questions())
+    qs.loop.run_forever()
+    qs.loop.close()
 

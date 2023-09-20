@@ -14,8 +14,18 @@ function Question() {
     () => [
       { headerName: "No.", valueGetter: "node.id" },
       { field: "title", headerName: "Title" },
-      { field: "difficulty", headerName: "Difficulty" },
-      { field: "status", headerName: "Status" },
+      {
+        field: "difficulty",
+        headerName: "Difficulty",
+        filter: true,
+        filterParams: {},
+      },
+      {
+        field: "status",
+        headerName: "Status",
+        filter: true,
+        filterParams: {},
+      },
     ],
     []
   );
@@ -31,15 +41,18 @@ function Question() {
 
   // all even rows assigned 'my-shaded-effect'
   const getRowClass = (params) => {
-    if (params.node.data.status === 1) {
+    if (params.node.data.status === "Completed") {
       return "question-completed";
-    } else if (params.node.data.status === 2) {
+    } else if (params.node.data.status === "Attempted") {
       return "question-inprogress";
     }
   };
 
-  const cellClickedListener = useCallback((event) => {
-    setQuestion(event.data);
+  const cellClickedListener = useCallback(async (event) => {
+    const { data } = await axios.get(
+      `http://localhost:5000/api/v1/question/problem/${event.data["titleSlug"]}`
+    );
+    setQuestion({ problem: data });
     navigate("/problem");
   }, []);
 
@@ -54,11 +67,6 @@ function Question() {
 
   return (
     <div className="question-container">
-      <div className="question-filter-container">
-        <div>Difficulty</div>
-        <div>Status</div>
-        <div>Tag</div>
-      </div>
       <div
         className="ag-theme-alpine"
         style={{ width: "100%", height: "100%" }}
