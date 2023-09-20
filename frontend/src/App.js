@@ -1,9 +1,9 @@
 import "./css/App.scss";
+import "ag-grid-enterprise";
 import Dashboard from "./pages/Dashboard";
 import Header from "./components/common/Header";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { green, grey, orange, red } from "@mui/material/colors";
-import "ag-grid-enterprise";
 import { QuestionProvider } from "./contexts/QuestionContext";
 import ProblemPage from "./pages/Problem";
 import { Navigate, BrowserRouter as Router } from "react-router-dom";
@@ -19,8 +19,8 @@ import { useContext } from "react";
 import Login from "./pages/Login";
 import { Provider } from "react-redux";
 import store from "./store";
-import Register from "./pages/Register";
 import ProtectedRoute from "./components/routing/ProtectedRoutes";
+import SignUp from "./pages/SignUp";
 
 function App() {
   const { mode } = useContext(ModeContext);
@@ -132,7 +132,7 @@ function App() {
                       <Route exact path="/profile" element={<Profile />} />
                     </Route>
                     <Route exact path="/" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
+                    <Route exact path="/signup" element={<SignUp />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
                 </CoopProvider>

@@ -4,8 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import LoadingIcon from "../components/common/LoadingIcon";
 import { userLogin } from "../components/auth/authActions";
+import "../css/login.scss";
+import bgimage from "../assets/PeerPrep.png";
 
-const LoginScreen = () => {
+function Login() {
   const { loading, userInfo, error } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
@@ -26,31 +28,51 @@ const LoginScreen = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(submitForm)}>
-      {error && console.log(error)}
-      <div className="form-group">
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          className="form-input"
-          {...register("email")}
-          required
-        />
-      </div>
-      <div className="form-group">
-        <label htmlFor="password">Password</label>
-        <input
-          type="password"
-          className="form-input"
-          {...register("password")}
-          required
-        />
-      </div>
-      <button type="submit" className="button" disabled={loading}>
-        {loading ? <LoadingIcon /> : "Login"}
-      </button>
-    </form>
-  );
-};
+    <section>
+      <div className="login-container">
+        <div className="col-2">
+          <img src={bgimage} alt="" />
+        </div>
 
-export default LoginScreen;
+        <div className="col-1">
+          <h2>Login</h2>
+          <span>Get yourself prepared for Tech Interview</span>
+
+          <form
+            id="form"
+            className="flex flex-col"
+            onSubmit={handleSubmit(submitForm)}
+          >
+            <input
+              type="email"
+              placeholder="Email Address"
+              className="form-input"
+              {...register("email")}
+              required
+            />
+            <input
+              className="form-input"
+              type="password"
+              placeholder="Password"
+              {...register("password")}
+              required
+            />
+
+            <button type="submit" className="button" disabled={loading}>
+              {loading ? <LoadingIcon /> : "Login"}
+            </button>
+            <div className="forgot-password">
+              <div>
+                New member? Click{" "}
+                <span onClick={() => navigate("signup")}>here!</span>
+              </div>
+              Lost Password? Click <span>here!</span>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default Login;
