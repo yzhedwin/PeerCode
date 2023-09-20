@@ -125,12 +125,12 @@ function App() {
                   <WebSocket />
                   <Header />
                   <Routes>
-                    <Route element={<ProtectedRoute />}>
-                      <Route exact path="/dashboard" element={<Dashboard />} />
-                      <Route exact path="/problem" element={<ProblemPage />} />
-                      <Route exact path="/match" element={<CoopPage />} />
-                      <Route exact path="/profile" element={<Profile />} />
-                    </Route>
+                    {/* <Route element={<ProtectedRoute />}> */}
+                    <Route exact path="/dashboard" element={<Dashboard />} />
+                    <Route exact path="/problem" element={<ProblemPage />} />
+                    <Route exact path="/match" element={<CoopPage />} />
+                    <Route exact path="/profile" element={<Profile />} />
+                    {/* </Route> */}
                     <Route exact path="/" element={<Login />} />
                     <Route exact path="/signup" element={<SignUp />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
