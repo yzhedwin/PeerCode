@@ -25,5 +25,5 @@ async def login(user: UserLogin):
 
 @router.post("/register")
 async def register():
-    response = requests.get(config.user_service_url + "/register")
-    return response
+    response = requests.post(config.user_service_url + "/register")
+    return response.json()

@@ -22,7 +22,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useGetUserDetailsQuery } from "../services/Auth";
 import { logout, setCredentials } from "../auth/authSlice";
 
-const noAuthPages = ["Register"];
 const settings = ["Profile", "Get Question", "Logout"];
 
 function Header() {
@@ -34,6 +33,7 @@ function Header() {
   const theme = useTheme();
   const { userInfo } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+
   // automatically authenticate user if token is found
   const { data, isFetching } = useGetUserDetailsQuery("userDetails", {
     pollingInterval: 900000, // 15mins
@@ -189,21 +189,8 @@ function Header() {
           >
             PeerCode
           </Typography>
-          {!userInfo ? (
-            <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-              {noAuthPages.map((page) => (
-                <Button
-                  key={page}
-                  onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: "white", display: "block" }}
-                >
-                  {page}
-                </Button>
-              ))}
-            </Box>
-          ) : (
-            <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-              {/* {noAuthPages.map((page) => (
+          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+            {/* {noAuthPages.map((page) => (
               <Button
                 key={page}
                 onClick={handleCloseNavMenu}
@@ -212,8 +199,7 @@ function Header() {
                 {page}
               </Button>
             ))} */}
-            </Box>
-          )}
+          </Box>
 
           {userInfo ? (
             <Box sx={{ flexGrow: 0 }}>
@@ -243,7 +229,7 @@ function Header() {
                     key={setting}
                     onClick={() =>
                       setting.toLowerCase() === "logout"
-                        ? dispatch(logout())
+                        ? dispatch(logout()) && handleCloseUserMenu(setting)
                         : handleCloseUserMenu(setting)
                     }
                   >
