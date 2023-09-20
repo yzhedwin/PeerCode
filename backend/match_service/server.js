@@ -6,7 +6,7 @@ const cors = require("cors");
 const app = express();
 app.use(cors());
 const httpServer = createServer(app);
-
+const PORT = process.env.MATCH_SERVICE_PORT;
 const io = new Server(httpServer, {
   cors: {
     origin: "http://localhost:3000",
@@ -72,6 +72,12 @@ io.on("connection", (socket) => {
   socket.on("room-message", (room_id, msg) => {
     socket.to(room_id).emit("chatroom-chat", msg);
   });
+  socket.on("code-submission", (room_id, submission) => {
+    socket.to(room_id).emit("chatroom-console-result", submission);
+  });
+  socket.on("code-language", (room_id, language) => {
+    socket.to(room_id).emit("chatroom-code-language", language);
+  });
 });
 
-httpServer.listen(5002);
+httpServer.listen(PORT);

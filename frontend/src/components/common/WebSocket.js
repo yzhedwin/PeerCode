@@ -2,8 +2,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { SnackBarContext } from "../../contexts/SnackBarContext";
 import { MatchContext } from "../../contexts/MatchContext";
-import { CodeContext } from "../../contexts/CodeContext";
-import { MessageContext } from "../../contexts/MessageContext";
+import { CoopContext } from "../../contexts/CoopContext";
 
 const socketUrl = "http://localhost:5002";
 export const socket = io(socketUrl, {
@@ -14,8 +13,8 @@ export default function WebSocket() {
   // eslint-disable-next-line no-unused-vars
   const [isConnected, setIsConnected] = useState(socket.connected);
   const { setMatch } = useContext(MatchContext);
-  const { setCode } = useContext(CodeContext);
-  const { message, setMessage } = useContext(MessageContext);
+  const { message, setMessage, setCode, setLanguage, setConsoleResult } =
+    useContext(CoopContext);
   const { setOpenSnackBar, setSB } = useContext(SnackBarContext);
   const [newMessage, setNewMessage] = useState({});
 
@@ -41,6 +40,12 @@ export default function WebSocket() {
   const onChatChanged = (msg) => {
     setNewMessage(msg);
   };
+  const onConsoleChanged = (result) => {
+    setConsoleResult(result);
+  };
+  const onCodeLanguageChanged = (language) => {
+    setLanguage(JSON.parse(language));
+  };
 
   useEffect(() => {
     let update = [...message];
@@ -55,11 +60,18 @@ export default function WebSocket() {
     socket.on("match", onMatch);
     socket.on("chatroom-code", onCodeChanged);
     socket.on("chatroom-chat", onChatChanged);
+    socket.on("chatroom-console-result", onConsoleChanged);
+    socket.on("chatroom-code-language", onCodeLanguageChanged);
 
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
       socket.off("match", onMatch);
+      socket.off("chatroom-code", onCodeChanged);
+      socket.off("chatroom-chat", onChatChanged);
+      socket.off("chatroom-console-result", onConsoleChanged);
+      socket.off("chatroom-code-language", onCodeLanguageChanged);
+
       socket.disconnect();
     };
   }, []);

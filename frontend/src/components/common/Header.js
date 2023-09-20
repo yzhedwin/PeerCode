@@ -7,19 +7,21 @@ import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { useNavigate } from "react-router-dom";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
+import axios from "axios";
+import { SnackBarContext } from "../../contexts/SnackBarContext";
 
 const pages = ["Hello"];
-const settings = ["Profile", "Logout"];
+const settings = ["Profile", "Get Question", "Logout"];
 
 function Header() {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
+  const { setOpenSnackBar, setSB } = useContext(SnackBarContext);
   const navigate = useNavigate();
 
   const handleOpenNavMenu = (event) => {
@@ -35,7 +37,15 @@ function Header() {
 
   const handleCloseUserMenu = useCallback((setting) => {
     setAnchorElUser(null);
-    navigate(setting?.toLowerCase());
+    if (typeof setting === "string") {
+      if (setting?.toLowerCase() == "get question") {
+        axios.post("http://localhost:5000/api/v1/question");
+        setSB({ msg: "Retrieve question from Leetcode", severity: "success" });
+        setOpenSnackBar(true);
+      } else {
+        navigate(setting?.toLowerCase());
+      }
+    }
     //if setting === logout => handleLogout()
   }, []);
 

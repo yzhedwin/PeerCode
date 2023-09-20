@@ -13,6 +13,7 @@ import WebSocket from "./components/common/WebSocket";
 import { SnackBarProvider } from "./contexts/SnackBarContext";
 import { MatchProvider } from "./contexts/MatchContext";
 import CoopPage from "./pages/CoopPage";
+import { CoopProvider } from "./contexts/CoopContext";
 import { CodeProvider } from "./contexts/CodeContext";
 import { MessageProvider } from "./contexts/MessageContext";
 import Homepage from "./pages/Homepage";
@@ -64,6 +65,7 @@ function App() {
         <SnackBarProvider>
           <QuestionProvider>
             <MatchProvider>
+              <CoopProvider>
               <MessageProvider>
                 <CodeProvider>
                   <WebSocket />
@@ -78,6 +80,7 @@ function App() {
                   </Routes>
                 </CodeProvider>
               </MessageProvider>
+             </CoopProvider>
             </MatchProvider>
           </QuestionProvider>
         </SnackBarProvider>

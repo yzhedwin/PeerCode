@@ -5,16 +5,27 @@ import Editor from "@monaco-editor/react";
 import { Button, TextField } from "@mui/material";
 import { socket } from "../components/common/WebSocket";
 import { MatchContext } from "../contexts/MatchContext";
-import { CodeContext } from "../contexts/CodeContext";
 import ChatBox from "../components/common/ChatBox";
-import { MessageContext } from "../contexts/MessageContext";
+import { CoopContext } from "../contexts/CoopContext";
+import axios from "axios";
+import SelectLanguage from "../components/common/SelectLanguage";
 
 function CoopPage(props) {
   const { question } = useContext(QuestionContext);
   const { match } = useContext(MatchContext);
-  const { code, setCode } = useContext(CodeContext);
-  const { message, setMessage } = useContext(MessageContext);
+  const {
+    message,
+    code,
+    language,
+    consoleResult,
+    setLanguage,
+    setCode,
+    setMessage,
+    setConsoleResult,
+  } = useContext(CoopContext);
+
   const [hide, setHide] = useState(true);
+  const [showConsole, setShowConsole] = useState(false);
   const [chatHeight, setChatHeight] = useState(5);
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
@@ -50,8 +61,44 @@ function CoopPage(props) {
       });
     }
   }
+  const onRun = async () => {
+    try {
+      const r1 = await axios.post(
+        "http://localhost:5000/api/v1/judge/submission",
+        { language_id: language.id, source_code: code }
+      );
+      const { data } = await axios.get(
+        `http://localhost:5000/api/v1/judge/submission?token=${r1.data.token}`
+      );
+      socket.emit("code-submission", match, {
+        stdout: data.stdout ? atob(data.stdout) : "None",
+        time: data.time,
+        memory: data.memory,
+        stderr: data.stderr ? atob(data.stderr) : "None",
+        compile_output: data.compile_output,
+        message: data.message ? atob(data.message) : "None",
+        status: data.status,
+      });
+      setConsoleResult({
+        stdout: data.stdout ? atob(data.stdout) : "None",
+        time: data.time,
+        memory: data.memory,
+        stderr: data.stderr ? atob(data.stderr) : "None",
+        compile_output: data.compile_output,
+        message: data.message ? atob(data.message) : "None",
+        status: data.status,
+      });
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
+  function handleLanguageChange(event) {
+    setLanguage(JSON.parse(event.target.value));
+    socket.emit("code-language", match, event.target.value);
+  }
   useEffect(() => {
     socket.emit("code-changes", match, code);
+    console.log(code);
   }, [code]);
 
   return (
@@ -67,12 +114,10 @@ function CoopPage(props) {
           >
             <Editor
               height="100%"
-              language="javascript"
+              language={language?.raw}
               theme="vs-dark"
               value={code}
-              onChange={(e) => {
-                console.log("code change", e);
-              }}
+              onChange={setCode}
               onMount={handleEditorDidMount}
               options={{
                 inlineSuggest: true,
@@ -88,24 +133,89 @@ function CoopPage(props) {
             style={{ height: `${chatHeight}%` }}
           >
             {hide && (
-              <Button variant="contained" onClick={onShow}>
+              <Button variant="contained" color="secondary" onClick={onShow}>
                 Show
               </Button>
             )}
             {!hide && (
               <>
-                <Button variant="contained" color="secondary" onClick={onHide}>
-                  Hide
-                </Button>
-                <div className="chat-message-container">
-                  <ChatBox />
+                <div className="console-options">
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={onHide}
+                  >
+                    Hide
+                  </Button>
+                  {!showConsole ? (
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={setShowConsole}
+                    >
+                      Console
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => setShowConsole(false)}
+                    >
+                      Chat
+                    </Button>
+                  )}
+                  <SelectLanguage
+                    language={language}
+                    handleChange={handleLanguageChange}
+                  />
                 </div>
-                <TextField
-                  style={{ backgroundColor: "#cccccc" }}
-                  fullWidth
-                  size="small"
-                  onKeyDown={onSubmitChat}
-                ></TextField>
+                {showConsole ? (
+                  <>
+                    <div className="console-message">
+                      <div>
+                        <div>
+                          <strong>Status: </strong>
+                          {consoleResult?.status?.description}
+                        </div>
+                        <strong>Time: </strong>
+                        {consoleResult?.time ? consoleResult?.time + "s" : ""}
+                      </div>
+                      <div>
+                        <strong>Memory: </strong>
+                        {consoleResult?.memory}
+                      </div>
+                      <div>
+                        <strong>Message: </strong>
+                        {consoleResult?.message}
+                      </div>
+                      <div>
+                        <strong>Output: </strong>
+                        {consoleResult?.stdout}
+                      </div>
+                    </div>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={onRun}
+                    >
+                      Run
+                    </Button>
+                  </>
+                ) : (
+                  <div className="chat-message-container">
+                    <div className="chat-message">
+                      <ChatBox />
+                    </div>
+                    <div className="chat-input">
+                      <TextField
+                        style={{ backgroundColor: "#cccccc" }}
+                        fullWidth
+                        size="small"
+                        onKeyDown={onSubmitChat}
+                      />
+                    </div>
+                  </div>
+                )}
               </>
             )}
           </div>
