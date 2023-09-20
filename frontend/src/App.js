@@ -14,8 +14,6 @@ import { SnackBarProvider } from "./contexts/SnackBarContext";
 import { MatchProvider } from "./contexts/MatchContext";
 import CoopPage from "./pages/CoopPage";
 import { CoopProvider } from "./contexts/CoopContext";
-import { CodeProvider } from "./contexts/CodeContext";
-import { MessageProvider } from "./contexts/MessageContext";
 import Homepage from "./pages/Homepage";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
@@ -66,21 +64,17 @@ function App() {
           <QuestionProvider>
             <MatchProvider>
               <CoopProvider>
-              <MessageProvider>
-                <CodeProvider>
-                  <WebSocket />
-                  <Header />
-                  <Routes>
-                    <Route exact path="/" element={<Login /> } />
-                    <Route exact path="/signup" element={<SignUp /> } />
-                    <Route exact path="/dashboard" element={<Dashboard />} />
-                    <Route exact path="/problem" element={<ProblemPage />} />
-                    <Route exact path="/match" element={<CoopPage />} />
-                    <Route exact path="/profile" element={<Profile />} />
-                  </Routes>
-                </CodeProvider>
-              </MessageProvider>
-             </CoopProvider>
+                <WebSocket />
+                <Header />
+                <Routes>
+                  <Route exact path="/" element={<Login />} />
+                  <Route exact path="/signup" element={<SignUp />} />
+                  <Route exact path="/dashboard" element={<Dashboard />} />
+                  <Route exact path="/problem" element={<ProblemPage />} />
+                  <Route exact path="/match" element={<CoopPage />} />
+                  <Route exact path="/profile" element={<Profile />} />
+                </Routes>
+              </CoopProvider>
             </MatchProvider>
           </QuestionProvider>
         </SnackBarProvider>
