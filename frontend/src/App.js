@@ -15,6 +15,10 @@ import { MatchProvider } from "./contexts/MatchContext";
 import CoopPage from "./pages/CoopPage";
 import { CodeProvider } from "./contexts/CodeContext";
 import { MessageProvider } from "./contexts/MessageContext";
+import Homepage from "./pages/Homepage";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
+import HomeHeader from "./components/common/HomeHeader";
 
 const theme = createTheme({
   palette: {
@@ -65,7 +69,9 @@ function App() {
                   <WebSocket />
                   <Header />
                   <Routes>
-                    <Route exact path="/" element={<Dashboard />} />
+                    <Route exact path="/" element={<Login /> } />
+                    <Route exact path="/signup" element={<SignUp /> } />
+                    <Route exact path="/dashboard" element={<Dashboard />} />
                     <Route exact path="/problem" element={<ProblemPage />} />
                     <Route exact path="/match" element={<CoopPage />} />
                     <Route exact path="/profile" element={<Profile />} />
