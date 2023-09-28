@@ -42,10 +42,14 @@ function ProblemPage(props) {
   }
   const onRun = async () => {
     try {
-      console.log(language.id, code);
       const r1 = await axios.post(
         "http://localhost:5000/api/v1/judge/submission",
-        { language_id: language.id, source_code: code }
+        {
+          userID: "1234",
+          titleSlug: question["titleSlug"],
+          language_id: language.id,
+          source_code: code,
+        }
       );
       const { data } = await axios.get(
         `http://localhost:5000/api/v1/judge/submission?token=${r1.data.token}`

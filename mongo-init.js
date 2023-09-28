@@ -12,3 +12,4 @@ db.createUser({
 });
 db.createCollection("questions", { capped: false });
 db.createCollection("solutions", { capped: false });
+db.createCollection("submissions", { capped: false });

@@ -31,7 +31,7 @@ export default function SelectLanguage(props) {
       >
         {EDITOR_SUPPORTED_LANGUAGES.map((language) => {
           return (
-            <MenuItem value={JSON.stringify(language)}>
+            <MenuItem key={language.name} value={JSON.stringify(language)}>
               {language.name}
             </MenuItem>
           );
