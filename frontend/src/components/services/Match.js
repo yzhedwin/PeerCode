@@ -3,10 +3,11 @@ import { socket } from "../common/WebSocket";
 import { SnackBarContext } from "../../contexts/SnackBarContext";
 import { useContext, useEffect, useState } from "react";
 import { MatchContext } from "../../contexts/MatchContext";
-import { CircularProgress } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { QuestionContext } from "../../contexts/QuestionContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import CoolButton from "../common/CoolButton";
 
 var timeout_id_easy = null;
 var timeout_id_medium = null;
@@ -108,79 +109,24 @@ function Match() {
   }, [match]);
 
   return (
-    <div className="match-container">
+    <Box
+      className="match-container"
+      sx={{
+        backgroundColor: "secondary.main",
+        color: "secondary.contrastText",
+      }}
+    >
       <div className="match-container-title">Match</div>
       <div className="match-difficulty-container">
-        <Button
-          style={{
-            maxWidth: "150px",
-            maxHeight: "80px",
-            minWidth: "150px",
-            minHeight: "80px",
-          }}
-          variant="contained"
-          size="large"
-          color="question_easy"
-          onClick={match_easy}
-        >
-          {loadingEasy ? (
-            <div className="match-difficulty-text">
-              <CircularProgress />
-            </div>
-          ) : (
-            <div className="match-difficulty-text">Easy</div>
-          )}
-        </Button>
-        <Button
-          style={{
-            maxWidth: "150px",
-            maxHeight: "80px",
-            minWidth: "150px",
-            minHeight: "80px",
-          }}
-          variant="contained"
-          size="large"
-          color="question_medium"
+        <CoolButton text={"Easy"} loading={loadingEasy} onClick={match_easy} />
+        <CoolButton
+          text={"Medium"}
+          loading={loadingMedium}
           onClick={match_medium}
-        >
-          {loadingMedium ? (
-            <div className="match-difficulty-text">
-              <CircularProgress />
-            </div>
-          ) : (
-            <div className="match-difficulty-text">Medium</div>
-          )}
-        </Button>
-        <Button
-          style={{
-            maxWidth: "150px",
-            maxHeight: "80px",
-            minWidth: "150px",
-            minHeight: "80px",
-          }}
-          variant="contained"
-          size="large"
-          color="question_hard"
-          onClick={match_hard}
-        >
-          {loadingHard ? (
-            <div className="match-difficulty-text">
-              <CircularProgress />
-            </div>
-          ) : (
-            <div className="match-difficulty-text">Hard</div>
-          )}
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => {
-            socket.emit("rooms");
-          }}
-        >
-          debug button
-        </Button>
+        />
+        <CoolButton text={"Hard"} loading={loadingHard} onClick={match_hard} />
       </div>
-    </div>
+    </Box>
   );
 }
 

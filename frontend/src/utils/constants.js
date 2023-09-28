@@ -85,3 +85,7 @@ export const EDITOR_SUPPORTED_LANGUAGES = [
     raw: "typescript",
   },
 ];
+
+export const EDITOR_SUPPORTED_THEMES = [];
+
+export const API_GATEWAY = "http://localhost:5000";

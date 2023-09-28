@@ -1,12 +1,17 @@
-import { Component } from "react";
+import { useSelector } from "react-redux";
 
-export default class Profile extends Component {
-  state = {};
-  render() {
-    return (
-      <>
-        <div>User Stuff</div>
-      </>
-    );
-  }
-}
+const Profile = () => {
+  const { userInfo } = useSelector((state) => state.auth);
+
+  return (
+    <div>
+      <figure>{userInfo?.firstName?.charAt(0).toUpperCase()}</figure>
+      <span>
+        Welcome <strong>{userInfo?.firstName}!</strong> You can view this page
+        because you're logged in
+      </span>
+    </div>
+  );
+};
+
+export default Profile;
