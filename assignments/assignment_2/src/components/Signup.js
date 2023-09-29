@@ -23,8 +23,7 @@ export default function Signup() {
             setLoading(true)
             await signup(emailRef.current.value, passwordRef.current.value);
         } catch (e) {
-            console.log(currentUser)
-            setError(e.error);
+            setError(e.message);
         }
         setLoading(false)
 
@@ -34,7 +33,7 @@ export default function Signup() {
             <Card>
                 <Card.Body>
                     <h2 className="text-center mb-4">Sign Up</h2>
-                    {error && <Alert variant="danger">{error}</Alert>}
+                    {error && <Alert key="danger" variant="danger">{error}</Alert>}
                 </Card.Body>
                 <Form onSubmit={handleSubmit}>
                     <Form.Group id="email">

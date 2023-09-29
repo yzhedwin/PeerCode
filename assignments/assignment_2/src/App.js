@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./App.css";
 import {
   BrowserRouter as Router,
   Route,
@@ -10,6 +9,7 @@ import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
 import Signup from "./components/Signup";
 import ForgotPassword from "./components/ForgotPassword";
+import UpdateProfile from "./components/UpdateProfile";
 import { Container } from "react-bootstrap";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoutes";
@@ -20,12 +20,15 @@ function App() {
       className="d-flex align-items-center justify-content-center"
       style={{ minHeight: "100vh" }}
     >
-      <div className="w-100" style={{ maxWidth: "400px" }}>
+      <div className="w-100">
         <Router>
           <AuthProvider>
             <Routes>
               <Route element={<ProtectedRoute />}>
                 <Route exact path="/dashboard" element={<Dashboard />} />
+              </Route>
+              <Route element={<ProtectedRoute />}>
+                <Route exact path="/update-profile" element={<UpdateProfile />} />
               </Route>
               <Route exact path="/" element={<Login />} />
               <Route exact path="/signup" element={<Signup />} />

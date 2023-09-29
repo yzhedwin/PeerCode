@@ -13,41 +13,26 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true)
 
     const signup = async (email, password) => {
-        try {
-            await createUserWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                })
-        } catch (err) {
-            console.error(err);
-        }
+        await createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+            })
     };
 
     const login = async (email, password) => {
-        try {
-            await signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                })
-        } catch (err) {
-            console.error(err);
-        }
+        await signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+            })
+
     };
 
     const logout = async () => {
-        try {
-            await signOut(auth);
-        } catch (err) {
-            console.error(err);
-        }
+        await signOut(auth);
     };
 
-    const resetPassword = async(email) => {
-        try {
-            await sendPasswordResetEmail(auth, email);
-        } catch (err) {
-            console.error(err);
-        }
+    const resetPassword = async (email) => {
+        await sendPasswordResetEmail(auth, email);
     }
 
     onAuthStateChanged(auth, (user) => {

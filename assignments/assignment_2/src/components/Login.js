@@ -30,8 +30,7 @@ export default function Login() {
             await login(emailRef.current.value, passwordRef.current.value);
             navigate('/dashboard');
         } catch (e) {
-            console.log(e)
-            setError("Failed to log in!");
+            setError(e.message);
         }
         setLoading(false)
     }
@@ -40,7 +39,7 @@ export default function Login() {
             <Card>
                 <Card.Body>
                     <h2 className="text-center mb-4">Log In</h2>
-                    {error && <Alert variant="danger">{error}</Alert>}
+                    {error && <Alert key="danger" variant="danger">{error}</Alert>}
                 </Card.Body>
                 <Form onSubmit={handleSubmit}>
                     <Form.Group id="email">

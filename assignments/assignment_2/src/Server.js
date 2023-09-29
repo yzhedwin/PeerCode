@@ -1,14 +1,45 @@
+const PORT = 3001;
+let connectionRequest = require('./DBConn')
+
+
 const express = require('express');
-const cors = require('cors');
 const app = express();
-const PORT = 8080;
+const cors = require('cors');
+const bodyParser = require('body-parser');
 
 app.use(cors());
+app.use(express.json())
+app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use('/login', (req, res) => {
-    res.send({
-        token: 'exampletokenassignment2'
-    });
-});
+app.listen(PORT, () => console.log('API is running on Port 3001'));
 
-app.listen(PORT, () => console.log('API is running on http://localhost:/8080/login'));
+
+app.post('/update', (req, res) => {
+  let db = connectionRequest()
+  let userObject = req.body.user;
+  let testInsertQuery = "INSERT INTO users(email, displayname, username, proficiency) VALUES (\"woobt123@gmail.com\", \"" + userObject.displayName + "\", \"" + userObject.username + "\", " + userObject.proficiency + ")"
+  console.log(testInsertQuery);
+
+  db.query(testInsertQuery, (err, res) => {
+    if (err) {
+      db.destroy();
+      throw err;
+    }
+    console.log(res);
+  })
+
+})
+
+
+app.post('/select', (req, res) => {
+  let db = connectionRequest()
+  let testInsertQuery = "SELECT * FROM users"
+
+  db.query(testInsertQuery, (err, res) => {
+    if (err) {
+      db.destroy();
+      throw err;
+    }
+    console.log(res);
+  })
+})
