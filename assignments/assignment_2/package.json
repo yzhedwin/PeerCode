@@ -8,7 +8,9 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.5.1",
     "bootstrap": "^5.3.2",
+    "dotenv": "^16.3.1",
     "firebase": "^10.4.0",
+    "mongoose": "^7.5.3",
     "mysql2": "^3.6.1",
     "react": "^18.2.0",
     "react-alert": "^7.0.3",
@@ -22,7 +24,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "serve": "node src/backend/question_service/mongodb.js",
+    "dev": "nodemon mongodb.js"
   },
   "eslintConfig": {
     "extends": [

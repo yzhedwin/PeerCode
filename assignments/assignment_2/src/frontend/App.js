@@ -11,7 +11,7 @@ import Signup from "./components/Signup";
 import ForgotPassword from "./components/ForgotPassword";
 import UpdateProfile from "./components/UpdateProfile";
 import { Container } from "react-bootstrap";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { AuthProvider, useAuth } from "../contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoutes";
 
 function App() {

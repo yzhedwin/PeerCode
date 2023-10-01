@@ -1,44 +1,38 @@
 import React, { useRef, useState } from 'react';
 import { Form, Button, Card, Alert } from 'react-bootstrap';
-import { useAuth } from '../contexts/AuthContext';
-import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 
-async function loginUser(credentials) {
-    return fetch('http://localhost:8080/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': "application/json"
-        },
-        body: JSON.stringify(credentials)
-    }).then(data => data.json())
-}
-
-export default function Login() {
+export default function Signup() {
     const emailRef = useRef();
     const passwordRef = useRef();
-    const { login } = useAuth();
+    const passwordConfirmRef = useRef();
+    const { currentUser, signup } = useAuth();
     const [error, setError] = useState();
-    const [loading, setLoading] = useState(false)
-    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     async function handleSubmit(e) {
         e.preventDefault();
 
+        if (passwordRef.current.value !== passwordConfirmRef.current.value) {
+            return setError('Passwords do not match!');
+        }
+
         try {
             setError()
             setLoading(true)
-            await login(emailRef.current.value, passwordRef.current.value);
-            navigate('/dashboard');
+            await signup(emailRef.current.value, passwordRef.current.value);
         } catch (e) {
             setError(e.message);
         }
         setLoading(false)
+
     }
     return (
         <>
             <Card>
                 <Card.Body>
-                    <h2 className="text-center mb-4">Log In</h2>
+                    <h2 className="text-center mb-4">Sign Up</h2>
                     {error && <Alert key="danger" variant="danger">{error}</Alert>}
                 </Card.Body>
                 <Form onSubmit={handleSubmit}>
@@ -50,14 +44,15 @@ export default function Login() {
                         <Form.Label>Password</Form.Label>
                         <Form.Control type="password" ref={passwordRef} required />
                     </Form.Group>
-                    <Button disabled={loading} className="w-100" type="submit">Log In</Button>
+                    <Form.Group id="password-confirm">
+                        <Form.Label>Password Confirmation</Form.Label>
+                        <Form.Control type="password" ref={passwordConfirmRef} required />
+                    </Form.Group>
+                    <Button disabled={loading} className="w-100" type="submit">Sign Up</Button>
                 </Form>
-                <div className="w-100 text-center mt-2">
-                    <Link to="/forgot-password">Forgot Password?</Link>
-                </div>
             </Card>
             <div className="w-100 text-center mt-2">
-                Need an account? <Link to="/signup">Sign Up</Link>
+                Already have an account? <Link to='/login'>Log In</Link>
             </div>
         </>
     )

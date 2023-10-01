@@ -16,6 +16,12 @@ code {
   padding: 3% 5% 0% 5%;
 }
 
+.db_loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .question-table {
   padding-top: 2%;
 }

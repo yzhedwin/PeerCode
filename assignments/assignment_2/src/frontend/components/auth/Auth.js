@@ -1,4 +1,4 @@
-import { auth, googleProvider } from "../../config/firebase";
+import { auth, googleProvider } from "../../../config/firebase";
 import { createUserWithEmailAndPassword, signInWithPopup, signOut, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
 import { useState } from "react";
 
