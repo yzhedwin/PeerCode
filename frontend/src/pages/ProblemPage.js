@@ -2,7 +2,7 @@ import { useContext, useRef, useState } from "react";
 import { QuestionContext } from "../contexts/QuestionContext";
 import parse from "html-react-parser";
 import Editor from "@monaco-editor/react";
-import { TextField } from "@mui/material";
+import { Tab, TextField } from "@mui/material";
 import { socket } from "../components/common/WebSocket";
 import { MatchContext } from "../contexts/MatchContext";
 import ChatBox from "../components/common/ChatBox";
@@ -11,6 +11,8 @@ import axios from "axios";
 import SelectLanguage from "../components/common/SelectLanguage";
 import Console from "../components/common/Console";
 import ConsoleButton from "../components/common/ConsoleButton";
+import ProblemPageTabs from "../components/common/ProblemPageTabs";
+import { dateDiffInDays } from "../utils/helper";
 
 function ProblemPage(props) {
   const { type } = props;
@@ -27,6 +29,7 @@ function ProblemPage(props) {
   } = useContext(ProblemContext);
 
   const [hide, setHide] = useState(true);
+  const [description, setDescription] = useState(true);
   const [showConsole, setShowConsole] = useState(type === "solo");
   const [chatHeight, setChatHeight] = useState(5);
   const editorRef = useRef(null);
@@ -118,7 +121,11 @@ function ProblemPage(props) {
     <>
       <div className="problem-page-container">
         <div className="problem-description-container">
-          {parse(question["problem"])}
+          <ProblemPageTabs
+            userID={"1234"}
+            titleSlug={question["titleSlug"]}
+            description={parse(question["problem"])}
+          />
         </div>
         <div className="editor-container">
           <div

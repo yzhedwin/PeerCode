@@ -5,12 +5,19 @@ from gql import Client, gql
 from gql.transport.aiohttp import AIOHTTPTransport
 import json
 from model.question import Question
+from model.judge import Submission
 from database.question_collection import (
     fetch_all_questions,
     fetch_one_question,
     delete_all_questions,
     delete_one_question,
 )
+from database.submision_collection import (
+    get_all_submission_from_question,
+    add_one_submission,
+    remove_all_submissions
+)
+
 
 router = APIRouter(
     prefix="/api/v1/question",
@@ -52,7 +59,7 @@ async def get_question_problem(titleSlug):
         return "Question not found"
     return result.get("question").get("content")
 
-@router.delete("/{title}")
+@router.delete("/title/{title}")
 async def delete_question(title, db: AsyncIOMotorClient = Depends(get_database)):
     question = await fetch_one_question(db, title)
     if not question:
@@ -120,3 +127,17 @@ async def get_question_of_the_day():
     r1["activeDailyCodingChallengeQuestion"]["question"]["problem"] = r2["question"]["content"]
     return Question(**r1["activeDailyCodingChallengeQuestion"]["question"])
    
+
+@router.get("/history")
+async def get_submissions_from_question(userID:str, titleSlug:str, db: AsyncIOMotorClient = Depends(get_database)):
+    response = await get_all_submission_from_question(db, userID, titleSlug)
+    return response
+
+@router.post("/history")
+async def add_submission_to_db(submission: Submission, db: AsyncIOMotorClient = Depends(get_database)):
+    response = await add_one_submission(db, submission.dict())
+    return response
+
+@router.delete("/history")
+async def delete_all_submissions_from_db(db: AsyncIOMotorClient = Depends(get_database)):
+    return await remove_all_submissions(db)
