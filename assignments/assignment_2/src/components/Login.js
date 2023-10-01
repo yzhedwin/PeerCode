@@ -3,16 +3,6 @@ import { Form, Button, Card, Alert } from 'react-bootstrap';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 
-async function loginUser(credentials) {
-    return fetch('http://localhost:8080/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': "application/json"
-        },
-        body: JSON.stringify(credentials)
-    }).then(data => data.json())
-}
-
 export default function Login() {
     const emailRef = useRef();
     const passwordRef = useRef();
@@ -28,7 +18,7 @@ export default function Login() {
             setError()
             setLoading(true)
             await login(emailRef.current.value, passwordRef.current.value);
-            navigate('/dashboard');
+            navigate('/profile');
         } catch (e) {
             setError(e.message);
         }
@@ -38,7 +28,7 @@ export default function Login() {
         <>
             <Card>
                 <Card.Body>
-                    <h2 className="text-center mb-4">Log In</h2>
+                    <h2 className="text-center text-uppercase mb-4">Log In</h2>
                     {error && <Alert key="danger" variant="danger">{error}</Alert>}
                 </Card.Body>
                 <Form onSubmit={handleSubmit}>

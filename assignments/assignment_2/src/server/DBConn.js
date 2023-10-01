@@ -10,9 +10,9 @@ module.exports = function () {
 
     db.connect(function (err) {
         if (err) {
-            console.log(`connectionrequest failed ${err.stack}`)
+            console.log(`DB Connection Request Failed ${err.stack}`)
         } else {
-            console.log(`db connectionrequest successful ${db.threadid}`)
+            console.log(`DB Connection Request Successful ${db.threadid}`)
         }
     });
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -6,12 +6,13 @@ import {
   Navigate,
 } from "react-router-dom";
 import Login from "./components/Login";
-import Dashboard from "./components/Dashboard";
+import Profile from "./components/Profile";
 import Signup from "./components/Signup";
 import ForgotPassword from "./components/ForgotPassword";
 import UpdateProfile from "./components/UpdateProfile";
+import CreateProfile from "./components/CreateProfile";
 import { Container } from "react-bootstrap";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoutes";
 
 function App() {
@@ -25,10 +26,9 @@ function App() {
           <AuthProvider>
             <Routes>
               <Route element={<ProtectedRoute />}>
-                <Route exact path="/dashboard" element={<Dashboard />} />
-              </Route>
-              <Route element={<ProtectedRoute />}>
+                <Route exact path="/profile" element={<Profile />} />
                 <Route exact path="/update-profile" element={<UpdateProfile />} />
+                <Route exact path="/create-profile" element={<CreateProfile />} />
               </Route>
               <Route exact path="/" element={<Login />} />
               <Route exact path="/signup" element={<Signup />} />
