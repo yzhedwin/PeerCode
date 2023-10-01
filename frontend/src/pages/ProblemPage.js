@@ -6,11 +6,12 @@ import { Box, Button, TextField } from "@mui/material";
 import { socket } from "../components/common/WebSocket";
 import { MatchContext } from "../contexts/MatchContext";
 import ChatBox from "../components/common/ChatBox";
-import { CoopContext } from "../contexts/CoopContext";
+import { ProblemContext } from "../contexts/ProblemContext";
 import axios from "axios";
 import SelectLanguage from "../components/common/SelectLanguage";
 
-function CoopPage(props) {
+function ProblemPage(props) {
+  const { type } = props;
   const { question } = useContext(QuestionContext);
   const { match } = useContext(MatchContext);
   const {
@@ -22,10 +23,10 @@ function CoopPage(props) {
     setCode,
     setMessage,
     setConsoleResult,
-  } = useContext(CoopContext);
+  } = useContext(ProblemContext);
 
   const [hide, setHide] = useState(true);
-  const [showConsole, setShowConsole] = useState(false);
+  const [showConsole, setShowConsole] = useState(type === "solo");
   const [chatHeight, setChatHeight] = useState(5);
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
@@ -65,20 +66,27 @@ function CoopPage(props) {
     try {
       const r1 = await axios.post(
         "http://localhost:5000/api/v1/judge/submission",
-        { language_id: language.id, source_code: code }
+        {
+          userID: "1234",
+          titleSlug: question["titleSlug"],
+          language_id: language.id,
+          source_code: code,
+        }
       );
       const { data } = await axios.get(
         `http://localhost:5000/api/v1/judge/submission?token=${r1.data.token}`
       );
-      socket.emit("code-submission", match, {
-        stdout: data.stdout ? atob(data.stdout) : "None",
-        time: data.time,
-        memory: data.memory,
-        stderr: data.stderr ? atob(data.stderr) : "None",
-        compile_output: data.compile_output,
-        message: data.message ? atob(data.message) : "None",
-        status: data.status,
-      });
+      if (type === "coop") {
+        socket.emit("code-submission", match, {
+          stdout: data.stdout ? atob(data.stdout) : "None",
+          time: data.time,
+          memory: data.memory,
+          stderr: data.stderr ? atob(data.stderr) : "None",
+          compile_output: data.compile_output,
+          message: data.message ? atob(data.message) : "None",
+          status: data.status,
+        });
+      }
       setConsoleResult({
         stdout: data.stdout ? atob(data.stdout) : "None",
         time: data.time,
@@ -94,11 +102,15 @@ function CoopPage(props) {
   };
   function handleLanguageChange(event) {
     setLanguage(JSON.parse(event.target.value));
-    socket.emit("code-language", match, event.target.value);
+    if (type === "coop") {
+      socket.emit("code-language", match, event.target.value);
+    }
   }
   function handleCodeChanges(code) {
     setCode(code);
-    socket.emit("code-changes", match, code);
+    if (type === "coop") {
+      socket.emit("code-changes", match, code);
+    }
   }
 
   return (
@@ -161,6 +173,7 @@ function CoopPage(props) {
                       variant="contained"
                       color="secondary"
                       onClick={() => setShowConsole(false)}
+                      disabled={type === "solo"}
                     >
                       Chat
                     </Button>
@@ -232,4 +245,4 @@ function CoopPage(props) {
   );
 }
 
-export default CoopPage;
+export default ProblemPage;

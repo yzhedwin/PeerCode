@@ -95,7 +95,7 @@ function Match() {
     const { data } = await axios.get(
       `http://localhost:5000/api/v1/question/problem/3Sum`
     );
-    setQuestion({ problem: data });
+    setQuestion({ titleSlug: "3Sum", problem: data });
     navigate("/match");
   };
   useEffect(() => {

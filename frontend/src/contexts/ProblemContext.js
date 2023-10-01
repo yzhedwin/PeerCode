@@ -1,8 +1,8 @@
 import React, { createContext, useState } from "react";
 
-export const CoopContext = createContext();
+export const ProblemContext = createContext();
 
-export const CoopProvider = ({ children }) => {
+export const ProblemProvider = ({ children }) => {
   const [message, setMessage] = useState([]);
   const [code, setCode] = useState("console.log('hello world')");
   const [consoleResult, setConsoleResult] = useState({});
@@ -12,7 +12,7 @@ export const CoopProvider = ({ children }) => {
     raw: "javascript",
   });
   return (
-    <CoopContext.Provider
+    <ProblemContext.Provider
       value={{
         message,
         language,
@@ -25,6 +25,6 @@ export const CoopProvider = ({ children }) => {
       }}
     >
       {children}
-    </CoopContext.Provider>
+    </ProblemContext.Provider>
   );
 };
