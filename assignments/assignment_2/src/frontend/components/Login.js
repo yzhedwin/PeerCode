@@ -18,7 +18,7 @@ export default function Login() {
             setError()
             setLoading(true)
             await login(emailRef.current.value, passwordRef.current.value);
-            navigate('/profile');
+            navigate('/dashboard');
         } catch (e) {
             setError(e.message);
         }

@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { Col, Button, Row, Container, Card, Form, Alert } from 'react-bootstrap';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 
 import Axios from 'axios';
 
@@ -27,10 +28,13 @@ export default function UpdateProfile() {
     await Axios.post("http://localhost:3001/update", { user })
       .then(res => {
         setMessage("Changes updated successfully!");
+        setLoading(true);
       })
       .catch(err => {
         setError("Error occurred, try again later!");
       })
+
+    setLoading(false);
   }
 
   return (
@@ -61,7 +65,11 @@ export default function UpdateProfile() {
 
                     <Form.Group className="mb-3" controlId="formProficiencyLevel">
                       <Form.Label className="text-center">Proficiency Level</Form.Label>
-                      <Form.Control type="text" ref={proficiencyLevelRef} placeholder="Enter your Proficiency Level" />
+                      <Form.Select ref={proficiencyLevelRef}>
+                        <option>Expert</option>
+                        <option>Intermediate</option>
+                        <option>Beginner</option>
+                      </Form.Select>
                     </Form.Group>
 
                     <div className="d-grid">
@@ -69,6 +77,7 @@ export default function UpdateProfile() {
                     </div>
 
                   </Form>
+                  <Link to="/profile" className="btn btn-primary w-100 mt-3">Back</Link>
                 </div>
               </Card.Body>
             </Card>

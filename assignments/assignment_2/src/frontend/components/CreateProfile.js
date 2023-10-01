@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 import { Col, Button, Row, Container, Card, Form, Alert } from 'react-bootstrap';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 
 import Axios from 'axios';
@@ -27,11 +27,13 @@ export default function CreateProfile() {
 
     await Axios.post("http://localhost:3001/insert", { user })
       .then(res => {
+        setLoading(true);
         setMessage("Profile created successfully!");
       })
       .catch(err => {
         setError("Error occurred, try again later!");
       })
+    setLoading(false);
   }
 
   return (
@@ -62,7 +64,11 @@ export default function CreateProfile() {
 
                     <Form.Group className="mb-3" controlId="formProficiencyLevel">
                       <Form.Label className="text-center">Proficiency Level</Form.Label>
-                      <Form.Control type="text" ref={proficiencyLevelRef} placeholder="Enter your Proficiency Level" />
+                      <Form.Select ref={proficiencyLevelRef}>
+                        <option>Expert</option>
+                        <option>Intermediate</option>
+                        <option>Beginner</option>
+                      </Form.Select>
                     </Form.Group>
 
                     <div className="d-grid">

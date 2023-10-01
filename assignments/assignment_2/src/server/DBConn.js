@@ -1,10 +1,11 @@
 const mysql = require('mysql2');
+require('dotenv').config();
 
 module.exports = function () {
     const db = mysql.createConnection({
         host: 'localhost',
         user: 'root',
-        password: 'qu%rK1ness',
+        password: process.env.MY_SQL_PASSWORDD,
         database: 'peerPrepAssignment'
     });
 

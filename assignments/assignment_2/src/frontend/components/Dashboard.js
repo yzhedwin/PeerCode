@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Alert, Spinner } from 'react-bootstrap';
+import { Spinner } from 'react-bootstrap';
 import { useAuth } from '../../contexts/AuthContext';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import QuestionTable from './dashboard_components/QuestionTable';
 import CreateQuestion from './dashboard_components/CreateQuestion';
@@ -11,67 +11,55 @@ import Axios from 'axios';
 
 export default function Dashboard() {
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const { currentUser, logout } = useAuth();
-    const navigate = useNavigate();
-
-    async function handleLogout() {
-        setError('')
-        try {
-            await logout()
-            navigate('/login');
-        } catch (err) {
-            setError(err.message)
-        }
-    }
+    const { currentUser } = useAuth();
 
     const [questions, setQuestions] = useState([]);
 
     const [currQuestion, setCurrQuestion] = useState({
-    id: 0,
-    title: "",
-    description: "",
-    categories: [],
-    complexity: "Easy"
-    })
-    
-    useEffect(() => {
-        Axios.get("http://localhost:3002/all/")
-        .then((response) => {
-            setQuestions(response.data);
-            setLoading(false);
-        })
-        .catch (error => {
-            console.log(error.message);
-        })
-    }, []);
-      
-      
-    const clearCurrQuestion = () => {
-    const isEmpty = {
         id: 0,
         title: "",
         description: "",
         categories: [],
         complexity: "Easy"
-    }
-    setCurrQuestion(isEmpty);
+    })
+
+    useEffect(() => {
+        Axios.get("http://localhost:3002/all/")
+            .then((response) => {
+                setQuestions(response.data);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.log(error.message);
+            })
+    }, []);
+
+
+    const clearCurrQuestion = () => {
+        const isEmpty = {
+            id: 0,
+            title: "",
+            description: "",
+            categories: [],
+            complexity: "Easy"
+        }
+        setCurrQuestion(isEmpty);
     }
 
     const updateCurrQuestion = (question) => {
-    setCurrQuestion(question);
+        setCurrQuestion(question);
     }
 
     const onValChange = (e) => {
-    var newValue =  e.target.value;
-    if (parseInt(newValue)) {
-        newValue = parseInt(newValue);
-    }
-    const updatedQuestion = (res) => ({
-        ...res,
-        [e.target.name]: newValue
-    });
-    setCurrQuestion(updatedQuestion);
+        var newValue = e.target.value;
+        if (parseInt(newValue)) {
+            newValue = parseInt(newValue);
+        }
+        const updatedQuestion = (res) => ({
+            ...res,
+            [e.target.name]: newValue
+        });
+        setCurrQuestion(updatedQuestion);
     }
 
     const onCategoryValChange = (e) => {
@@ -83,11 +71,11 @@ export default function Dashboard() {
         else {
             let i = 0;
             while (i < updatedCategories.length) {
-            if (updatedCategories[i] == e.target.value) {
-                updatedCategories.splice(i, 1);
-                break;
-            }
-            i++;
+                if (updatedCategories[i] === e.target.value) {
+                    updatedCategories.splice(i, 1);
+                    break;
+                }
+                i++;
             }
         }
         var updatedQuestion = currQuestion;
@@ -99,18 +87,18 @@ export default function Dashboard() {
     const onCreateQuestion = async () => {
         var newQuestions = questions;
         newQuestions.push(currQuestion);
-        newQuestions.sort(function(a,b) {
+        newQuestions.sort(function (a, b) {
             return a.id - b.id;
         });
         setQuestions(newQuestions);
 
         await Axios.post("http://localhost:3002/add/", currQuestion)
-        .then(function (response) {
-            console.log(response);
+            .then(function (response) {
+                console.log(response);
             })
-        .catch(function (error) {
-        console.log(error);
-        });
+            .catch(function (error) {
+                console.log(error);
+            });
 
         clearCurrQuestion();
     };
@@ -122,18 +110,18 @@ export default function Dashboard() {
         });
         setQuestions(newQuestions);
         newQuestions.push(currQuestion);
-        newQuestions.sort(function(a,b) {
+        newQuestions.sort(function (a, b) {
             return a.id - b.id;
         });
         setQuestions(newQuestions);
 
         await Axios.put(`http://localhost:3002/update/${id}`, currQuestion)
-        .then((response) => {
-            console.log(response.data);
-        })
-        .catch((error) => {
-            console.error(error);
-        });
+            .then((response) => {
+                console.log(response.data);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
 
         clearCurrQuestion();
     };
@@ -145,38 +133,28 @@ export default function Dashboard() {
         setQuestions(updatedQuestions);
 
         await Axios.delete(`http://localhost:3002/delete/${currentUser.uid}/${id}`)
-        .then(() => {
-            console.log(`Deleted post with ID ${id}`);
-        })
-        .catch(error => {
-        console.error(error);
-        });
+            .then(() => {
+                console.log(`Deleted post with ID ${id}`);
+            })
+            .catch(error => {
+                console.error(error);
+            });
     }
 
     return (
         <>
-            {/* <Card>
-                <Card.Body>
-                    <h2 className="text-center mb-4">Profile</h2>
-                    {error && <Alert variant="danger">{error}</Alert>}
-                    <strong>Email:</strong> {currentUser.email}
-                    <Link to="/update-profile" className="btn btn-primary w-100 mt-3">Update Profile</Link>
-                </Card.Body>
-            </Card>
-            <div className="w-100 text-center mt-2">
-                <Button variant="link" onClick={handleLogout}>Log Out</Button>
-            </div> */}
+            <Link to="/profile" className="btn btn-primary w-100 mt-3">My Profile</Link>
             <div className="app-body">
-                {loading ? 
-                <div className="db_loading">
-                    <Spinner className="db_loading" animation="border" role="status" style={{ width: "4rem", height: "4rem"}}>
-                        <span className="visually-hidden">Loading...</span>
-                    </Spinner> 
-                </div> :
-                <div>
-                    <CreateQuestion questions={questions} currQuestion={currQuestion} onValChange={onValChange} onCategoryValChange={onCategoryValChange} onCreateQuestion={onCreateQuestion} clearCurrQuestion={clearCurrQuestion}/>
-                    <QuestionTable questions={questions} currQuestion={currQuestion} onValChange={onValChange} onCategoryValChange={onCategoryValChange} onDeleteQuestion={onDeleteQuestion} onUpdateQuestion={onUpdateQuestion} clearCurrQuestion={clearCurrQuestion} updateCurrQuestion={updateCurrQuestion}/>
-                </div>}
+                {loading ?
+                    <div className="db_loading">
+                        <Spinner className="db_loading" animation="border" role="status" style={{ width: "4rem", height: "4rem" }}>
+                            <span className="visually-hidden">Loading...</span>
+                        </Spinner>
+                    </div> :
+                    <div>
+                        <CreateQuestion questions={questions} currQuestion={currQuestion} onValChange={onValChange} onCategoryValChange={onCategoryValChange} onCreateQuestion={onCreateQuestion} clearCurrQuestion={clearCurrQuestion} />
+                        <QuestionTable questions={questions} currQuestion={currQuestion} onValChange={onValChange} onCategoryValChange={onCategoryValChange} onDeleteQuestion={onDeleteQuestion} onUpdateQuestion={onUpdateQuestion} clearCurrQuestion={clearCurrQuestion} updateCurrQuestion={updateCurrQuestion} />
+                    </div>}
             </div>
         </>
     );

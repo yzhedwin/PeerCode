@@ -1,12 +1,13 @@
-CREATE DATABASE PeerPrepAssignment;
-USE PeerPrepAssignment;
+CREATE DATABASE peerPrepAssignment;
+USE peerPrepAssignment;
 
 CREATE TABLE users (
     UserID INT AUTO_INCREMENT NOT NULL,
-    Email NVARCHAR(50) NOT NULL,
-    DisplayName NVARCHAR(50),
-    Username NVARCHAR(50), 
-    Proficiency INT
+    Email VARCHAR(50) NOT NULL,
+    DisplayName VARCHAR(50),
+    Username VARCHAR(50), 
+    Proficiency VARCHAR(50),
+    CONSTRAINT UC_Users UNIQUE (UserID, Email)
 );
 
 SELECT * FROM users;

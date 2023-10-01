@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Button, Alert } from 'react-bootstrap';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 
 import Axios from 'axios';
@@ -42,16 +42,19 @@ export default function Profile() {
     }
 
     async function deleteProfileData() {
+
         const user = {
             email: currentUser.email,
         }
 
         await Axios.post("http://localhost:3001/delete", { user })
             .then(res => {
+                setLoading(true);
             })
             .catch(err => {
                 console.log(err.message);
             })
+        setLoading(false);
     }
 
     async function handleLogout() {
@@ -83,6 +86,10 @@ export default function Profile() {
                     <p></p>
                     <div className="d-grid">
                         <Button disabled={loading} variant="danger" onClick={deleteProfileData}>Delete Profile Data</Button>
+                    </div>
+
+                    <div className="d-grid">
+                        <Link to="/dashboard" className="btn btn-info w-100 mt-3">Back to Dashboard</Link>
                     </div>
                 </Card.Body>
 
