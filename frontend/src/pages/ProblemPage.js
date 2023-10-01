@@ -2,13 +2,15 @@ import { useContext, useRef, useState } from "react";
 import { QuestionContext } from "../contexts/QuestionContext";
 import parse from "html-react-parser";
 import Editor from "@monaco-editor/react";
-import { Box, Button, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import { socket } from "../components/common/WebSocket";
 import { MatchContext } from "../contexts/MatchContext";
 import ChatBox from "../components/common/ChatBox";
 import { ProblemContext } from "../contexts/ProblemContext";
 import axios from "axios";
 import SelectLanguage from "../components/common/SelectLanguage";
+import Console from "../components/common/Console";
+import ConsoleButton from "../components/common/ConsoleButton";
 
 function ProblemPage(props) {
   const { type } = props;
@@ -18,7 +20,6 @@ function ProblemPage(props) {
     message,
     code,
     language,
-    consoleResult,
     setLanguage,
     setCode,
     setMessage,
@@ -144,39 +145,24 @@ function ProblemPage(props) {
             className="console-and-chat-container"
             style={{ height: `${chatHeight}%` }}
           >
-            {hide && (
-              <Button variant="contained" color="secondary" onClick={onShow}>
-                Show
-              </Button>
-            )}
+            {hide && <ConsoleButton onClick={onShow} title={"Show"} />}
             {!hide && (
               <>
                 <div className="console-options">
-                  <Button
-                    variant="contained"
-                    color="secondary"
+                  <ConsoleButton
                     onClick={onHide}
+                    title={"Hide"}
                     sx={{ marginInline: 1 }}
-                  >
-                    Hide
-                  </Button>
+                  />
+
                   {!showConsole ? (
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      onClick={setShowConsole}
-                    >
-                      Console
-                    </Button>
+                    <ConsoleButton onClick={setShowConsole} title={"Console"} />
                   ) : (
-                    <Button
-                      variant="contained"
-                      color="secondary"
+                    <ConsoleButton
                       onClick={() => setShowConsole(false)}
+                      title={"Chat"}
                       disabled={type === "solo"}
-                    >
-                      Chat
-                    </Button>
+                    />
                   )}
                   <SelectLanguage
                     language={language}
@@ -184,43 +170,7 @@ function ProblemPage(props) {
                   />
                 </div>
                 {showConsole ? (
-                  <>
-                    <Box
-                      className="console-message"
-                      sx={{
-                        backgroundColor: "primary.console",
-                        color: "primary.contrastText",
-                      }}
-                    >
-                      <div>
-                        <div>
-                          <strong>Status: </strong>
-                          {consoleResult?.status?.description}
-                        </div>
-                        <strong>Time: </strong>
-                        {consoleResult?.time ? consoleResult?.time + "s" : ""}
-                      </div>
-                      <div>
-                        <strong>Memory: </strong>
-                        {consoleResult?.memory}
-                      </div>
-                      <div>
-                        <strong>Message: </strong>
-                        {consoleResult?.message}
-                      </div>
-                      <div>
-                        <strong>Output: </strong>
-                        {consoleResult?.stdout}
-                      </div>
-                    </Box>
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      onClick={onRun}
-                    >
-                      Run
-                    </Button>
-                  </>
+                  <Console onRun={onRun} />
                 ) : (
                   <div className="chat-message-container">
                     <div className="chat-message">
