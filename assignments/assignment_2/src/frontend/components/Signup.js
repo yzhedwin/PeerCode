@@ -8,16 +8,17 @@ export default function Signup() {
     const passwordRef = useRef();
     const passwordConfirmRef = useRef();
     const { currentUser, signup } = useAuth();
-    const [error, setError] = useState();
+    const [error, setError] = useState("");
+    const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
 
     async function handleSubmit(e) {
+        setError("");
         e.preventDefault();
 
         if (passwordRef.current.value !== passwordConfirmRef.current.value) {
             return setError('Passwords do not match!');
         }
-
         try {
             setError()
             setLoading(true)
@@ -26,7 +27,9 @@ export default function Signup() {
             setError(e.message);
         }
         setLoading(false)
-
+        if (error === "") {
+            setMessage("Your account has been created successfully!");
+        }
     }
     return (
         <>
@@ -34,6 +37,7 @@ export default function Signup() {
                 <Card.Body>
                     <h2 className="text-center mb-4">Sign Up</h2>
                     {error && <Alert key="danger" variant="danger">{error}</Alert>}
+                    {message && <Alert key="success" variant="success">{message}</Alert>}
                 </Card.Body>
                 <Form onSubmit={handleSubmit}>
                     <Form.Group id="email">

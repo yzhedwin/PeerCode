@@ -1,21 +1,22 @@
 import React, { useRef, useState } from 'react'
 import { Col, Button, Row, Container, Card, Form, Alert } from 'react-bootstrap';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 
 import Axios from 'axios';
 
-export default function UpdateProfile() {
+export default function CreateProfile() {
   const displayNameRef = useRef();
   const usernameRef = useRef();
   const proficiencyLevelRef = useRef();
-  const [error, setError] = useState();
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("");
+  const [hasCreated, setHasCreated] = useState(false)
   const { currentUser } = useAuth();
 
 
-  async function updateUserProfile(event) {
+  function createUserProfile(event) {
     event.preventDefault();
     const user = {
       email: currentUser.email,
@@ -24,34 +25,35 @@ export default function UpdateProfile() {
       proficiency: proficiencyLevelRef.current.value
     }
 
-
-    await Axios.post("http://localhost:3001/update", { user })
+    Axios.post("http://localhost:3001/insert", { user })
       .then(res => {
-        setMessage("Changes updated successfully!");
         setLoading(true);
       })
       .catch(err => {
         setError("Error occurred, try again later!");
       })
-
     setLoading(false);
+    if (error === "") {
+      setMessage("Profile created successfully!");
+      setHasCreated(true);
+    }
   }
 
   return (
     <>
       <Container>
-        {error && <Alert variant="danger">{error}</Alert>}
-        {message && <Alert variant="danger">{message}</Alert>}
         <Row className="vh-100 d-flex justify-content-center align-items-center">
           <Col md={8} lg={6} xs={12}>
+            {error && <Alert variant="danger">{error}</Alert>}
+            {message && <Alert variant="success">{message}</Alert>}
             <div className="border border-3 border-primary"></div>
             <Card className="shadow">
               <Card.Body>
                 <div className="mb-3 mt-4">
-                  <h2 className="fw-bold mb-2 text-uppercase">Edit Profile</h2>
+                  <h2 className="fw-bold mb-2 text-uppercase">Create Profile</h2>
                   <p className=" mb-5">Customise your profile here!</p>
 
-                  <Form className="mb-3" onSubmit={updateUserProfile}>
+                  <Form className="mb-3" onSubmit={createUserProfile}>
 
                     <Form.Group className="mb-3" controlId="formDisplayName">
                       <Form.Label className="text-center">Display Name</Form.Label>
@@ -73,9 +75,8 @@ export default function UpdateProfile() {
                     </Form.Group>
 
                     <div className="d-grid">
-                      <Button disabled={loading} variant="primary" type="submit">Update Changes</Button>
+                      {!hasCreated && <Button disabled={loading} variant="primary" type="submit">Create Profile</Button>}
                     </div>
-
                   </Form>
                   <Link to="/profile" className="btn btn-primary w-100 mt-3">Back</Link>
                 </div>
