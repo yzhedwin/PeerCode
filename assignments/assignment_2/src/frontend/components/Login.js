@@ -11,6 +11,16 @@ export default function Login() {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate();
 
+    const parseError = (err) => {
+        if (err.includes("invalid-login-credentials")){
+            return "Wrong Username or Password!"
+        }
+        if (err.includes("too-many-requests")){
+            return "Access has been temporarily disabled due to many failed login attempts! Reset your password or try again later."
+        }
+        return "Login Error!"
+    }
+
     async function handleSubmit(e) {
         e.preventDefault();
 
@@ -20,7 +30,7 @@ export default function Login() {
             await login(emailRef.current.value, passwordRef.current.value);
             navigate('/dashboard');
         } catch (e) {
-            setError(e.message);
+            setError(parseError(e.message));
         }
         setLoading(false)
     }
