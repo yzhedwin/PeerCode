@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { SnackBarContext } from "../../contexts/SnackBarContext";
 import { MatchContext } from "../../contexts/MatchContext";
-import { CoopContext } from "../../contexts/CoopContext";
+import { ProblemContext } from "../../contexts/ProblemContext";
 
 const socketUrl = "http://localhost:5002";
 export const socket = io(socketUrl, {
@@ -14,7 +14,7 @@ export default function WebSocket() {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const { setMatch } = useContext(MatchContext);
   const { message, setMessage, setCode, setLanguage, setConsoleResult } =
-    useContext(CoopContext);
+    useContext(ProblemContext);
   const { setOpenSnackBar, setSB } = useContext(SnackBarContext);
   const [newMessage, setNewMessage] = useState({});
 

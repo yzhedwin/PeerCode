@@ -1,8 +1,8 @@
 import { useCallback, useContext } from "react";
-import { CoopContext } from "../../contexts/CoopContext";
+import { ProblemContext } from "../../contexts/ProblemContext";
 
 function ChatBox() {
-  const { message } = useContext(CoopContext);
+  const { message } = useContext(ProblemContext);
 
   const getMessages = useCallback(() => {
     return message.map((msg, index) => {

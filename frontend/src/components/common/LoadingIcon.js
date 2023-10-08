@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 export default function LoadingIcon() {
   return (
     <Box sx={{ display: "flex" }}>
-      <CircularProgress />
+      <CircularProgress sx={{ color: "secondary.contrastText" }} />
     </Box>
   );
 }

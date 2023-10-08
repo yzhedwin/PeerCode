@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import LoadingIcon from "../components/common/LoadingIcon";
 import { userLogin } from "../components/auth/authActions";
 import "../css/login.scss";
-import bgimage from "../assets/PeerPrep.png";
+import bgimage from "../assets/PeerCode.png";
 
 function Login() {
   const { loading, userInfo, error } = useSelector((state) => state.auth);

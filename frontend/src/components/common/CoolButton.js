@@ -3,6 +3,7 @@ import "../../css/coolbutton.scss";
 import { green, orange, red } from "@mui/material/colors";
 import { useContext } from "react";
 import { ModeContext } from "../../contexts/ModeContext";
+import LoadingIcon from "./LoadingIcon";
 
 function CoolButton(props) {
   const { text, loading, onClick } = props;
@@ -33,7 +34,7 @@ function CoolButton(props) {
       >
         {loading ? (
           <div style={{ display: "flex" }}>
-            <CircularProgress color="secondary" />
+            <LoadingIcon />
           </div>
         ) : (
           <span style={{ color: mode === "dark" ? "white" : "black" }}>

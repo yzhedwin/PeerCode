@@ -25,6 +25,7 @@ export default function SnackBar(props) {
       onClose={handleCloseSnackBar}
       action={snackBarAction}
       anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      transitionDuration={500}
     >
       <Alert
         onClose={handleCloseSnackBar}

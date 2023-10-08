@@ -5,15 +5,13 @@ import Header from "./components/common/Header";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { green, grey, orange, red } from "@mui/material/colors";
 import { QuestionProvider } from "./contexts/QuestionContext";
-import ProblemPage from "./pages/Problem";
+import ProblemPage from "./pages/ProblemPage";
 import { Navigate, BrowserRouter as Router } from "react-router-dom";
 import { Route, Routes } from "react-router-dom";
 import Profile from "./pages/Profile";
 import WebSocket from "./components/common/WebSocket";
 import { SnackBarProvider } from "./contexts/SnackBarContext";
 import { MatchProvider } from "./contexts/MatchContext";
-import CoopPage from "./pages/CoopPage";
-import { CoopProvider } from "./contexts/CoopContext";
 import { ModeContext } from "./contexts/ModeContext";
 import { useContext } from "react";
 import Login from "./pages/Login";
@@ -21,12 +19,21 @@ import { Provider } from "react-redux";
 import store from "./store";
 import ProtectedRoute from "./components/routing/ProtectedRoutes";
 import SignUp from "./pages/SignUp";
+import { ProblemProvider } from "./contexts/ProblemContext";
 
 function App() {
   const { mode } = useContext(ModeContext);
   const theme = createTheme({
     palette: {
       mode: mode,
+      action: {
+        ...(mode === "dark"
+          ? {
+              disabledBackground: "#333333",
+              disabled: "#fff",
+            }
+          : { disabledBackground: "#fff", disabled: grey[900] }),
+      },
       primary: {
         ...(mode === "dark"
           ? {
@@ -121,21 +128,29 @@ function App() {
           <SnackBarProvider>
             <QuestionProvider>
               <MatchProvider>
-                <CoopProvider>
+                <ProblemProvider>
                   <WebSocket />
                   <Header />
                   <Routes>
                     {/* <Route element={<ProtectedRoute />}> */}
                     <Route exact path="/dashboard" element={<Dashboard />} />
-                    <Route exact path="/problem" element={<ProblemPage />} />
-                    <Route exact path="/match" element={<CoopPage />} />
+                    <Route
+                      exact
+                      path="/problem"
+                      element={<ProblemPage type={"solo"} />}
+                    />
+                    <Route
+                      exact
+                      path="/match"
+                      element={<ProblemPage type={"coop"} />}
+                    />
                     <Route exact path="/profile" element={<Profile />} />
                     {/* </Route> */}
                     <Route exact path="/" element={<Login />} />
                     <Route exact path="/signup" element={<SignUp />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
-                </CoopProvider>
+                </ProblemProvider>
               </MatchProvider>
             </QuestionProvider>
           </SnackBarProvider>

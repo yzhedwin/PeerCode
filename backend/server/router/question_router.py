@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from config import get_config
 import requests
+from model.judge import Submission
 
 router = APIRouter(
     prefix="/api/v1/question",
@@ -27,7 +28,7 @@ async def get_question_problem(titleSlug):
     return response.json()
 
 
-@router.delete("/{title}")
+@router.delete("/title/{title}")
 async def delete_question(title):
 	response = requests.delete(config.question_service_url + f"/title/{title}")
 	return response.json()
@@ -47,3 +48,20 @@ async def add_questions_from_leetcode():
 async def get_question_of_the_day():
 	response =  requests.get(config.question_service_url + "/day")
 	return response.json()
+
+@router.get("/history")
+async def get_submissions_from_question(userID:str, titleSlug:str):
+    response = requests.get(config.question_service_url + f"/history?userID={userID}&titleSlug={titleSlug}")
+    return response.json()
+
+
+@router.post("/history")
+async def add_submission_to_db(submission: Submission):
+    response = requests.post(config.question_service_url + "/history", data=submission.dict())
+    return response.json()
+
+@router.delete("/history")
+async def delete_all_submissions_from_db():
+    response = requests.delete(config.question_service_url + "/history")
+    return response.json()
+

@@ -12,4 +12,4 @@ db = DataBase()
 
 
 async def get_database() -> AsyncIOMotorClient:
-    return db.client[config.mongo_peerprep_database_name]
+    return db.client[config.mongo_peercode_database_name]
