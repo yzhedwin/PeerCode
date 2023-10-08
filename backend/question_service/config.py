@@ -4,10 +4,10 @@ from confluent_kafka import Consumer, OFFSET_END, Producer
 
 class Config(BaseSettings):
     # the following variables will read from env var
-    mongo_peerprep_host_name: str
-    mongo_peerprep_database_name: str
-    mongo_peerprep_database_user: str
-    mongo_peerprep_database_password: str
+    mongo_peercode_host_name: str
+    mongo_peercode_database_name: str
+    mongo_peercode_database_user: str
+    mongo_peercode_database_password: str
     kafka_server_name: str
     kafka_topics: str
     kafka_topic_question_service: str

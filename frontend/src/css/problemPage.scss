@@ -51,3 +51,20 @@
   flex: 1;
   border: black solid 1px;
 }
+.submissions-container {
+  height: 100%;
+}
+.ag-theme-alpine {
+  --ag-foreground-color: white;
+  --ag-background-color: #333333;
+  --ag-header-foreground-color: white;
+  --ag-header-background-color: #333333;
+  --ag-odd-row-background-color: #333333;
+  --ag-row-border-color: #333333;
+  --ag-font-size: 12px;
+  --ag-font-family: monospace;
+  --ag-borders: none;
+  --ag-selected-row-background-color: none;
+  --ag-range-selection-border-color: none;
+  --ag-range-selection-border-style: none;
+}

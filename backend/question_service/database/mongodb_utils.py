@@ -9,19 +9,19 @@ async def connect_to_mongo():
     config = get_config()
     db_uri = (
         "mongodb://"
-        + config.mongo_peerprep_database_user
+        + config.mongo_peercode_database_user
         + ":"
-        + config.mongo_peerprep_database_password
+        + config.mongo_peercode_database_password
         + "@"
-        + config.mongo_peerprep_host_name
+        + config.mongo_peercode_host_name
         + ":27017/"
-        + config.mongo_peerprep_database_name
+        + config.mongo_peercode_database_name
         + "?uuidRepresentation=standard"
     )
     db.client = AsyncIOMotorClient(str(db_uri))
     logging.info("MongoDB connected")
     logging.info("Creating database index")
-    myDB = db.client[config.mongo_peerprep_database_name]
+    myDB = db.client[config.mongo_peercode_database_name]
     myDB["questions"].create_index("titleSlug", unique=True)
     myDB["solutions"].create_index("titleSlug", unique=True)
     logging.info("Created database index")
