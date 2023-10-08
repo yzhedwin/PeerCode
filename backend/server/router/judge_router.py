@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from typing import Union
 from config import get_config
 import requests
 from model.judge import JudgeInput, JudgeOutput, Submission
@@ -19,18 +20,19 @@ async def add_submission(data: JudgeInput):
         response = requests.post(config.question_service_url + "/history", submission)
         response.raise_for_status()
         return jo
-    except Exception:
-        return response.reason
+    except Exception as e:
+        return e.response
 
 
-@router.get("/submission", response_model= JudgeOutput)
+@router.get("/submission")
 async def get_submission(token:str):
     try:
         response = requests.get(config.judge_service_url + f"/submissions/{token}?base64_encoded=true&fields=stdout,time,memory,stderr,token,compile_output,message,status,finished_at")
         response.raise_for_status()
-        return response.json()
-    except Exception:
-        return response.reason
+        jo = JudgeOutput(**response.json())
+        return jo
+    except Exception as e:
+        return e.response
 
 @router.get("/submissions")
 async def get_submissions():
@@ -39,7 +41,7 @@ async def get_submissions():
         response.raise_for_status()
         return response.json()
     except Exception as e:
-        return response.reason
+        return e.response
 
 
 @router.get("/languages")
@@ -54,4 +56,4 @@ async def authorize():
         response.raise_for_status()
         return response.json()
     except Exception as e:
-        return response.reason
+        return e.response

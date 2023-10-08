@@ -77,6 +77,11 @@ class QuestionService():
         except KeyboardInterrupt:
             self.consumer.close()
             self.loop.stop()
+        except Exception as e:
+            self.consumer.close()
+            self.loop.stop()
+            logger.error(f"[Kafka] {e}")
+
 
 
 if __name__ == "__main__":

@@ -1,8 +1,16 @@
 version: '3'
+
+x-logging:
+  &default-logging
+  logging:
+    driver: json-file
+    options:
+      max-size: 100m
+
 services:
-    server:
-        image: cs3219_server
-        container_name: cs3219_server
+    peercode_server:
+        image: peercode_server
+        container_name: peercode_server
         restart: always
         build:
             context: ./backend/server
@@ -21,21 +29,25 @@ services:
             KAFKA_TOPIC_QUESTION_BANK: ${KAFKA_TOPIC_QUESTION_BANK}
             KAFKA_TOPIC_QUESTION_OF_THE_DAY: ${KAFKA_TOPIC_QUESTION_OF_THE_DAY}
             KAFKA_GROUP_SERVER: ${KAFKA_GROUP_SERVER}
+            QUESTION_SERVICE_URL: ${QUESTION_SERVICE_URL}
+            JUDGE_SERVICE_URL: ${JUDGE_SERVICE_URL}
+            USER_SERVICE_URL: ${USER_SERVICE_URL}
+            SERVER_PORT: ${SERVER_PORT}
         networks:
             - network
-    question_service:
-        image: cs3219_question_service
-        container_name: cs3219_question_service
+    peercode_question_service:
+        image: peercode_question_service
+        container_name: peercode_question_service
         restart: always
         build:
             context: ./backend/question_service
             dockerfile: Dockerfile
         command: bash run.sh
         ports:
-            - 5001:5000
+            - 5001:5001
         depends_on:
             - peercode_kafka
-            - server
+            - peercode_server
         environment:
             MONGO_PEERCODE_HOST_NAME: ${MONGO_PEERCODE_HOST_NAME}
             MONGO_PEERCODE_DATABASE_NAME: ${MONGO_PEERCODE_DATABASE_NAME}
@@ -49,9 +61,9 @@ services:
             KAFKA_GROUP_QUESTION_SERVICE: ${KAFKA_GROUP_QUESTION_SERVICE}
         networks:
             - network
-    leetcode_service:
-        image: cs3219_leetcode_service
-        container_name: cs3219_leetcode_service
+    peercode_leetcode_service:
+        image: peercode_leetcode_service
+        container_name: peercode_leetcode_service
         restart: always
         build:
             context: ./backend/leetcode_service
@@ -59,7 +71,7 @@ services:
         command: bash run.sh
         depends_on:
             - peercode_kafka
-            - server
+            - peercode_server
         environment:
             MONGO_PEERCODE_HOST_NAME: ${MONGO_PEERCODE_HOST_NAME}
             MONGO_PEERCODE_DATABASE_NAME: ${MONGO_PEERCODE_DATABASE_NAME}
@@ -73,9 +85,38 @@ services:
             KAFKA_GROUP_LEETCODE_SERVICE: ${KAFKA_GROUP_LEETCODE_SERVICE}
         networks:
             - network
-    react:
-      image: cs3219_react
-      container_name: cs3219_react
+    peercode_match_service:
+        image: peercode_match_service
+        container_name: peercode_match_service
+        restart: always
+        build:
+            context: ./backend/match_service
+            dockerfile: Dockerfile
+        command: node server.js
+        # depends_on:
+        environment:
+            MATCH_SERVICE_PORT: ${MATCH_SERVICE_PORT}
+        networks:
+            - network
+    peercode_user_service:
+        image: peercode_user_service
+        container_name: peercode_user_service
+        restart: always
+        build:
+            context: ./backend/user_service
+            dockerfile: Dockerfile
+        command: bash run.sh
+        # depends_on:
+        # environment:  
+        networks:
+            - network
+
+    
+    
+    
+    peercode_react:
+      image: peercode_react
+      container_name: peercode_react
       restart: always
       build:
         context: ./frontend
@@ -83,10 +124,11 @@ services:
       command: npm start
       ports:
           - 3000:3000
-      # environment:
+      environment:
+        REACT_APP_API_SERVER: ${API_GATEWAY_URL}
       # volumes:
       depends_on:
-        - server
+        - peercode_server
       networks:
           - network
           
@@ -151,6 +193,49 @@ services:
             - peercode_mongo
         networks:
             - network
+
+    server:
+        image: judge0/judge0:1.13.0
+        volumes:
+        - ./judge0.conf:/judge0.conf:ro
+        ports:
+        - "2358:2358"
+        privileged: true
+        <<: *default-logging
+        restart: always
+
+    workers:
+        image: judge0/judge0:1.13.0
+        command: ["./scripts/workers"]
+        volumes:
+        - ./judge0.conf:/judge0.conf:ro
+        privileged: true
+        <<: *default-logging
+        restart: always
+
+    judge0_db:
+        image: postgres:13.0
+        env_file: judge0.conf
+        volumes:
+        - postgres-data:/var/lib/postgresql/data/
+        <<: *default-logging
+        restart: always
+
+    judge0_redis:
+        image: redis:6.0
+        command: [
+            "bash", "-c",
+            'docker-entrypoint.sh --appendonly yes --requirepass "$$REDIS_PASSWORD"'
+        ]
+        env_file: judge0.conf
+        volumes:
+        - redis-data:/data
+        <<: *default-logging
+        restart: always
+
 networks:
     network:
-# volumes:
+
+volumes:
+  postgres-data:
+  redis-data:

@@ -9,7 +9,7 @@ const httpServer = createServer(app);
 const PORT = process.env.MATCH_SERVICE_PORT;
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["http://peercode_react:3000", "http://localhost:3000"],
   },
 });
 var waiting_easy = null;
