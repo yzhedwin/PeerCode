@@ -93,6 +93,8 @@ services:
             context: ./backend/match_service
             dockerfile: Dockerfile
         command: node server.js
+        ports:
+            - 5002:5002
         # depends_on:
         environment:
             MATCH_SERVICE_PORT: ${MATCH_SERVICE_PORT}
@@ -106,6 +108,8 @@ services:
             context: ./backend/user_service
             dockerfile: Dockerfile
         command: bash run.sh
+        ports:
+            - 5003:5003
         # depends_on:
         # environment:  
         networks:
@@ -194,7 +198,7 @@ services:
         networks:
             - network
 
-    server:
+    judge0_service:
         image: judge0/judge0:1.13.0
         volumes:
         - ./judge0.conf:/judge0.conf:ro
@@ -203,6 +207,8 @@ services:
         privileged: true
         <<: *default-logging
         restart: always
+        networks:
+            - network
 
     workers:
         image: judge0/judge0:1.13.0
@@ -212,6 +218,8 @@ services:
         privileged: true
         <<: *default-logging
         restart: always
+        networks:
+            - network
 
     judge0_db:
         image: postgres:13.0
@@ -220,6 +228,8 @@ services:
         - postgres-data:/var/lib/postgresql/data/
         <<: *default-logging
         restart: always
+        networks:
+            - network
 
     judge0_redis:
         image: redis:6.0
@@ -232,6 +242,8 @@ services:
         - redis-data:/data
         <<: *default-logging
         restart: always
+        networks:
+            - network
 
 networks:
     network:
