@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Form, Button, Card, Alert } from 'react-bootstrap';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function Login() {
@@ -12,10 +12,10 @@ export default function Login() {
     const navigate = useNavigate();
 
     const parseError = (err) => {
-        if (err.includes("invalid-login-credentials")){
+        if (err.includes("invalid-login-credentials")) {
             return "Wrong Username or Password!"
         }
-        if (err.includes("too-many-requests")){
+        if (err.includes("too-many-requests")) {
             return "Access has been temporarily disabled due to many failed login attempts! Reset your password or try again later."
         }
         return "Login Error!"

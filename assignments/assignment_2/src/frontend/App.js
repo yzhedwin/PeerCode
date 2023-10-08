@@ -5,15 +5,18 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import Login from "./components/Login";
-import Profile from "./components/profile_components/Profile";
-import Signup from "./components/Signup";
-import Dashboard from "./components/Dashboard";
-import ForgotPassword from "./components/ForgotPassword";
-import UpdateProfile from "./components/profile_components/UpdateProfile";
-import CreateProfile from "./components/profile_components/CreateProfile";
 import { Container } from "react-bootstrap";
 import { AuthProvider } from "../contexts/AuthContext";
+
+import Login from "./components/auth_components/Login";
+import ForgotPassword from "./components/auth_components/ForgotPassword";
+import Signup from "./components/auth_components/Signup";
+
+import Profile from "./components/profile_components/Profile";
+import UpdateProfile from "./components/profile_components/UpdateProfile";
+import CreateProfile from "./components/profile_components/CreateProfile";
+
+import Dashboard from "./components/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoutes";
 
 function App() {
