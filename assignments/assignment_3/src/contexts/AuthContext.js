@@ -34,7 +34,9 @@ export function AuthProvider({ children }) {
         if (user) {
             const docRef = doc(fs, "users", user.uid);
             const docSnap = await getDoc(docRef);
-            setIsAdmin(docSnap.data().role);
+            if (docSnap.exists()) {
+                setIsAdmin(docSnap.data().role);
+            }
         }
     }
 
@@ -49,7 +51,7 @@ export function AuthProvider({ children }) {
     onAuthStateChanged(auth, async (user) => {
         setCurrentUser(user)
         await checkIfAdmin(user)
-        .then(setLoading(false));
+            .then(setLoading(false));
     }, []);
 
     const value = {

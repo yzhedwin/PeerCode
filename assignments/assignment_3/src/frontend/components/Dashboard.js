@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 import QuestionTable from './dashboard_components/QuestionTable';
 import CreateQuestion from './dashboard_components/CreateQuestion';
 
-//temporary test
 import Axios from 'axios';
 
 export default function Dashboard() {
@@ -144,7 +143,8 @@ export default function Dashboard() {
 
     return (
         <>
-            <Link to="/profile" className="btn btn-primary w-100 mt-3">My Profile</Link>
+            {isAdmin ? <h2>ADMIN DASHBOARD</h2> : <h2>USER DASHBOARD</h2>}
+            <Link to="/profile" className="btn btn-primary w-100 mt-3">Profile</Link>
             <div className="app-body">
                 {loading ?
                     <div className="db_loading">
@@ -154,11 +154,9 @@ export default function Dashboard() {
                     </div> :
                     <div>
                         {isAdmin ? <CreateQuestion questions={questions} currQuestion={currQuestion} onValChange={onValChange} onCategoryValChange={onCategoryValChange} onCreateQuestion={onCreateQuestion} clearCurrQuestion={clearCurrQuestion} /> : <div></div>}
-                        <QuestionTable questions={questions} currQuestion={currQuestion} onValChange={onValChange} onCategoryValChange={onCategoryValChange} onDeleteQuestion={onDeleteQuestion} onUpdateQuestion={onUpdateQuestion} clearCurrQuestion={clearCurrQuestion} updateCurrQuestion={updateCurrQuestion} isAdmin={isAdmin}/>
-                    </div>} 
+                        <QuestionTable questions={questions} currQuestion={currQuestion} onValChange={onValChange} onCategoryValChange={onCategoryValChange} onDeleteQuestion={onDeleteQuestion} onUpdateQuestion={onUpdateQuestion} clearCurrQuestion={clearCurrQuestion} updateCurrQuestion={updateCurrQuestion} isAdmin={isAdmin} />
+                    </div>}
             </div>
-            {<div>{isAdmin.toString()}</div>}
-            {<div>{currentUser.uid.toString()}</div>}
         </>
     );
 }
