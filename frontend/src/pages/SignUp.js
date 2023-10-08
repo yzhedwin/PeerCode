@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import "../css/signup.scss";
-import bgimage from "../assets/PeerPrep.png";
+import bgimage from "../assets/PeerCode.png";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import LoadingIcon from "../components/common/LoadingIcon";
