@@ -37,6 +37,8 @@ class RabbitMQService {
     }
   }
 
+  // WIP trying to figure out how to remove people from queue
+  // https://stackoverflow.com/questions/53273463/how-to-remove-specific-message-from-queue-in-rabbitmq
   async removeUserFromQueue(queue: string, userId: string) {
     if (!this.channel) {
       console.error('RabbitMQ channel not initialized');
