@@ -29,8 +29,16 @@ function App() {
               <Route element={<ProtectedRoute />}>
                 <Route exact path="/Dashboard" element={<Dashboard />} />
                 <Route exact path="/profile" element={<Profile />} />
-                <Route exact path="/update-profile" element={<UpdateProfile />} />
-                <Route exact path="/create-profile" element={<CreateProfile />} />
+                <Route
+                  exact
+                  path="/update-profile"
+                  element={<UpdateProfile />}
+                />
+                <Route
+                  exact
+                  path="/create-profile"
+                  element={<CreateProfile />}
+                />
               </Route>
               <Route exact path="/" element={<Login />} />
               <Route exact path="/signup" element={<Signup />} />
