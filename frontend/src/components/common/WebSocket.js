@@ -27,7 +27,7 @@ export default function WebSocket() {
     console.log("client is disconnected");
     setIsConnected(false);
   }
-  function onMatch(room) {
+  function onMatchSuccess(room) {
     setSB({ msg: "Found a match!", severity: "success" });
     setOpenSnackBar(true);
     socket.emit("join_room", room);
@@ -57,7 +57,7 @@ export default function WebSocket() {
     socket.connect();
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
-    socket.on("match", onMatch);
+    socket.on("match-success", onMatchSuccess);
     socket.on("chatroom-code", onCodeChanged);
     socket.on("chatroom-chat", onChatChanged);
     socket.on("chatroom-console-result", onConsoleChanged);
@@ -66,7 +66,7 @@ export default function WebSocket() {
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
-      socket.off("match", onMatch);
+      socket.off("match-success", onMatchSuccess);
       socket.off("chatroom-code", onCodeChanged);
       socket.off("chatroom-chat", onChatChanged);
       socket.off("chatroom-console-result", onConsoleChanged);
