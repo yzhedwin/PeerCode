@@ -21,10 +21,13 @@ app.include_router(question_router.router)
         
 @app.on_event("startup")
 async def startup_event():
-    await connect_to_mongo()
-    await question_bank_consumer.start()
-    global question_bank_consumer_task
-    question_bank_consumer_task = asyncio.create_task(question_bank_consume())
+    try:
+        await connect_to_mongo()
+        await question_bank_consumer.start()
+        global question_bank_consumer_task
+        question_bank_consumer_task = asyncio.create_task(question_bank_consume())
+    except Exception as e:
+        print(e)
 
 
 @app.on_event("shutdown")
