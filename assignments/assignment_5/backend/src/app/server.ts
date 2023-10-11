@@ -5,7 +5,7 @@ import routes from './routes/matchmaking'; // Import your matchmaking routes her
 import rabbitmq from '../message-queue/rabbitmq';
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3002;
 
 // Middleware
 app.use(cors()); // Enable CORS for your API

@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
@@ -9,9 +10,19 @@ export const socket = io(URL, {
 	autoConnect: false,
 });
 
-export default function Websocket({ conn, setSuccess }) {
+export default function Websocket({ conn, setSuccess, difficulty }) {
 	const [isConnected, setIsConnected] = useState(socket.connected);
 
+	async function addUserToQueue(difficulty) {
+		try {
+			await axios.post("http://localhost:3002/api/matchmaking/queue", {
+				userId: socket.id,
+				difficulty: difficulty.toLowerCase(),
+			});
+		} catch (e) {
+			console.log(e.message);
+		}
+	}
 	useEffect(() => {
 		if (conn) {
 			socket.connect();
@@ -23,10 +34,12 @@ export default function Websocket({ conn, setSuccess }) {
 	useEffect(() => {
 		function onConnect() {
 			setIsConnected(true);
+			addUserToQueue(difficulty);
 		}
 
 		function onDisconnect() {
 			setIsConnected(false);
+			//dequeue?
 		}
 		function onMatchSuccess(msg) {
 			console.log(msg);

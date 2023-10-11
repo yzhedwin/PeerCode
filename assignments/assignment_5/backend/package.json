@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "ts-node src/app/server.ts",
-    "sock": "ts-node src/websocket/socket-server.ts",
+    "dev": "nodemon src/app/server.ts",
+    "sock": "nodemon src/websocket/socket-server.ts",
     "serve": "node src/server/Server.js",
     "mongo": "nodemon src/question_service/mongodb.js"
   },

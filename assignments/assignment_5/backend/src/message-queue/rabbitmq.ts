@@ -25,11 +25,13 @@ class RabbitMQService {
       await this.channel.assertQueue('easy', { durable: true });
       await this.channel.assertQueue('medium', { durable: true });
       await this.channel.assertQueue('hard', { durable: true });
-
+      await this.channel.assertQueue('matched', { durable: true });
+      this.channel.prefetch(1);
       // Bind queues to the exchange with routing keys
       await this.channel.bindQueue('easy', 'matchmaking', 'easy');
       await this.channel.bindQueue('medium', 'matchmaking', 'medium');
       await this.channel.bindQueue('hard', 'matchmaking', 'hard');
+      await this.channel.bindQueue('matched', 'matchmaking', 'matched');
 
       console.log('RabbitMQ initialized successfully');
     } catch (error: any) {
@@ -39,29 +41,28 @@ class RabbitMQService {
 
   // WIP trying to figure out how to remove people from queue
   // https://stackoverflow.com/questions/53273463/how-to-remove-specific-message-from-queue-in-rabbitmq
-  async removeUserFromQueue(queue: string, userId: string) {
-    if (!this.channel) {
-      console.error('RabbitMQ channel not initialized');
-      return;
-    }
+  // async removeUserFromQueue(queue: string, userId: string) {
+  //   if (!this.channel) {
+  //     console.error('RabbitMQ channel not initialized');
+  //     return;
+  //   }
 
-    try {
-      for (const consumerTag in this.consumers) {
-        if (this.consumers[consumerTag] === userId) {
-          await this.channel.cancel(consumerTag);
-          console.log(`User ${userId} removed from queue`);
-          // Remove the user from the consumers object
-          delete this.consumers[consumerTag];
-        }
-      }
-    } catch (error: any) {
-      console.error(
-        `Error removing user ${userId} from queue "${queue}":`,
-        error.message
-      );
-    }
-  }
-
+  //   try {
+  //     for (const consumerTag in this.consumers) {
+  //       if (this.consumers[consumerTag] === userId) {
+  //         await this.channel.cancel(consumerTag);
+  //         console.log(`User ${userId} removed from queue`);
+  //         // Remove the user from the consumers object
+  //         delete this.consumers[consumerTag];
+  //       }
+  //     }
+  //   } catch (error: any) {
+  //     console.error(
+  //       `Error removing user ${userId} from queue "${queue}":`,
+  //       error.message
+  //     );
+  //   }
+  // }
 
   async publishMessage(queue: string, message: string) {
     if (!this.channel) {
@@ -70,8 +71,10 @@ class RabbitMQService {
     }
 
     try {
-      await this.channel.sendToQueue(queue, Buffer.from(message));
+      this.channel.sendToQueue(queue, Buffer.from(message));
       console.log(`Message sent to queue "${queue}": ${message}`);
+      const qq = await this.channel.checkQueue(queue);
+      console.log(qq);
     } catch (error: any) {
       console.error(
         `Error sending message to queue "${queue}":`,
@@ -82,7 +85,7 @@ class RabbitMQService {
 
   async consumeMessage(
     queue: string,
-    callback: (message: amqp.Message | null) => void
+    callback: (players: Array<string>) => void
   ) {
     if (!this.channel) {
       console.error('RabbitMQ channel not initialized');
@@ -91,25 +94,35 @@ class RabbitMQService {
 
     try {
       // Consume messages from the specified queue
-      await this.channel.consume(queue, async (message) => {
+      this.channel.consume(queue, async (message) => {
         if (message) {
           const player = JSON.parse(message.content.toString());
-
           // Find a match for the player based on difficulty level
           const matchQueue = this.getMatchQueue(queue);
-          const matchedPlayer = await this.findMatch(player, matchQueue);
-
-          if (matchedPlayer) {
-            // Remove matched players from the queue
-            await this.channel!.ack(message);
-            const players = [player, matchedPlayer];
-
+          // find match for x seconds
+          const interval_id = setInterval(async () => {
+            const queueStatus = await this.channel?.checkQueue(queue);
+            console.log(queueStatus);
+            let matchedPlayer = await this.findMatch(player, matchQueue);
+            if (matchedPlayer) {
+              const players = [player, matchedPlayer];
+              clearTimeout(timeout_id);
+              clearInterval(interval_id);
+              this.channel?.ack(message);
+              return callback(players);
+            }
             // Create a room and send players to it
             //   this.createRoomAndSendPlayers(queue, players);
-          } else {
-            // No match found, requeue the message
-            await this.channel!.nack(message);
-          }
+            // } else {
+            //   // No match found, requeue the message
+            //   // time out here?
+            //   this.channel?.nack(message);
+          }, 1000);
+          const timeout_id = setTimeout(() => {
+            clearTimeout(timeout_id);
+            clearInterval(interval_id);
+            this.channel?.ack(message);
+          }, 5000);
         }
       });
     } catch (error: any) {
@@ -146,8 +159,7 @@ class RabbitMQService {
 
     try {
       // Retrieve messages from the match queue
-      const result = await this.channel.get(matchQueue);
-
+      let result = await this.channel.get(matchQueue);
       if (result !== false && result.content) {
         const matchedPlayer = JSON.parse(result.content.toString());
         return matchedPlayer;
