@@ -140,6 +140,12 @@ function ProblemPage(props) {
 				openSnackBar={openSnackBar}
 				severity={sb.severity}
 			/>
+			{/* {type === "coop" && (
+				<Prompt
+					when={shouldBlockNavigation}
+					message="You have unsaved changes, are you sure you want to leave?"
+				/>
+			)} */}
 			<div className="problem-page-container">
 				<div className="problem-description-container">
 					<ProblemPageTabs

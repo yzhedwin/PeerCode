@@ -76,12 +76,15 @@ export default function WebSocket() {
 		setOpenSnackBar(true);
 		setMatch(null);
 		handleClose();
-		navigate("/dashboard");
+		socket.emit("room-message", match, {
+			user: "edwin",
+			data: "has left...",
+		});
 	}
 	function onMatchQuitDeny() {
 		socket.emit("room-message", match, {
 			user: "edwin",
-			data: "Refused to leave",
+			data: "refused to leave",
 		});
 		handleClose();
 	}
@@ -143,6 +146,7 @@ export default function WebSocket() {
 							onClick={() => {
 								socket.emit("match-quit-confirm", match);
 								onMatchQuitConfirm();
+								navigate("/dashboard");
 							}}
 						/>
 						<ConsoleButton
