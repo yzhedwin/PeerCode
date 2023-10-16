@@ -1,10 +1,9 @@
 FROM node:18
 WORKDIR /frontend
 
-COPY package*.json ./
-COPY . .
-
+COPY package*.json /frontend
 RUN npm install
+COPY . .
 # RUN npm ci --omit=dev
 
 EXPOSE 3000

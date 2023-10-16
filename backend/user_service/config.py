@@ -1,5 +1,4 @@
 from pydantic import BaseSettings
-from confluent_kafka import Consumer, OFFSET_END, Producer
 
 
 class Config(BaseSettings):

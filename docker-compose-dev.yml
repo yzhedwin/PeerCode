@@ -88,7 +88,7 @@ services:
         <<: *default-logging
         restart: always
 
-    db:
+    judge0_db:
         image: postgres:13.0
         env_file: judge0.conf
         volumes:
@@ -96,7 +96,7 @@ services:
         <<: *default-logging
         restart: always
 
-    redis:
+    judge0_redis:
         image: redis:6.0
         command: [
             "bash", "-c",

@@ -7,77 +7,74 @@ const app = express();
 app.use(cors());
 const httpServer = createServer(app);
 const PORT = process.env.MATCH_SERVICE_PORT;
+const REACT_APP_URL = process.env.REACT_APP_URL;
 const io = new Server(httpServer, {
-  cors: {
-    origin: "http://localhost:3000",
-  },
+	cors: {
+		origin: REACT_APP_URL,
+	},
 });
-var waiting_easy = null;
-var waiting_medium = null;
-var waiting_hard = null;
+
+class Queue {
+	constructor(difficulty) {
+		this.difficulty = difficulty;
+		this.user_list = [];
+	}
+	getUserSize() {
+		return this.user_list.length;
+	}
+	addUser(sid) {
+		this.user_list.push(sid);
+	}
+	getUser() {
+		return this.user_list.pop();
+	}
+	removeUser(sid) {
+		const idx = this.user_list.findIndex((usr) => usr === sid);
+		this.user_list.splice(idx, 1);
+	}
+}
+
+const queueDict = {
+	easy: new Queue("easy"),
+	medium: new Queue("medium"),
+	hard: new Queue("hard"),
+};
 
 io.on("connection", (socket) => {
-  console.log(socket.id);
-  socket.on("disconnect", (reason) => {
-    console.log(reason);
-  });
-  socket.on("join_room", (room) => {
-    socket.join(room);
-  });
-  socket.on("match_easy", (sid) => {
-    if (waiting_easy === null) {
-      waiting_easy = sid;
-    } else {
-      const room_id = String(uuid());
-      socket.to(waiting_easy).emit("match", "easy" + room_id);
-      socket.emit("match", "easy" + room_id);
-      waiting_easy = null;
-    }
-  });
-  socket.on("match_medium", (sid) => {
-    if (waiting_medium === null) {
-      waiting_medium = sid;
-    } else {
-      const room_id = String(uuid());
-      socket.to(waiting_medium).emit("match", "medium" + room_id);
-      socket.emit("match", "medium" + room_id);
-      waiting_medium = null;
-    }
-  });
-  socket.on("match_hard", (sid) => {
-    if (waiting_hard === null) {
-      waiting_hard = sid;
-    } else {
-      const room_id = String(uuid());
-      socket.to(waiting_hard).emit("match", "hard" + room_id);
-      socket.emit("match", "hard" + room_id);
-      waiting_hard = null;
-    }
-  });
-  socket.on("match_cancel_easy", (sid) => {
-    console.log("cancel_easy", sid);
-    waiting_easy = null;
-  });
-  socket.on("match_cancel_medium", (sid) => {
-    console.log("cancel_medium", sid);
-    waiting_medium = null;
-  });
-  socket.on("match_cancel_hard", (sid) => {
-    console.log("cancel_hard", sid);
-    waiting_hard = null;
-  });
-  socket.on("code-changes", (room_id, code) => {
-    socket.to(room_id).emit("chatroom-code", code);
-  });
-  socket.on("room-message", (room_id, msg) => {
-    socket.to(room_id).emit("chatroom-chat", msg);
-  });
-  socket.on("code-submission", (room_id, submission) => {
-    socket.to(room_id).emit("chatroom-console-result", submission);
-  });
-  socket.on("code-language", (room_id, language) => {
-    socket.to(room_id).emit("chatroom-code-language", language);
-  });
+	socket.on("disconnect", (reason) => {
+		console.log(reason);
+	});
+	socket.on("join_room", (room) => {
+		socket.join(room);
+	});
+	socket.on("match", (sid, difficulty) => {
+		if (queueDict[difficulty].getUserSize() < 1) {
+			queueDict[difficulty].addUser(sid);
+		} else {
+			const room_id = String(uuid());
+			other_user = queueDict[difficulty].getUser();
+			socket.to(other_user).emit("match-success", difficulty + room_id);
+			socket.emit("match-success", difficulty + room_id);
+		}
+	});
+
+	socket.on("match_cancel", (sid, difficulty) => {
+		console.log("cancel", sid, difficulty);
+		queueDict[difficulty].removeUser(sid);
+	});
+
+	socket.on("code-changes", (room_id, code) => {
+		socket.to(room_id).emit("chatroom-code", code);
+	});
+	socket.on("room-message", (room_id, msg) => {
+		socket.to(room_id).emit("chatroom-chat", msg);
+	});
+	socket.on("code-submission", (room_id, submission) => {
+		socket.to(room_id).emit("chatroom-console-result", submission);
+	});
+	socket.on("code-language", (room_id, language) => {
+		socket.to(room_id).emit("chatroom-code-language", language);
+	});
 });
 
 httpServer.listen(PORT);
