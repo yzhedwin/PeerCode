@@ -63,6 +63,14 @@ io.on("connection", (socket) => {
 		queueDict[difficulty].removeUser(sid);
 	});
 
+	socket.on("match-quit", (room_id) => {
+		socket.to(room_id).emit("match-quit");
+	});
+
+	socket.on("match-quit-confirm", (room_id) => {
+		socket.to(room_id).emit("match-quit-confirm");
+	});
+
 	socket.on("code-changes", (room_id, code) => {
 		socket.to(room_id).emit("chatroom-code", code);
 	});
