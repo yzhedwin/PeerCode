@@ -28,7 +28,8 @@ function ProblemPage(props) {
 		setMessage,
 		setConsoleResult,
 	} = useContext(ProblemContext);
-	const { openSnackBar, setOpenSnackBar, sb } = useContext(SnackBarContext);
+	const { openSnackBar, setOpenSnackBar, sb, setSB } =
+		useContext(SnackBarContext);
 	const [hide, setHide] = useState(true);
 	const [description, setDescription] = useState(true);
 	const [showConsole, setShowConsole] = useState(type === "solo");
@@ -129,6 +130,8 @@ function ProblemPage(props) {
 	function handleLeaveRoom() {
 		if (type === "coop") {
 			socket.emit("match-quit", match);
+			setSB({ msg: "Requested to quit session...", severity: "success" });
+			setOpenSnackBar(true);
 		}
 	}
 
@@ -140,12 +143,6 @@ function ProblemPage(props) {
 				openSnackBar={openSnackBar}
 				severity={sb.severity}
 			/>
-			{/* {type === "coop" && (
-				<Prompt
-					when={shouldBlockNavigation}
-					message="You have unsaved changes, are you sure you want to leave?"
-				/>
-			)} */}
 			<div className="problem-page-container">
 				<div className="problem-description-container">
 					<ProblemPageTabs

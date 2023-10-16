@@ -67,7 +67,6 @@ export default function WebSocket() {
 	};
 
 	function onMatchQuit() {
-		console.log("quit match?");
 		handleOpen();
 	}
 
@@ -76,17 +75,26 @@ export default function WebSocket() {
 		setOpenSnackBar(true);
 		setMatch(null);
 		handleClose();
-		socket.emit("room-message", match, {
-			user: "edwin",
-			data: "has left...",
-		});
+		socket.emit("connection-lost", match, "User has left");
+		navigate("/dashboard");
 	}
 	function onMatchQuitDeny() {
+		let currentMessage = [...message];
+		currentMessage.push({
+			user: "me",
+			data: "refused to leave",
+		});
+		setMessage(currentMessage);
 		socket.emit("room-message", match, {
 			user: "edwin",
 			data: "refused to leave",
 		});
 		handleClose();
+	}
+	function onConnectionLost(msg) {
+		setSB({ msg: msg, severity: "error" });
+		setOpenSnackBar(true);
+		setMatch(null);
 	}
 	useEffect(() => {
 		let update = [...message];
@@ -101,7 +109,7 @@ export default function WebSocket() {
 		socket.on("match-success", onMatchSuccess);
 		socket.on("match-quit", onMatchQuit);
 		socket.on("match-quit-confirm", onMatchQuitConfirm);
-
+		socket.on("connection-lost", onConnectionLost);
 		socket.on("chatroom-code", onCodeChanged);
 		socket.on("chatroom-chat", onChatChanged);
 		socket.on("chatroom-console-result", onConsoleChanged);
@@ -113,6 +121,7 @@ export default function WebSocket() {
 			socket.off("match-success", onMatchSuccess);
 			socket.off("match-quit", onMatchQuit);
 			socket.off("match-quit-confirm", onMatchQuitConfirm);
+			socket.off("connection-lost", onConnectionLost);
 			socket.off("chatroom-code", onCodeChanged);
 			socket.off("chatroom-chat", onChatChanged);
 			socket.off("chatroom-console-result", onConsoleChanged);
@@ -146,7 +155,6 @@ export default function WebSocket() {
 							onClick={() => {
 								socket.emit("match-quit-confirm", match);
 								onMatchQuitConfirm();
-								navigate("/dashboard");
 							}}
 						/>
 						<ConsoleButton

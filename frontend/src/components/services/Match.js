@@ -7,6 +7,7 @@ import { QuestionContext } from "../../contexts/QuestionContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import CoolButton from "../common/CoolButton";
+import { ProblemContext } from "../../contexts/ProblemContext";
 
 var timeout_id = {
 	easy: null,
@@ -18,6 +19,7 @@ function Match() {
 	const { setOpenSnackBar, setSB } = useContext(SnackBarContext);
 	const { setQuestion } = useContext(QuestionContext);
 	const { match, findMatch, setMatch, setFindMatch } = useContext(MatchContext);
+	const { setMessage } = useContext(ProblemContext);
 	const navigate = useNavigate();
 
 	const getMatch = (difficulty) => {
@@ -98,6 +100,7 @@ function Match() {
 			timeout_id["medium"] = null;
 			timeout_id["hard"] = null;
 			setFindMatch({});
+			setMessage([]);
 			getRandomEasyQuestion();
 		}
 	}, [match]);
