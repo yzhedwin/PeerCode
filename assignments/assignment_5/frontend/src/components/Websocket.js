@@ -13,47 +13,51 @@ export const socket = io(URL, {
 export default function Websocket({ conn, setSuccess, difficulty }) {
 	const [isConnected, setIsConnected] = useState(socket.connected);
 
-	async function addUserToQueue(difficulty) {
+	function onInitMatchQueue(message) {
+		addUserToQueue(difficulty);
+	}
+	function addUserToQueue(difficulty) {
 		try {
-			await axios.post("http://localhost:3002/api/matchmaking/queue", {
+			socket.emit("joinMatchmaking", {
 				userId: socket.id,
 				difficulty: difficulty.toLowerCase(),
 			});
+			console.log("add user");
 		} catch (e) {
 			console.log(e.message);
 		}
 	}
+	function onConnect() {
+		setIsConnected(true);
+		console.log("connected");
+	}
+
+	function onDisconnect() {
+		console.log("disconnect event");
+		setIsConnected(false);
+		//dequeue?
+	}
+	function onMatchSuccess(msg) {
+		console.log(msg);
+		setSuccess(true);
+	}
 	useEffect(() => {
-		if (conn) {
-			socket.connect();
-		} else {
+		if (!conn) {
 			socket.disconnect();
 		}
 	}, [conn]);
 
 	useEffect(() => {
-		function onConnect() {
-			setIsConnected(true);
-			addUserToQueue(difficulty);
-		}
-
-		function onDisconnect() {
-			setIsConnected(false);
-			//dequeue?
-		}
-		function onMatchSuccess(msg) {
-			console.log(msg);
-			setSuccess(true);
-		}
-
 		socket.on("connect", onConnect);
 		socket.on("disconnect", onDisconnect);
-		socket.on("matchFound", onMatchSuccess);
+		socket.on("initMatchQueue", onInitMatchQueue);
+		socket.on("matchSuccess", onMatchSuccess);
 
 		return () => {
 			socket.off("connect", onConnect);
 			socket.off("disconnect", onDisconnect);
-			socket.off("matchFound", onMatchSuccess);
+			socket.off("matchSuccess", onMatchSuccess);
+			socket.off("initMatchQueue", onInitMatchQueue);
 		};
 	}, []);
 	return <></>;

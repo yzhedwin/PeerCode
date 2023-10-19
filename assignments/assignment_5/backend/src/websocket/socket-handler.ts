@@ -7,38 +7,46 @@ export function initializeSocketHandlers(io: Server) {
 
   io.on('connection', (socket: Socket) => {
     console.log(`User connected with socket ID: ${socket.id}`);
-
-    // Handle user disconnect
-    socket.on('disconnect', () => {
-      console.log(`User disconnected with socket ID: ${socket.id}`);
-      // Implement any necessary cleanup or disconnection logic
+    RabbitMQService.initialize().then(() => {
+      //Tell web app that system is ready for matchmaking
+      socket.emit('initMatchQueue', 'initialized');
+      // Handle user disconnect
+      socket.on('disconnect', () => {
+        console.log(`User disconnected with socket ID: ${socket.id}`);
+        // Implement any necessary cleanup or disconnection logic
+      });
+      // Handle matchmaking requests
+      socket.on(
+        'joinMatchmaking',
+        (data: { userId: string; difficulty: string }) => {
+          const { userId, difficulty } = data;
+          console.log('get match');
+          RabbitMQService.publishMessage(
+            difficulty.toLowerCase(),
+            JSON.stringify({ userId })
+          );
+        }
+      );
+      // Get matched users here
+      RabbitMQService.consumeMessage('matched', (message) => {
+        if (message) {
+          const data = JSON.parse(message);
+          const room_id =
+            data['difficulty'] +
+            data['players'][0]['userId'] +
+            data['players'][1]['userId'];
+          //Emit room_id to both users so users can join room
+          socket.to(data['players'][0]['userId']).emit('matchSuccess', room_id);
+          socket.to(data['players'][1]['userId']).emit('matchSuccess', room_id);
+          RabbitMQService.getChannel()
+            ?.checkQueue('matched')
+            .then((status) => {
+              console.log(data, status);
+            });
+        }
+      });
     });
 
-    // Handle matchmaking requests
-    socket.on(
-      'joinMatchmaking',
-      (data: { userId: string; difficulty: string }) => {
-        const { userId, difficulty } = data;
-
-        /* 
-        matchmakingLogic
-          .joinMatchmaking(userId, difficulty)
-          .then((match) => {
-            if (match) {
-              // Notify the user that a match has been found
-              socket.emit('matchFound', match);
-            } else {
-              // Notify the user that they are in the matchmaking queue
-              socket.emit('waitingForMatch');
-            }
-          })
-          .catch((error) => {
-            // Handle errors and notify the user
-            socket.emit('matchmakingError', { message: error.message });
-          });
-          */
-      }
-    );
     // Handle other WebSocket events as needed
     // ...
 

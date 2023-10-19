@@ -6,15 +6,18 @@ import { socket } from "./Websocket";
 var timeout_id = null;
 export default function Match(props) {
 	const { difficulty } = props;
-	const [findMatch, setFindMatch] = useState(Boolean);
+	const [findMatch, setFindMatch] = useState(false);
 	const [success, setSuccess] = useState(false);
-	async function onMatch() {
+
+	function onMatch() {
+		socket.connect();
 		setFindMatch(true);
 		setSuccess(false);
 		timeout_id = setTimeout(() => {
 			setFindMatch(false);
 		}, 5000);
 	}
+
 	useEffect(() => {
 		if (success) {
 			clearTimeout(timeout_id);

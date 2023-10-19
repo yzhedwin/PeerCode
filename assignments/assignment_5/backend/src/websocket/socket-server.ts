@@ -15,12 +15,6 @@ const io = new Server(httpServer, {
 // Initialize socket event handlers
 initializeSocketHandlers(io);
 
-RabbitMQService.initialize().then(() => {
-  RabbitMQService.consumeMessage('easy', (players) => {
-    console.log(players);
-  });
-});
-
 const PORT = process.env.SOCKET_PORT || 3001;
 // Start the Express server
 httpServer.listen(PORT, () => {
