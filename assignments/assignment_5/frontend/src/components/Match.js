@@ -7,6 +7,7 @@ var timeout_id = null;
 export default function Match(props) {
 	const [success, setSuccess] = useState(false);
 	const [findMatch, setFindMatch] = useState(false);
+	const [roomID, setRoomID] = useState();
 	const difficultyRef = useRef();
 
 	function onMatch(difficulty) {
@@ -31,9 +32,15 @@ export default function Match(props) {
 				findMatch={findMatch}
 				ref={difficultyRef}
 				setSuccess={setSuccess}
+				setRoomID={setRoomID}
 			/>
-			<div className="match-btn-container">
-				{findMatch ? (
+			<div
+				className="match-btn-container"
+				style={{ display: "flex", justifyContent: "space-around", flex: 1 }}
+			>
+				{success ? (
+					<div>Matched: {roomID}</div>
+				) : findMatch ? (
 					<CoolButton
 						text={"Cancel"}
 						loading={findMatch}

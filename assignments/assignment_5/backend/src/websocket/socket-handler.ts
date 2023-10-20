@@ -35,7 +35,9 @@ export function initializeSocketHandlers(io: Server) {
           const data = JSON.parse(message);
           const room_id =
             data['difficulty'] +
+            '-' +
             data['players'][0]['userId'] +
+            '-' +
             data['players'][1]['userId'];
           //Emit room_id to both users so users can join room
           socket.to(data['players'][0]['userId']).emit('matchSuccess', room_id);

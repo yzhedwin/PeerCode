@@ -158,7 +158,12 @@ export default function Dashboard() {
 
 	return (
 		<>
-			<div className="match-container">
+			<div
+				className="match-container"
+				style={{
+					display: "flex",
+				}}
+			>
 				<Match />
 			</div>
 			<Link to="/profile" className="btn btn-primary w-100 mt-3">

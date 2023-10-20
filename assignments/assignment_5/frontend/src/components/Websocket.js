@@ -12,7 +12,7 @@ export const socket = io(URL, {
 
 const Websocket = forwardRef((props, difficultyRef) => {
 	const [isConnected, setIsConnected] = useState(socket.connected);
-	const { findMatch, setSuccess } = props;
+	const { findMatch, setSuccess, setRoomID } = props;
 	function initMatchQueue() {
 		addUserToQueue(difficultyRef.current);
 	}
@@ -39,8 +39,8 @@ const Websocket = forwardRef((props, difficultyRef) => {
 		setIsConnected(false);
 		//dequeue?
 	}
-	function onMatchSuccess(msg) {
-		console.log(msg);
+	function onMatchSuccess(roomid) {
+		setRoomID(roomid);
 		setSuccess(true);
 	}
 	useEffect(() => {
