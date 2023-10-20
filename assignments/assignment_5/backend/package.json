@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon src/app/server.ts",
     "sock": "nodemon src/websocket/socket-server.ts",
-    "serve": "nodemon src/app/server.ts",
+    "match": "nodemon src/matchmaking/index.ts",
     "mongo": "nodemon src/question_service/mongodb.js"
   },
   "dependencies": {

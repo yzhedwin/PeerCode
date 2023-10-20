@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 // "undefined" means the URL will be computed from the `window.location` object
@@ -10,23 +10,25 @@ export const socket = io(URL, {
 	autoConnect: false,
 });
 
-export default function Websocket({ conn, setSuccess, difficulty }) {
+const Websocket = forwardRef((props, difficultyRef) => {
 	const [isConnected, setIsConnected] = useState(socket.connected);
-
-	function onInitMatchQueue(message) {
-		addUserToQueue(difficulty);
+	const { findMatch, setSuccess } = props;
+	function initMatchQueue() {
+		addUserToQueue(difficultyRef.current);
 	}
-	function addUserToQueue(difficulty) {
+	function addUserToQueue() {
 		try {
+			console.log(difficultyRef.current);
 			socket.emit("joinMatchmaking", {
 				userId: socket.id,
-				difficulty: difficulty.toLowerCase(),
+				difficulty: difficultyRef.current,
 			});
 			console.log("add user");
 		} catch (e) {
 			console.log(e.message);
 		}
 	}
+
 	function onConnect() {
 		setIsConnected(true);
 		console.log("connected");
@@ -42,23 +44,28 @@ export default function Websocket({ conn, setSuccess, difficulty }) {
 		setSuccess(true);
 	}
 	useEffect(() => {
-		if (!conn) {
+		console.log(findMatch);
+		if (findMatch) {
+			socket.connect();
+		} else {
 			socket.disconnect();
 		}
-	}, [conn]);
+	}, [findMatch]);
 
 	useEffect(() => {
 		socket.on("connect", onConnect);
 		socket.on("disconnect", onDisconnect);
-		socket.on("initMatchQueue", onInitMatchQueue);
+		socket.on("initMatchQueue", initMatchQueue);
 		socket.on("matchSuccess", onMatchSuccess);
 
 		return () => {
 			socket.off("connect", onConnect);
 			socket.off("disconnect", onDisconnect);
+			socket.off("initMatchQueue", initMatchQueue);
 			socket.off("matchSuccess", onMatchSuccess);
-			socket.off("initMatchQueue", onInitMatchQueue);
 		};
 	}, []);
 	return <></>;
-}
+});
+
+export default Websocket;

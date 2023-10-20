@@ -1,20 +1,23 @@
 import * as amqp from 'amqplib';
-
 require('dotenv').config(); // Load environment variables from .env
 
+const MATCH_TIMEOUT = parseInt(process.env.MATCH_TIMEOUT || '5');
 const rabbitmqUrl = process.env.RABBITMQ_URL;
 function timeout(time: any) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
-const TIMEOUT = 5;
 class RabbitMQService {
   private connection: amqp.Connection | null = null;
   private channel: amqp.Channel | null = null;
+  private cancelled: boolean = false;
 
   public getChannel() {
     if (this.channel) {
       return this.channel;
     }
+  }
+  public setCancelled(cancel: boolean) {
+    this.cancelled = cancel;
   }
   async initialize() {
     try {
@@ -34,13 +37,18 @@ class RabbitMQService {
       await this.channel.assertQueue('medium', { durable: true });
       await this.channel.assertQueue('hard', { durable: true });
       await this.channel.assertQueue('matched', { durable: true });
+      await this.channel.assertQueue('cancelMatchmaking', { durable: true });
       this.channel.prefetch(1);
       // Bind queues to the exchange with routing keys
       await this.channel.bindQueue('easy', 'matchmaking', 'easy');
       await this.channel.bindQueue('medium', 'matchmaking', 'medium');
       await this.channel.bindQueue('hard', 'matchmaking', 'hard');
       await this.channel.bindQueue('matched', 'matchmaking', 'matched');
-
+      await this.channel.bindQueue(
+        'cancelMatchmaking',
+        'matchmaking',
+        'cancelMatchmaking'
+      );
       console.log('RabbitMQ initialized successfully');
     } catch (error: any) {
       console.error('Error initializing RabbitMQ:', error.message);
@@ -120,6 +128,7 @@ class RabbitMQService {
         queue,
         async (message) => {
           if (message) {
+            this.cancelled = false;
             const player = JSON.parse(message.content.toString());
             // Find a match for the player based on difficulty level
             const matchQueue = this.getMatchQueue(queue);
@@ -127,7 +136,11 @@ class RabbitMQService {
             console.log(status);
             // find match for x seconds
             let matchedPlayer = null;
-            for (let index = 0; index < TIMEOUT; index++) {
+            for (
+              let index = 0;
+              index < MATCH_TIMEOUT && !this.cancelled;
+              index++
+            ) {
               const status = await this.channel?.checkQueue(queue);
               console.log(status);
               matchedPlayer = await this.findMatch(player, matchQueue);

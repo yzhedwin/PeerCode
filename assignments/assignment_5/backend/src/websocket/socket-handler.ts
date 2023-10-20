@@ -1,10 +1,7 @@
 import { Server, Socket } from 'socket.io';
-import { MatchmakingLogic } from '../matchmaking/matchmaking-logic'; // Import your matchmaking logic
 import RabbitMQService from '../message-queue/rabbitmq'; // Import the RabbitMQ service
 
 export function initializeSocketHandlers(io: Server) {
-  const matchmakingLogic = new MatchmakingLogic(); // Create an instance of your matchmaking logic
-
   io.on('connection', (socket: Socket) => {
     console.log(`User connected with socket ID: ${socket.id}`);
     RabbitMQService.initialize().then(() => {
@@ -27,6 +24,11 @@ export function initializeSocketHandlers(io: Server) {
           );
         }
       );
+      socket.on('cancelMatchmaking', () => {
+        console.log('cancel', socket.id);
+        RabbitMQService.publishMessage('cancelMatchmaking', socket.id);
+      });
+
       // Get matched users here
       RabbitMQService.consumeMessage('matched', (message) => {
         if (message) {
