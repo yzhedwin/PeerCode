@@ -10,6 +10,7 @@ class RabbitMQService {
   private connection: amqp.Connection | null = null;
   private channel: amqp.Channel | null = null;
   private cancelled: boolean = false;
+  private consumer_id: string = '';
 
   public getChannel() {
     if (this.channel) {
@@ -18,6 +19,12 @@ class RabbitMQService {
   }
   public setCancelled(cancel: boolean) {
     this.cancelled = cancel;
+  }
+  public setConsumerID(id: string) {
+    this.consumer_id = id;
+  }
+  public getConsumerID() {
+    return this.consumer_id;
   }
   async initialize() {
     try {
@@ -96,7 +103,10 @@ class RabbitMQService {
       );
     }
   }
-  async consumeMessage(queue: string, callback: (message: any) => void) {
+  async consumeMessage(
+    queue: string,
+    callback: (message: any, tag: string) => void
+  ) {
     if (!this.channel) {
       console.error('RabbitMQ channel not initialized');
       return;
@@ -107,7 +117,7 @@ class RabbitMQService {
         queue,
         (message) => {
           if (message) {
-            return callback(message.content);
+            return callback(message.content, message.fields.consumerTag);
           }
         },
         { noAck: true }
