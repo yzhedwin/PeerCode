@@ -158,8 +158,13 @@ export default function Dashboard() {
 
 	return (
 		<>
-			<div className="match-container">
-				<Match difficulty={"Easy"} />
+			<div
+				className="match-container"
+				style={{
+					display: "flex",
+				}}
+			>
+				<Match />
 			</div>
 			<Link to="/profile" className="btn btn-primary w-100 mt-3">
 				My Profile

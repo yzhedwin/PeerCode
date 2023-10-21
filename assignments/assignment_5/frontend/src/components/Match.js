@@ -1,20 +1,24 @@
-import { useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
-import Websocket from "./Websocket";
-import { socket } from "./Websocket";
+import { useEffect, useRef, useState } from "react";
+import Websocket, { socket } from "./Websocket";
+import CoolButton from "./button/CoolButton";
+import { MATCHMAKING_TIMEOUT } from "../utils/constants";
 
 var timeout_id = null;
 export default function Match(props) {
-	const { difficulty } = props;
-	const [findMatch, setFindMatch] = useState(Boolean);
 	const [success, setSuccess] = useState(false);
-	async function onMatch() {
+	const [findMatch, setFindMatch] = useState(false);
+	const [roomID, setRoomID] = useState();
+	const difficultyRef = useRef();
+
+	function onMatch(difficulty) {
 		setFindMatch(true);
+		difficultyRef.current = difficulty;
 		setSuccess(false);
 		timeout_id = setTimeout(() => {
 			setFindMatch(false);
-		}, 5000);
+		}, MATCHMAKING_TIMEOUT);
 	}
+
 	useEffect(() => {
 		if (success) {
 			clearTimeout(timeout_id);
@@ -25,19 +29,46 @@ export default function Match(props) {
 	return (
 		<>
 			<Websocket
-				difficulty={difficulty}
-				conn={findMatch}
+				findMatch={findMatch}
+				ref={difficultyRef}
 				setSuccess={setSuccess}
+				setRoomID={setRoomID}
 			/>
-			<div className="match-btn-container">
-				<Button
-					onClick={() => {
-						socket.disconnect();
-					}}
-				>
-					Cancel Match
-				</Button>
-				<Button onClick={onMatch}>Match</Button>
+			<div
+				className="match-btn-container"
+				style={{ display: "flex", justifyContent: "space-around", flex: 1 }}
+			>
+				{success ? (
+					<div>Matched: {roomID}</div>
+				) : findMatch ? (
+					<CoolButton
+						text={"Cancel"}
+						loading={findMatch}
+						onClick={() => {
+							clearTimeout(timeout_id);
+							setFindMatch(false);
+							socket.emit("cancelMatchmaking");
+						}}
+					/>
+				) : (
+					<>
+						<CoolButton
+							onClick={() => onMatch("easy")}
+							text={"Easy"}
+							loading={findMatch}
+						/>
+						<CoolButton
+							onClick={() => onMatch("medium")}
+							text={"Medium"}
+							loading={findMatch}
+						/>
+						<CoolButton
+							onClick={() => onMatch("hard")}
+							text={"Hard"}
+							loading={findMatch}
+						/>
+					</>
+				)}
 			</div>
 		</>
 	);

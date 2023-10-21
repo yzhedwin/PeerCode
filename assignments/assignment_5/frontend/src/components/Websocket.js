@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 // "undefined" means the URL will be computed from the `window.location` object
@@ -10,51 +10,62 @@ export const socket = io(URL, {
 	autoConnect: false,
 });
 
-export default function Websocket({ conn, setSuccess, difficulty }) {
+const Websocket = forwardRef((props, difficultyRef) => {
 	const [isConnected, setIsConnected] = useState(socket.connected);
-
-	async function addUserToQueue(difficulty) {
+	const { findMatch, setSuccess, setRoomID } = props;
+	function initMatchQueue() {
+		addUserToQueue(difficultyRef.current);
+	}
+	function addUserToQueue() {
 		try {
-			await axios.post("http://localhost:3002/api/matchmaking/queue", {
+			console.log(difficultyRef.current);
+			socket.emit("joinMatchmaking", {
 				userId: socket.id,
-				difficulty: difficulty.toLowerCase(),
+				difficulty: difficultyRef.current,
 			});
+			console.log("add user");
 		} catch (e) {
 			console.log(e.message);
 		}
 	}
+
+	function onConnect() {
+		setIsConnected(true);
+		console.log("connected");
+	}
+
+	function onDisconnect() {
+		console.log("disconnect event");
+		setIsConnected(false);
+		//dequeue?
+	}
+	function onMatchSuccess(roomid) {
+		setRoomID(roomid);
+		setSuccess(true);
+	}
 	useEffect(() => {
-		if (conn) {
+		console.log(findMatch);
+		if (findMatch) {
 			socket.connect();
 		} else {
 			socket.disconnect();
 		}
-	}, [conn]);
+	}, [findMatch]);
 
 	useEffect(() => {
-		function onConnect() {
-			setIsConnected(true);
-			addUserToQueue(difficulty);
-		}
-
-		function onDisconnect() {
-			setIsConnected(false);
-			//dequeue?
-		}
-		function onMatchSuccess(msg) {
-			console.log(msg);
-			setSuccess(true);
-		}
-
 		socket.on("connect", onConnect);
 		socket.on("disconnect", onDisconnect);
-		socket.on("matchFound", onMatchSuccess);
+		socket.on("initMatchQueue", initMatchQueue);
+		socket.on("matchSuccess", onMatchSuccess);
 
 		return () => {
 			socket.off("connect", onConnect);
 			socket.off("disconnect", onDisconnect);
-			socket.off("matchFound", onMatchSuccess);
+			socket.off("initMatchQueue", initMatchQueue);
+			socket.off("matchSuccess", onMatchSuccess);
 		};
 	}, []);
 	return <></>;
-}
+});
+
+export default Websocket;

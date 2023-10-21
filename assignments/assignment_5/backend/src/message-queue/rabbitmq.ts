@@ -1,13 +1,24 @@
 import * as amqp from 'amqplib';
-
 require('dotenv').config(); // Load environment variables from .env
 
+const MATCH_TIMEOUT = parseInt(process.env.MATCH_TIMEOUT || '5');
 const rabbitmqUrl = process.env.RABBITMQ_URL;
-
+function timeout(time: any) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
 class RabbitMQService {
   private connection: amqp.Connection | null = null;
   private channel: amqp.Channel | null = null;
+  private cancelled: boolean = false;
 
+  public getChannel() {
+    if (this.channel) {
+      return this.channel;
+    }
+  }
+  public setCancelled(cancel: boolean) {
+    this.cancelled = cancel;
+  }
   async initialize() {
     try {
       // Connect to RabbitMQ server
@@ -26,13 +37,18 @@ class RabbitMQService {
       await this.channel.assertQueue('medium', { durable: true });
       await this.channel.assertQueue('hard', { durable: true });
       await this.channel.assertQueue('matched', { durable: true });
+      await this.channel.assertQueue('cancelMatchmaking', { durable: true });
       this.channel.prefetch(1);
       // Bind queues to the exchange with routing keys
       await this.channel.bindQueue('easy', 'matchmaking', 'easy');
       await this.channel.bindQueue('medium', 'matchmaking', 'medium');
       await this.channel.bindQueue('hard', 'matchmaking', 'hard');
       await this.channel.bindQueue('matched', 'matchmaking', 'matched');
-
+      await this.channel.bindQueue(
+        'cancelMatchmaking',
+        'matchmaking',
+        'cancelMatchmaking'
+      );
       console.log('RabbitMQ initialized successfully');
     } catch (error: any) {
       console.error('Error initializing RabbitMQ:', error.message);
@@ -64,7 +80,7 @@ class RabbitMQService {
   //   }
   // }
 
-  async publishMessage(queue: string, message: string) {
+  publishMessage(queue: string, message: string) {
     if (!this.channel) {
       console.error('RabbitMQ channel not initialized');
       return;
@@ -73,8 +89,6 @@ class RabbitMQService {
     try {
       this.channel.sendToQueue(queue, Buffer.from(message));
       console.log(`Message sent to queue "${queue}": ${message}`);
-      const qq = await this.channel.checkQueue(queue);
-      console.log(qq);
     } catch (error: any) {
       console.error(
         `Error sending message to queue "${queue}":`,
@@ -82,49 +96,72 @@ class RabbitMQService {
       );
     }
   }
-
-  async consumeMessage(
-    queue: string,
-    callback: (players: Array<string>) => void
-  ) {
+  async consumeMessage(queue: string, callback: (message: any) => void) {
     if (!this.channel) {
       console.error('RabbitMQ channel not initialized');
       return;
     }
-
     try {
       // Consume messages from the specified queue
-      this.channel.consume(queue, async (message) => {
-        if (message) {
-          const player = JSON.parse(message.content.toString());
-          // Find a match for the player based on difficulty level
-          const matchQueue = this.getMatchQueue(queue);
-          // find match for x seconds
-          const interval_id = setInterval(async () => {
-            const queueStatus = await this.channel?.checkQueue(queue);
-            console.log(queueStatus);
-            let matchedPlayer = await this.findMatch(player, matchQueue);
-            if (matchedPlayer) {
-              const players = [player, matchedPlayer];
-              clearTimeout(timeout_id);
-              clearInterval(interval_id);
-              this.channel?.ack(message);
-              return callback(players);
+      await this.channel.consume(
+        queue,
+        (message) => {
+          if (message) {
+            return callback(message.content);
+          }
+        },
+        { noAck: true }
+      );
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async matchMaking(queue: string, callback: (players: Array<string>) => void) {
+    if (!this.channel) {
+      console.error('RabbitMQ channel not initialized');
+      return;
+    }
+    try {
+      // Consume messages from the specified queue
+      await this.channel.consume(
+        queue,
+        async (message) => {
+          if (message) {
+            this.cancelled = false;
+            const player = JSON.parse(message.content.toString());
+            // Find a match for the player based on difficulty level
+            const matchQueue = this.getMatchQueue(queue);
+            const status = await this.channel?.checkQueue(queue);
+            console.log(status);
+            // find match for x seconds
+            let matchedPlayer = null;
+            for (
+              let index = 0;
+              index < MATCH_TIMEOUT && !this.cancelled;
+              index++
+            ) {
+              const status = await this.channel?.checkQueue(queue);
+              console.log(status);
+              matchedPlayer = await this.findMatch(player, matchQueue);
+              if (matchedPlayer) {
+                console.log('matched');
+                const players = [player, matchedPlayer];
+                this.channel?.ack(message);
+                console.log('acked');
+                return callback(players);
+              }
+              console.log('retry in 1s');
+              await timeout(1000);
             }
-            // Create a room and send players to it
-            //   this.createRoomAndSendPlayers(queue, players);
-            // } else {
-            //   // No match found, requeue the message
-            //   // time out here?
-            //   this.channel?.nack(message);
-          }, 1000);
-          const timeout_id = setTimeout(() => {
-            clearTimeout(timeout_id);
-            clearInterval(interval_id);
-            this.channel?.ack(message);
-          }, 5000);
-        }
-      });
+            if (this.channel) {
+              this.channel.ack(message);
+              console.log('timeout: acked');
+            }
+          }
+        },
+        { noAck: false }
+      );
     } catch (error: any) {
       console.error(
         `Error consuming messages from queue "${queue}":`,
