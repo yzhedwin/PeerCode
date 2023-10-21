@@ -6,7 +6,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { Container } from "react-bootstrap";
-import { AuthProvider } from "../contexts/AuthContext";
+import { AuthProvider } from "./contexts/AuthContext";
 
 import Login from "./components/auth_components/Login";
 import ForgotPassword from "./components/auth_components/ForgotPassword";

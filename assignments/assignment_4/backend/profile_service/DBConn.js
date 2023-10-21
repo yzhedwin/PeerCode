@@ -13,9 +13,11 @@ module.exports = function () {
 
     db.connect(function (err) {
         if (err) {
+            console.log(err)
             console.log("DB Request Failed")
         }
     });
 
     return db
 }
+

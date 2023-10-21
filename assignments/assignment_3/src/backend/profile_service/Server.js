@@ -24,13 +24,13 @@ function callStoredProcQuery(storedProcName, ...args) {
   return storedProcQuery;
 }
 
-app.post('/insert', (req, resp) => {
+app.post('/insert', (req, res) => {
   let db = connectionRequest()
   let userObject = req.body.user;
   let stringQuery = callStoredProcQuery("InsertUserProfile", userObject.email, userObject.displayName, userObject.username, userObject.proficiency)
 
 
-  db.query(stringQuery, (err, res) => {
+  db.query(stringQuery, (err, dbres) => {
     try {
       if (err) {
         db.destroy();
@@ -38,27 +38,27 @@ app.post('/insert', (req, resp) => {
       }
     }
     catch (err) {
-      console.log(err.message);
+      res.status(500).json({ message: err.message })
     }
   })
   db.end();
 })
 
-app.post('/read', (req, resp) => {
+app.post('/read', (req, res) => {
   let db = connectionRequest()
   let userObject = req.body.user;
   let stringQuery = callStoredProcQuery("GetUserProfile", userObject.email)
 
-  db.query(stringQuery, (err, res) => {
+  db.query(stringQuery, (err, dbres) => {
     try {
       if (err) {
         db.destroy();
         throw err;
       }
-      resp.send(res[0][0]);
+      res.status(200).send(dbres[0][0])
     }
     catch (err) {
-      console.log(err.message);
+      res.status(500).json({ message: err.message })
     }
   })
   db.end();
@@ -70,7 +70,7 @@ app.post('/update', (req, res) => {
   let userObject = req.body.user;
   let stringQuery = callStoredProcQuery("UpdateUserProfile", userObject.email, userObject.displayName, userObject.username, userObject.proficiency)
 
-  db.query(stringQuery, (err, res) => {
+  db.query(stringQuery, (err, dbres) => {
     try {
       if (err) {
         db.destroy();
@@ -79,7 +79,7 @@ app.post('/update', (req, res) => {
       console.log(res);
     }
     catch (err) {
-      console.log(err.message);
+      res.status(500).json({ message: err.message })
     }
   })
 
@@ -91,7 +91,7 @@ app.post('/delete', (req, res) => {
   let userObject = req.body.user;
   let stringQuery = callStoredProcQuery("DeleteUserProfile", userObject.email)
 
-  db.query(stringQuery, (err, res) => {
+  db.query(stringQuery, (err, dbres) => {
     try {
       if (err) {
         db.destroy();
@@ -100,7 +100,7 @@ app.post('/delete', (req, res) => {
       console.log(res);
     }
     catch (err) {
-      console.log(err.message);
+      res.status(500).json({ message: err.message })
     }
   })
 

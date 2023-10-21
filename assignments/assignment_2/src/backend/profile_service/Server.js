@@ -38,7 +38,7 @@ app.post('/insert', (req, res) => {
       }
     }
     catch (err) {
-      res.status(500).json({message: err.message})
+      res.status(500).json({ message: err.message })
     }
   })
   db.end();
@@ -58,7 +58,7 @@ app.post('/read', (req, res) => {
       res.status(200).send(dbres[0][0])
     }
     catch (err) {
-      res.status(500).json({message: err.message})
+      res.status(500).json({ message: err.message })
     }
   })
   db.end();
@@ -79,7 +79,7 @@ app.post('/update', (req, res) => {
       console.log(res);
     }
     catch (err) {
-      res.status(500).json({message: err.message})
+      res.status(500).json({ message: err.message })
     }
   })
 
@@ -100,7 +100,7 @@ app.post('/delete', (req, res) => {
       console.log(res);
     }
     catch (err) {
-      res.status(500).json({message: err.message})
+      res.status(500).json({ message: err.message })
     }
   })
 
