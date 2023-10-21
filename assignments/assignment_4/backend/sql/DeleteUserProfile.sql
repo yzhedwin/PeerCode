@@ -1,4 +1,4 @@
-CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteUserProfile`(
+CREATE PROCEDURE `DeleteUserProfile`(
 	IN email VARCHAR(200)
 )
 BEGIN

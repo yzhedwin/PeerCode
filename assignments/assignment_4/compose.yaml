@@ -36,32 +36,8 @@ services:
       - 3001:3001
     expose:
       - '3001'
-    environment:
-      MYSQL_HOST: mysql
-      MYSQL_USER: root
-      MYSQL_PASSWORD: qu%rK1ness
-      MYSQL_DB: users
-      DB_URL: mysql://profile_db/peerPrepProfile
 
   db:
     image: mongo:4.0-xenial
     ports:
       - 27017:27017
-    volumes:
-      - peerprep:/data/db
-
-  mysql:
-    image: mysql/mysql-server
-    restart: always
-    environment:
-      MYSQL_DATABASE: 'users'
-      MY_SQL_PASSWORD: 'qu%rK1ness'
-      MYSQL_ROOT_PASSWORD: 'qu%rK1ness'
-    expose:
-      - '3003'
-    volumes:
-      - peerPrepProfile:/var/lib/mysql
-
-volumes:
-  peerprep:
-  peerPrepProfile:
