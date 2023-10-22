@@ -1,27 +1,27 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const questionSchema = mongoose.Schema(
   {
     id: {
-      type: Number
+      type: Number,
     },
     title: {
-      type: String
+      type: String,
     },
     description: {
-      type: String
+      type: String,
     },
     categories: {
-      type: Array
+      type: Array,
     },
     complexity: {
-      type: String
-    }
+      type: String,
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
-)
+);
 
 const Question = mongoose.model("Question", questionSchema, "questions");
 

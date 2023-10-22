@@ -1,5 +1,5 @@
 const PORT = 3001;
-let connectionRequest = require("./mysqlConnector");
+let connectionRequest = require("./DBConn");
 
 const express = require("express");
 const app = express();
@@ -23,27 +23,11 @@ function callStoredProcQuery(storedProcName, ...args) {
   return storedProcQuery;
 }
 
-function updateSQL(stringQuery) {
-  let db = connectionRequest();
-  db.query(stringQuery, (err, dbres) => {
-    try {
-      console.log(dbres);
-      if (err) {
-        db.destroy();
-        throw err;
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  });
-  db.end();
-}
-
 app.post("/insert", (req, res) => {
   let db = connectionRequest();
   let userObject = req.body.user;
   let stringQuery = callStoredProcQuery(
-    "peerPrepAssignment.InsertUserProfile",
+    "InsertUserProfile",
     userObject.email,
     userObject.displayName,
     userObject.username,
@@ -65,12 +49,8 @@ app.post("/insert", (req, res) => {
 
 app.post("/read", (req, res) => {
   let db = connectionRequest();
-
   let userObject = req.body.user;
-  let stringQuery = callStoredProcQuery(
-    "peerPrepAssignment.GetUserProfile",
-    userObject.email
-  );
+  let stringQuery = callStoredProcQuery("GetUserProfile", userObject.email);
 
   db.query(stringQuery, (err, dbres) => {
     try {
@@ -78,7 +58,6 @@ app.post("/read", (req, res) => {
         db.destroy();
         throw err;
       }
-      console.log(dbres);
       res.status(200).send(dbres[0][0]);
     } catch (err) {
       res.status(500).json({ message: err.message });
@@ -91,7 +70,7 @@ app.post("/update", (req, res) => {
   let db = connectionRequest();
   let userObject = req.body.user;
   let stringQuery = callStoredProcQuery(
-    "peerPrepAssignment.UpdateUserProfile",
+    "UpdateUserProfile",
     userObject.email,
     userObject.displayName,
     userObject.username,
@@ -116,10 +95,7 @@ app.post("/update", (req, res) => {
 app.post("/delete", (req, res) => {
   let db = connectionRequest();
   let userObject = req.body.user;
-  let stringQuery = callStoredProcQuery(
-    "peerPrepAssignment.DeleteUserProfile",
-    userObject.email
-  );
+  let stringQuery = callStoredProcQuery("DeleteUserProfile", userObject.email);
 
   db.query(stringQuery, (err, dbres) => {
     try {
