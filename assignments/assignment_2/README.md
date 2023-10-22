@@ -1,8 +1,20 @@
-# Getting Started with Create React App
+# CS3219 Assignment 2 
+
+A web application with a frontend and backend, using two different kinds of databases (NoSQL and SQL), with communication between the frontend and backend of the application with a RESTful API.
+
+The following objectives are achieved:
+- Creating and managing user profiles, with the capacity of CRUD actions
+- User profiles are stored in a MySQL database (RDBMS)  
+- A REST API is required to communicate user actions such as registering, deregistering, creating, and the update of profiles from the front-end to the back-end.
+- Enhancement of the question repository from Assignment 1 by integrating the requirements of Assignment 1 into Assignment 2
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Set-up
+
+### Navigate to the current project directory 
+
+After cloning the project in your personal device, navigate the directory to ay2324s1-course-assessment-g33/assignments/assignment_2 using `cd` commands in the terminal.
 
 In the project directory, you can run:
 
@@ -14,57 +26,30 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
 
-### `npm test`
+On successful set-up, your browser should look as follows:
+![image](https://github.com/CS3219-AY2324S1/ay2324s1-course-assessment-g33/assets/62021897/4ca66719-dbfd-4f72-ae40-4ab92bc98690)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### `npm run mongo`
 
-### `npm run build`
+Runs the question repository backend service, to allow CRUD of questions in the question repository.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### `npm run serve`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Runs the user profile backend service, to allow CRUD of user profiles in the platform.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Requirements Fulfilled
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- Users can sign up and register to be on the platform
+- Users can log out from the platform
+- Users can create a profile on the platform, in a database with data persistence
+- Users can delete their profile from the platform
+- Users can view their profile when they are using the application
+- Users can update the profile when they are on the platform when they like
+- Users can maintain the question repository from the question bank with data persistence (integrated from Assignment 1)
+- System robustness includes users cannot share the same email as others (unique)
 
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
