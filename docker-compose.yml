@@ -91,13 +91,16 @@ services:
     build:
       context: ./backend/match_service
       dockerfile: Dockerfile
-    command: node server.js
+    command: bash run.sh
     ports:
       - 5002:5002
     # depends_on:
     environment:
       MATCH_SERVICE_PORT: ${MATCH_SERVICE_PORT}
       REACT_APP_URL: ${REACT_APP_URL}
+      RABBITMQ_URL: ${RABBITMQ_URL}
+      MATCH_TIMEOUT: ${MATCH_TIMEOUT}
+
     networks:
       - network
   peercode_user_service:
