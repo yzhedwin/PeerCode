@@ -11,6 +11,7 @@ from database.question_collection import (
     fetch_one_question,
     delete_all_questions,
     delete_one_question,
+    create_question
 )
 from database.submision_collection import (
     get_all_submission_from_question,
@@ -77,12 +78,21 @@ async def delete_questions(db: AsyncIOMotorClient = Depends(get_database)):
     raise HTTPException(500, "Something went wrong")
 
 
-@router.post("")
+@router.post("/leetcode")
 async def add_questions_from_leetcode():
     producer = get_producer()
     producer.produce(config.kafka_topic_question_service, json.dumps("GET QUESTIONS FROM LEETCODE"))
     producer.flush()
     return "Successfully added questions from Leetcode"
+
+@router.post("")
+async def add_one_question(question: Question, db: AsyncIOMotorClient = Depends(get_database)):
+    try:
+        result = await create_question(db, question.dict())
+        return result
+    except Exception as e:
+        return e
+
 
 @router.get("/day")
 async def get_question_of_the_day():
