@@ -6,7 +6,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import Axios from 'axios';
 
 export default function Profile() {
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
+    const [message, setMessage] = useState("");
     const { currentUser, logout } = useAuth();
     const [displayName, setDisplayName] = useState("");
     const [username, setUsername] = useState("");
@@ -16,14 +17,14 @@ export default function Profile() {
     const navigate = useNavigate();
     getUserProfileDetails();
 
-    async function getUserProfileDetails() {
+    function getUserProfileDetails() {
         const user = {
             email: currentUser.email,
         }
 
         var currentUserProfileDetails = {}
 
-        await Axios.post("http://localhost:3001/read", { user })
+        Axios.post("http://localhost:3001/read", { user })
             .then((res) => {
                 currentUserProfileDetails = res.data;
                 setDisplayName(currentUserProfileDetails.DisplayName);
@@ -36,25 +37,28 @@ export default function Profile() {
                 }
             })
             .catch(err => {
-                console.log(err.message);
+                setError("Error connecting to server!")
+                return
             })
-
     }
 
-    async function deleteProfileData() {
-
+    function deleteProfileData() {
         const user = {
             email: currentUser.email,
         }
 
-        await Axios.post("http://localhost:3001/delete", { user })
+        Axios.post("http://localhost:3001/delete", { user })
             .then(res => {
                 setLoading(true);
             })
             .catch(err => {
-                console.log(err.message);
+                setError("Delete failed!")
+                return
             })
         setLoading(false);
+        if (error === "") {
+            setMessage("User profile details deleted successfully!")
+        }
     }
 
     async function handleLogout() {
@@ -70,10 +74,10 @@ export default function Profile() {
         <>
             <Card>
                 <div className="border border-3 border-primary"></div>
-
+                {error && <Alert variant="danger">{error}</Alert>}
+                {message && <Alert variant="success">{message}</Alert>}
                 <Card.Body>
                     <h2 className="fw-bold mb-4 text-center text-uppercase">Profile</h2>
-                    {error && <Alert variant="danger">{error}</Alert>}
                     <p className="text-center mb-4"><strong>Email:</strong> {currentUser.email}</p>
                     <p className="text-center mb-4"><strong>Display Name:</strong> {displayName}</p>
                     <p className="text-center mb-4"><strong>Username:</strong> {username}</p>

@@ -44,6 +44,15 @@ io.on("connection", (socket) => {
 	socket.on("disconnect", (reason) => {
 		console.log(reason);
 	});
+	socket.on("disconnecting", () => {
+		let room_ids = Array.from(socket.rooms);
+		room_ids.forEach((room_id) => {
+			if (room_id !== socket.id) {
+				socket.to(room_id).emit("connection-lost", "User has left");
+				socket.leave(room_id);
+			}
+		});
+	});
 	socket.on("join_room", (room) => {
 		socket.join(room);
 	});
@@ -59,8 +68,16 @@ io.on("connection", (socket) => {
 	});
 
 	socket.on("match_cancel", (sid, difficulty) => {
-		console.log("cancel", sid, difficulty);
 		queueDict[difficulty].removeUser(sid);
+	});
+
+	socket.on("match-quit", (room_id) => {
+		socket.to(room_id).emit("match-quit");
+	});
+
+	socket.on("match-quit-confirm", (room_id) => {
+		socket.to(room_id).emit("match-quit-confirm");
+		socket.leave(room_id);
 	});
 
 	socket.on("code-changes", (room_id, code) => {

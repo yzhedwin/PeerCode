@@ -6,29 +6,29 @@ import { SnackBarContext } from "../contexts/SnackBarContext";
 import { useContext } from "react";
 
 export default function Dashboard() {
-  const { openSnackBar, setOpenSnackBar, sb } = useContext(SnackBarContext);
+	const { openSnackBar, setOpenSnackBar, sb } = useContext(SnackBarContext);
 
-  const handleCloseSnackBar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackBar(false);
-  };
-  return (
-    <>
-      <SnackBar
-        msg={sb.msg}
-        handleCloseSnackBar={handleCloseSnackBar}
-        openSnackBar={openSnackBar}
-        severity={sb.severity}
-      />
-      <div className="dashboard-container">
-        <div className="dashboard-container-top">
-          <QuestionOTD />
-          <Match />
-        </div>
-        <Question />
-      </div>
-    </>
-  );
+	const handleCloseSnackBar = (event, reason) => {
+		if (reason === "clickaway") {
+			return;
+		}
+		setOpenSnackBar(false);
+	};
+	return (
+		<>
+			<SnackBar
+				msg={sb.msg}
+				handleCloseSnackBar={handleCloseSnackBar}
+				openSnackBar={openSnackBar}
+				severity={sb.severity}
+			/>
+			<div className="dashboard-container">
+				<div className="dashboard-container-top">
+					<QuestionOTD />
+					<Match />
+				</div>
+				<Question />
+			</div>
+		</>
+	);
 }

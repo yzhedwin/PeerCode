@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Form, Button, Card, Alert } from 'react-bootstrap';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 
 export default function Signup() {
@@ -11,6 +11,16 @@ export default function Signup() {
     const [error, setError] = useState("");
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
+
+    const parseError = (err) => {
+        if (err.includes("email-already-in-use")) {
+            return "Email has been used before! Use another email!"
+        }
+        if (err.includes("weak-password")) {
+            return "Weak password! Password should be at least 6 characters."
+        }
+        return "Signup Error!"
+    }
 
     async function handleSubmit(e) {
         setError("");
@@ -24,12 +34,13 @@ export default function Signup() {
             setLoading(true)
             await signup(emailRef.current.value, passwordRef.current.value);
         } catch (e) {
-            setError(e.message);
+            setLoading(false)
+            return setError(parseError(e.message));
         }
-        setLoading(false)
         if (error === "") {
             setMessage("Your account has been created successfully!");
         }
+        setLoading(false)
     }
     return (
         <>

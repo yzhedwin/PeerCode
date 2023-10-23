@@ -5,17 +5,17 @@ import { Link } from 'react-router-dom';
 
 import Axios from 'axios';
 
-export default function CreateProfile() {
+export default function UpdateProfile() {
   const displayNameRef = useRef();
   const usernameRef = useRef();
   const proficiencyLevelRef = useRef();
-  const [error, setError] = useState();
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("");
   const { currentUser } = useAuth();
 
 
-  async function createUserProfile(event) {
+  const updateUserProfile = (event) => {
     event.preventDefault();
     const user = {
       email: currentUser.email,
@@ -23,34 +23,35 @@ export default function CreateProfile() {
       username: usernameRef.current.value,
       proficiency: proficiencyLevelRef.current.value
     }
-
-
-    await Axios.post("http://localhost:3001/insert", { user })
+    Axios.post("http://localhost:3001/update", { user })
       .then(res => {
         setLoading(true);
-        setMessage("Profile created successfully!");
       })
       .catch(err => {
         setError("Error occurred, try again later!");
+        return
       })
-    setLoading(false);
+      if (error === ""){
+        setMessage("Changes updated successfully!");
+      }
   }
 
   return (
     <>
       <Container>
-        {error && <Alert variant="danger">{error}</Alert>}
-        {message && <Alert variant="danger">{message}</Alert>}
+
         <Row className="vh-100 d-flex justify-content-center align-items-center">
           <Col md={8} lg={6} xs={12}>
+            {error && <Alert variant="danger">{error}</Alert>}
+            {message && <Alert variant="success">{message}</Alert>}
             <div className="border border-3 border-primary"></div>
             <Card className="shadow">
               <Card.Body>
                 <div className="mb-3 mt-4">
-                  <h2 className="fw-bold mb-2 text-uppercase">Create Profile</h2>
+                  <h2 className="fw-bold mb-2 text-uppercase">Edit Profile</h2>
                   <p className=" mb-5">Customise your profile here!</p>
 
-                  <Form className="mb-3" onSubmit={createUserProfile}>
+                  <Form className="mb-3" onSubmit={updateUserProfile}>
 
                     <Form.Group className="mb-3" controlId="formDisplayName">
                       <Form.Label className="text-center">Display Name</Form.Label>
@@ -72,8 +73,9 @@ export default function CreateProfile() {
                     </Form.Group>
 
                     <div className="d-grid">
-                      <Button disabled={loading} variant="primary" type="submit">Create Profile</Button>
+                      <Button disabled={loading} variant="primary" type="submit">Update Changes</Button>
                     </div>
+
                   </Form>
                   <Link to="/profile" className="btn btn-primary w-100 mt-3">Back</Link>
                 </div>
