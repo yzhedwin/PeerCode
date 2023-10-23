@@ -57,11 +57,5 @@ export function initializeSocketHandlers(io: Server) {
         }
       });
     });
-
-    // Handle other WebSocket events as needed
-    // ...
-
-    // Example of sending a message to the client
-    // socket.emit('message', 'Hello, client!');
   });
 }

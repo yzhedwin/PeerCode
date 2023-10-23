@@ -166,9 +166,6 @@ export default function Dashboard() {
 			>
 				<Match />
 			</div>
-			<Link to="/profile" className="btn btn-primary w-100 mt-3">
-				My Profile
-			</Link>
 			<div className="app-body">
 				{loading ? (
 					<div className="db_loading">
