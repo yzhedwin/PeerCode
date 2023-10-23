@@ -31,7 +31,6 @@ function ProblemPage(props) {
 	const { openSnackBar, setOpenSnackBar, sb, setSB } =
 		useContext(SnackBarContext);
 	const [hide, setHide] = useState(true);
-	const [description, setDescription] = useState(true);
 	const [showConsole, setShowConsole] = useState(type === "solo");
 	const [chatHeight, setChatHeight] = useState(5);
 	const [textInput, setTextInput] = useState("");
