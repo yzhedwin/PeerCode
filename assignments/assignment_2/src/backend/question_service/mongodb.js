@@ -56,7 +56,7 @@ mdb.post("/add", async (req, res) => {
 
 mdb.delete("/delete/:id", async (req, res) => {
   try {
-    const id = req.params;
+    const id = req.params.id;
     const question = await Question.deleteOne({ id: id });
     if (!question) {
       return res
@@ -71,7 +71,7 @@ mdb.delete("/delete/:id", async (req, res) => {
 
 mdb.put("/update/:id", async (req, res) => {
   try {
-    const id = req.params;
+    const id = req.params.id;
     const question = await Question.updateOne({ id: id }, req.body);
     if (!question) {
       return res

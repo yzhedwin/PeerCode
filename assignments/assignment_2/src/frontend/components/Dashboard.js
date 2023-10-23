@@ -130,7 +130,7 @@ export default function Dashboard() {
     });
     setQuestions(updatedQuestions);
 
-    await Axios.delete(`http://localhost:3002/delete/${currentUser.uid}/${id}`)
+    await Axios.delete(`http://localhost:3002/delete/${id}`)
       .then(() => {
         console.log(`Deleted post with ID ${id}`);
       })
