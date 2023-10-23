@@ -12,6 +12,12 @@ export function initializeSocketHandlers(io: Server) {
         console.log(`User disconnected with socket ID: ${socket.id}`);
         // Implement any necessary cleanup or disconnection logic
       });
+      socket.on('disconnecting', async () => {
+        console.log('disconnecting...', RabbitMQService.getConsumerID());
+        await RabbitMQService.getChannel()?.cancel(
+          RabbitMQService.getConsumerID()
+        );
+      });
       // Handle matchmaking requests
       socket.on(
         'joinMatchmaking',
@@ -30,7 +36,7 @@ export function initializeSocketHandlers(io: Server) {
       });
 
       // Get matched users here
-      RabbitMQService.consumeMessage('matched', (message) => {
+      RabbitMQService.consumeMessage('matched', (message, consumer_id) => {
         if (message) {
           const data = JSON.parse(message);
           const room_id =
@@ -42,6 +48,7 @@ export function initializeSocketHandlers(io: Server) {
           //Emit room_id to both users so users can join room
           socket.to(data['players'][0]['userId']).emit('matchSuccess', room_id);
           socket.to(data['players'][1]['userId']).emit('matchSuccess', room_id);
+          RabbitMQService.setConsumerID(consumer_id);
           RabbitMQService.getChannel()
             ?.checkQueue('matched')
             .then((status) => {

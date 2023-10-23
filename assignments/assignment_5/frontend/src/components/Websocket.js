@@ -1,6 +1,6 @@
-import axios from "axios";
-import { forwardRef, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import { MatchContext } from "../contexts/MatchContext";
 
 // "undefined" means the URL will be computed from the `window.location` object
 const URL =
@@ -10,49 +10,28 @@ export const socket = io(URL, {
 	autoConnect: false,
 });
 
-const Websocket = forwardRef((props, difficultyRef) => {
+export default function Websocket() {
 	const [isConnected, setIsConnected] = useState(socket.connected);
-	const { findMatch, setSuccess, setRoomID } = props;
-	function initMatchQueue() {
-		addUserToQueue(difficultyRef.current);
-	}
-	function addUserToQueue() {
-		try {
-			console.log(difficultyRef.current);
-			socket.emit("joinMatchmaking", {
-				userId: socket.id,
-				difficulty: difficultyRef.current,
-			});
-			console.log("add user");
-		} catch (e) {
-			console.log(e.message);
-		}
-	}
+	const { setMatch, setHasInit } = useContext(MatchContext);
 
+	function initMatchQueue() {
+		setHasInit(true);
+		console.log("Match Queue initialized");
+	}
 	function onConnect() {
 		setIsConnected(true);
 		console.log("connected");
 	}
-
 	function onDisconnect() {
 		console.log("disconnect event");
 		setIsConnected(false);
-		//dequeue?
 	}
-	function onMatchSuccess(roomid) {
-		setRoomID(roomid);
-		setSuccess(true);
+	function onMatchSuccess(id) {
+		setMatch({ success: true, room_id: id });
 	}
-	useEffect(() => {
-		console.log(findMatch);
-		if (findMatch) {
-			socket.connect();
-		} else {
-			socket.disconnect();
-		}
-	}, [findMatch]);
 
 	useEffect(() => {
+		socket.connect();
 		socket.on("connect", onConnect);
 		socket.on("disconnect", onDisconnect);
 		socket.on("initMatchQueue", initMatchQueue);
@@ -63,9 +42,9 @@ const Websocket = forwardRef((props, difficultyRef) => {
 			socket.off("disconnect", onDisconnect);
 			socket.off("initMatchQueue", initMatchQueue);
 			socket.off("matchSuccess", onMatchSuccess);
+			socket.disconnect();
+			setHasInit(false);
 		};
 	}, []);
 	return <></>;
-});
-
-export default Websocket;
+}

@@ -1,45 +1,49 @@
-import { useEffect, useRef, useState } from "react";
-import Websocket, { socket } from "./Websocket";
+import { useContext, useEffect } from "react";
+import { socket } from "./Websocket";
 import CoolButton from "./button/CoolButton";
 import { MATCHMAKING_TIMEOUT } from "../utils/constants";
+import { MatchContext } from "../contexts/MatchContext";
 
 var timeout_id = null;
-export default function Match(props) {
-	const [success, setSuccess] = useState(false);
-	const [findMatch, setFindMatch] = useState(false);
-	const [roomID, setRoomID] = useState();
-	const difficultyRef = useRef();
+export default function Match() {
+	const { match, setMatch, setFindMatch, findMatch, hasInit } =
+		useContext(MatchContext);
 
+	function addUserToQueue(difficulty) {
+		try {
+			socket.emit("joinMatchmaking", {
+				userId: socket.id,
+				difficulty: difficulty,
+			});
+			console.log("add user");
+		} catch (e) {
+			console.log(e.message);
+		}
+	}
 	function onMatch(difficulty) {
 		setFindMatch(true);
-		difficultyRef.current = difficulty;
-		setSuccess(false);
+		addUserToQueue(difficulty);
+		setMatch({ success: false });
 		timeout_id = setTimeout(() => {
 			setFindMatch(false);
 		}, MATCHMAKING_TIMEOUT);
 	}
 
 	useEffect(() => {
-		if (success) {
+		if (match?.success) {
 			clearTimeout(timeout_id);
 			timeout_id = null;
 		}
-	}, [success]);
+	}, [match.success]);
 
 	return (
 		<>
-			<Websocket
-				findMatch={findMatch}
-				ref={difficultyRef}
-				setSuccess={setSuccess}
-				setRoomID={setRoomID}
-			/>
 			<div
 				className="match-btn-container"
 				style={{ display: "flex", justifyContent: "space-around", flex: 1 }}
 			>
-				{success ? (
-					<div>Matched: {roomID}</div>
+				{match.success ? (
+					<div>Matched: {match?.room_id}</div>
 				) : findMatch ? (
 					<CoolButton
 						text={"Cancel"}
@@ -56,16 +60,19 @@ export default function Match(props) {
 							onClick={() => onMatch("easy")}
 							text={"Easy"}
 							loading={findMatch}
+							disabled={!hasInit}
 						/>
 						<CoolButton
 							onClick={() => onMatch("medium")}
 							text={"Medium"}
 							loading={findMatch}
+							disabled={!hasInit}
 						/>
 						<CoolButton
 							onClick={() => onMatch("hard")}
 							text={"Hard"}
 							loading={findMatch}
+							disabled={!hasInit}
 						/>
 					</>
 				)}

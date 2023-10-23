@@ -15,6 +15,8 @@ import CreateProfile from "./components/CreateProfile";
 import { Container } from "react-bootstrap";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoutes";
+import Websocket from "./components/Websocket";
+import { MatchProvider } from "./contexts/MatchContext";
 
 function App() {
 	return (
@@ -25,29 +27,32 @@ function App() {
 			<div className="w-100">
 				<Router>
 					<AuthProvider>
-						<Routes>
-							<Route element={<ProtectedRoute />}>
-								<Route exact path="/Dashboard" element={<Dashboard />} />
-								<Route exact path="/profile" element={<Profile />} />
+						<MatchProvider>
+							<Websocket />
+							<Routes>
+								<Route element={<ProtectedRoute />}>
+									<Route exact path="/Dashboard" element={<Dashboard />} />
+									<Route exact path="/profile" element={<Profile />} />
+									<Route
+										exact
+										path="/update-profile"
+										element={<UpdateProfile />}
+									/>
+									<Route
+										exact
+										path="/create-profile"
+										element={<CreateProfile />}
+									/>
+								</Route>
+								<Route exact path="/" element={<Login />} />
+								<Route exact path="/signup" element={<Signup />} />
 								<Route
-									exact
-									path="/update-profile"
-									element={<UpdateProfile />}
-								/>
-								<Route
-									exact
-									path="/create-profile"
-									element={<CreateProfile />}
-								/>
-							</Route>
-							<Route exact path="/" element={<Login />} />
-							<Route exact path="/signup" element={<Signup />} />
-							<Route
-								path="/forgot-password"
-								element={<ForgotPassword />}
-							></Route>
-							<Route path="*" element={<Navigate to="/" replace />} />
-						</Routes>
+									path="/forgot-password"
+									element={<ForgotPassword />}
+								></Route>
+								<Route path="*" element={<Navigate to="/" replace />} />
+							</Routes>
+						</MatchProvider>
 					</AuthProvider>
 				</Router>
 			</div>
