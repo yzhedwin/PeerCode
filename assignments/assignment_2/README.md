@@ -16,6 +16,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 After cloning the project in your personal device, navigate the directory to ay2324s1-course-assessment-g33/assignments/assignment_2 using `cd` commands in the terminal.
 
+Within the project directory, create an environment file (.env.local). You can request for the environment file containing our API secrets from our group over email, at woobt123@gmail.com.
+This allows you to access mongoDB, Firebase, and AWS RDS servers.
+
 In the project directory, you can run:
 
 ### `npm start`
@@ -27,7 +30,8 @@ The page will reload when you make changes.\
 You may also see any lint errors in the console.
 
 On successful set-up, your browser should look as follows:
-![image](https://github.com/CS3219-AY2324S1/ay2324s1-course-assessment-g33/assets/62021897/4ca66719-dbfd-4f72-ae40-4ab92bc98690)
+![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/43572438-c073-48fc-b34f-21d7db7be55c)
+
 
 ### `npm run mongo`
 
@@ -36,6 +40,31 @@ Runs the question repository backend service, to allow CRUD of questions in the 
 ### `npm run serve`
 
 Runs the user profile backend service, to allow CRUD of user profiles in the platform.
+
+## User Guide
+
+### Authentication
+
+- Click 'Signup' to create an account. You can use a sample email such as sample@mail.com, and a password of more than 6 characters/numbers will do. 
+![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/20d43de4-c58f-4846-acb5-fb89ef88ee6a)
+
+- Ensure that both fields, password and password confirmation have the same value, else an error will be thrown
+![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/dc15014c-e441-4e06-a2c0-30c95d55ed95)
+
+- Successful sign up will be as follows
+![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/0c73055a-affd-4f25-b977-2e0479737059)
+
+- Thereafter login with your newly created account
+
+- A successful login should bring you to the following page
+![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/0feae2bd-28b5-4293-bd8a-8f4d6982b29e)
+
+- Thereafter, you can add, update, delete and view questions in your question bank as per assignment 1
+
+### User Profile Management
+
+- Click 'My Profile' to navigate to the profile management page
+
 
 ## Requirements Fulfilled
 
