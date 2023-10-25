@@ -52,10 +52,10 @@ async def delete_questions():
     except Exception as e:
         return e
 
-@router.post("")
+@router.post("/leetcode")
 async def add_questions_from_leetcode():
     try:
-        response = requests.post(config.question_service_url)
+        response = requests.post(config.question_service_url + "/leetcode")
         return response.json()
     except Exception as e:
         return e
