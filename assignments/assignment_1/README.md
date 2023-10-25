@@ -18,6 +18,11 @@ After cloning the project in your personal device, navigate the directory to ay2
 
 In the project directory, you can run:
 
+### `npm i`
+
+This installs the necessary node module packages key to running the assignment.
+Please ensure that your node version is set to version 16, with npm version set to version 8.
+
 ### `npm start`
 
 Runs the app in the development mode.\
