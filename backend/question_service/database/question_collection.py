@@ -7,16 +7,16 @@ config = get_config
 COLLECTION_NAME = "questions"
 
 
-async def fetch_one_question(client: AsyncIOMotorClient, title):
-    document = await client[COLLECTION_NAME].find_one({"title": title})
+async def fetch_one_question(client: AsyncIOMotorClient, titleSlug):
+    document = await client[COLLECTION_NAME].find_one({"titleSlug": titleSlug})
     if document:
         return Question(**document)
     return None
 
 
-async def check_exist_question(client: AsyncIOMotorClient, title):
+async def check_exist_question(client: AsyncIOMotorClient, titleSlug):
     document = await client[COLLECTION_NAME].find_one(
-        {"title": re.compile("^" + re.escape(title) + "$", re.IGNORECASE)}
+        {"titleSlug": re.compile("^" + re.escape(titleSlug) + "$", re.IGNORECASE)}
     )
     if document:
         return True
@@ -36,8 +36,8 @@ async def create_question(client: AsyncIOMotorClient, question):
     return result
 
 
-async def delete_one_question(client: AsyncIOMotorClient, title):
-    await client[COLLECTION_NAME].delete_one({"title": title})
+async def delete_one_question(client: AsyncIOMotorClient, titleSlug):
+    await client[COLLECTION_NAME].delete_one({"titleSlug": titleSlug})
     return True
 
 

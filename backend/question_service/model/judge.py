@@ -2,7 +2,6 @@ from pydantic import BaseModel, Field
 from typing import Union
 import uuid
 
-
 class JudgeInput(BaseModel):
     userID: str
     titleSlug: str

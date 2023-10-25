@@ -14,7 +14,9 @@ from database.question_collection import (
     create_question
 )
 from database.submision_collection import (
+    get_all_submission,
     get_all_submission_from_question,
+    get_all_submission_from_user,
     add_one_submission,
     remove_all_submissions
 )
@@ -35,37 +37,26 @@ async def get_questions(db: AsyncIOMotorClient = Depends(get_database)):
     return response
 
 
-@router.get("/title/{title}", response_model=Question)
-async def get_question_by_title(title, db: AsyncIOMotorClient = Depends(get_database)):
-    response = await fetch_one_question(db, title)
+@router.get("/title/{titleSlug}", response_model=Question)
+async def get_question_by_title(titleSlug, db: AsyncIOMotorClient = Depends(get_database)):
+    response = await fetch_one_question(db, titleSlug)
     if response:
         return response
-    raise HTTPException(404, f"There is no question with the name {title}")
+    raise HTTPException(404, f"There is no question with the name {titleSlug}")
 
 @router.get("/problem/{titleSlug}")
-async def get_question_problem(titleSlug):
-    transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
-    client = Client(transport=transport, fetch_schema_from_transport=False)
-    query = gql("""
-                    query questionContent($titleSlug: String!) {
-    question(titleSlug: $titleSlug) {
-    content
-    mysqlSchemas
-    }
-}""")
-    result = await client.execute_async(
-        query, {"titleSlug":  titleSlug}
-    )
-    if result.get("question") is None:
-        return "Question not found"
-    return result.get("question").get("content")
+async def get_question_problem(titleSlug,  db: AsyncIOMotorClient = Depends(get_database)):
+    response = await fetch_one_question(db, titleSlug)
+    if response:
+        return dict(response)["problem"]
 
-@router.delete("/title/{title}")
-async def delete_question(title, db: AsyncIOMotorClient = Depends(get_database)):
-    question = await fetch_one_question(db, title)
+
+@router.delete("/title/{titleSlug}")
+async def delete_question(titleSlug, db: AsyncIOMotorClient = Depends(get_database)):
+    question = await fetch_one_question(db, titleSlug)
     if not question:
-        raise HTTPException(400, f"Question {title} does not exist")
-    response = await delete_one_question(db, title)
+        raise HTTPException(400, f"Question {titleSlug} does not exist")
+    response = await delete_one_question(db, titleSlug)
     if response:
         return "Successfully deleted question"
 
@@ -138,9 +129,19 @@ async def get_question_of_the_day():
     return Question(**r1["activeDailyCodingChallengeQuestion"]["question"])
    
 
-@router.get("/history")
+@router.get("/history/user/question")
 async def get_submissions_from_question(userID:str, titleSlug:str, db: AsyncIOMotorClient = Depends(get_database)):
     response = await get_all_submission_from_question(db, userID, titleSlug)
+    return response
+
+@router.get("/history/user")
+async def get_submissions_from_question(userID:str, db: AsyncIOMotorClient = Depends(get_database)):
+    response = await get_all_submission_from_user(db, userID)
+    return response
+
+@router.get("/history")
+async def get_submissions(db: AsyncIOMotorClient = Depends(get_database)):
+    response = await get_all_submission(db)
     return response
 
 @router.post("/history")

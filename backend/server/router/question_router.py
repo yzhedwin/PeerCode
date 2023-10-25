@@ -20,10 +20,10 @@ async def get_questions():
     except Exception as e:
         return e
 
-@router.get("/title/{title}")
-async def get_question_by_title(title):
+@router.get("/title/{titleSlug}")
+async def get_question_by_title(titleSlug):
     try:
-        response = requests.get(config.question_service_url + f"/title/{title}")
+        response = requests.get(config.question_service_url + f"/title/{titleSlug}")
         return response.json()
     except Exception as e:
         return e
@@ -36,10 +36,10 @@ async def get_question_problem(titleSlug):
     except Exception as e:
         return e
 
-@router.delete("/title/{title}")
-async def delete_question(title):
+@router.delete("/title/{titleSlug}")
+async def delete_question(titleSlug):
     try:
-        response = requests.delete(config.question_service_url + f"/title/{title}")
+        response = requests.delete(config.question_service_url + f"/title/{titleSlug}")
         return response.json()
     except Exception as e:
         return e
@@ -68,10 +68,26 @@ async def get_question_of_the_day():
     except Exception as e:
         return e
 
-@router.get("/history")
+@router.get("/history/user/question")
 async def get_submissions_from_question(userID:str, titleSlug:str):
     try:
-        response = requests.get(config.question_service_url + f"/history?userID={userID}&titleSlug={titleSlug}")
+        response = requests.get(config.question_service_url + f"/history/user/question?userID={userID}&titleSlug={titleSlug}")
+        return response.json()
+    except Exception as e:
+        return e
+    
+@router.get("/history/user")
+async def get_submissions_from_user(userID:str):
+    try:
+        response = requests.get(config.question_service_url + f"/history/user?userID={userID}")
+        return response.json()
+    except Exception as e:
+        return e
+
+@router.get("/history")
+async def get_submissions():
+    try:
+        response = requests.get(config.question_service_url + f"/history")
         return response.json()
     except Exception as e:
         return e
