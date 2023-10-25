@@ -21,6 +21,11 @@ This allows you to access mongoDB, Firebase, and AWS RDS servers.
 
 In the project directory, you can run:
 
+### `npm i`
+
+This installs the necessary node module packages key to running the assignment.
+Please ensure that your node version is set to version 16, with npm version set to version 8.
+
 ### `npm start`
 
 Runs the app in the development mode.\
