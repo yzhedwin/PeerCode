@@ -64,6 +64,16 @@ Runs the user profile backend service, to allow CRUD of user profiles in the pla
 ### User Profile Management
 
 - Click 'My Profile' to navigate to the profile management page
+![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/9a31033c-cd47-426a-a451-3531fc48cf29)
+
+- On a fresh account/on deletion of profile details, you can create your profile by clicking on 'Create Profile'
+![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/f9d3bc1b-a6ed-4be8-b511-f74a62cc27c3)
+
+- A successful profile creation can be shown as follows:
+![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/e20ac6e8-b1d3-4159-b60d-033d69499e40)
+
+- On returning back to the profile page, you will see that the details have been updated accordingly on the UI
+![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/b05dfb9b-1608-432f-9d25-707c911eb49f)
 
 
 ## Requirements Fulfilled
