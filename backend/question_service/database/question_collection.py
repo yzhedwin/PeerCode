@@ -9,6 +9,8 @@ COLLECTION_NAME = "questions"
 
 async def fetch_one_question(client: AsyncIOMotorClient, titleSlug):
     document = await client[COLLECTION_NAME].find_one({"titleSlug": titleSlug})
+async def fetch_one_question(client: AsyncIOMotorClient, titleSlug):
+    document = await client[COLLECTION_NAME].find_one({"titleSlug": titleSlug})
     if document:
         return Question(**document)
     return None
@@ -31,9 +33,14 @@ async def fetch_all_questions(client: AsyncIOMotorClient):
     return questions
 
 
-async def create_question(client: AsyncIOMotorClient, question):
+async def create_question(client: AsyncIOMotorClient, question: Question):
     result = await client[COLLECTION_NAME].insert_one(question)
-    return result
+    return result.inserted_id
+
+
+async def update_one_question(client: AsyncIOMotorClient, question: Question, titleSlug):
+    await client[COLLECTION_NAME].replace_one({"titleSlug": titleSlug}, question)
+    return True
 
 
 async def delete_one_question(client: AsyncIOMotorClient, titleSlug):

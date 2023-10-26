@@ -9,6 +9,8 @@ from model.judge import Submission
 from database.question_collection import (
     fetch_all_questions,
     fetch_one_question,
+    create_question,
+    update_one_question,
     delete_all_questions,
     delete_one_question,
     create_question
@@ -51,9 +53,25 @@ async def get_question_problem(titleSlug,  db: AsyncIOMotorClient = Depends(get_
         return dict(response)["problem"]
 
 
-@router.delete("/title/{titleSlug}")
-async def delete_question(titleSlug, db: AsyncIOMotorClient = Depends(get_database)):
-    question = await fetch_one_question(db, titleSlug)
+@router.post("/create")
+async def add_question_to_db(question: Question, db: AsyncIOMotorClient = Depends(get_database)):
+    print(question)
+    response = await create_question(db, question.dict())
+    return response
+
+@router.post("/update/{titleSlug}")
+async def update_question(titleSlug, question: Question, db: AsyncIOMotorClient = Depends(get_database)):
+    result = await fetch_one_question(db, titleSlug)
+    if not result:
+        raise HTTPException(400, f"Question with titleSlug {titleSlug} does not exist")
+    print(question)
+    response = await update_one_question(db, question.dict(), titleSlug)    
+    if response:
+        return "Successfully updated question"
+
+@router.delete("/title/{title}")
+async def delete_question(title, db: AsyncIOMotorClient = Depends(get_database)):
+    question = await fetch_one_question(db, title)
     if not question:
         raise HTTPException(400, f"Question {titleSlug} does not exist")
     response = await delete_one_question(db, titleSlug)

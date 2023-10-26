@@ -20,6 +20,9 @@ import store from "./store";
 import ProtectedRoute from "./components/routing/ProtectedRoutes";
 import SignUp from "./pages/SignUp";
 import { ProblemProvider } from "./contexts/ProblemContext";
+import { FirebaseProvider } from "./contexts/FirebaseContext";
+import CreateQuestion from "./pages/CreateQuestion";
+import EditQuestion from "./pages/EditQuestion";
 
 function App() {
 	const { mode } = useContext(ModeContext);
@@ -132,43 +135,51 @@ function App() {
 		},
 	});
 
-	return (
-		<Provider store={store}>
-			<Router>
-				<ThemeProvider theme={theme}>
-					<SnackBarProvider>
-						<QuestionProvider>
-							<MatchProvider>
-								<ProblemProvider>
-									<WebSocket />
-									<Header />
-									<Routes>
-										{/* <Route element={<ProtectedRoute />}> */}
-										<Route exact path="/dashboard" element={<Dashboard />} />
-										<Route
-											exact
-											path="/problem"
-											element={<ProblemPage type={"solo"} />}
-										/>
-										<Route
-											exact
-											path="/match"
-											element={<ProblemPage type={"coop"} />}
-										/>
-										<Route exact path="/profile" element={<Profile />} />
-										{/* </Route> */}
-										<Route exact path="/" element={<Login />} />
-										<Route exact path="/signup" element={<SignUp />} />
-										<Route path="*" element={<Navigate to="/" replace />} />
-									</Routes>
-								</ProblemProvider>
-							</MatchProvider>
-						</QuestionProvider>
-					</SnackBarProvider>
-				</ThemeProvider>
-			</Router>
-		</Provider>
-	);
+  return (
+    <Provider store={store}>
+      <Router>
+        <ThemeProvider theme={theme}>
+          <FirebaseProvider>
+            <SnackBarProvider>
+              <QuestionProvider>
+                <MatchProvider>
+                  <ProblemProvider>
+                    <WebSocket />
+                    <Header />
+                    <Routes>
+                      {/* <Route element={<ProtectedRoute />}> */}
+                      <Route exact path="/dashboard" element={<Dashboard />} />
+                      <Route
+                        exact
+                        path="/problem"
+                        element={<ProblemPage type={"solo"} />}
+                      />
+                      <Route
+                        exact
+                        path="/match"
+                        element={<ProblemPage type={"coop"} />}
+                      />
+                      <Route exact path="/profile" element={<Profile />} />
+                      {/* </Route> */}
+                      <Route exact path="/" element={<Login />} />
+                      <Route exact path="/signup" element={<SignUp />} />
+                      <Route
+                        exact
+                        path="/create"
+                        element={<CreateQuestion />}
+                      />
+                      <Route exact path="/edit" element={<EditQuestion />} />
+                      <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                  </ProblemProvider>
+                </MatchProvider>
+              </QuestionProvider>
+            </SnackBarProvider>
+          </FirebaseProvider>
+        </ThemeProvider>
+      </Router>
+    </Provider>
+  );
 }
 
 export default App;

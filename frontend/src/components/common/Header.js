@@ -14,6 +14,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { SnackBarContext } from "../../contexts/SnackBarContext";
 import { ModeContext } from "../../contexts/ModeContext";
+import { FirebaseContext } from "../../contexts/FirebaseContext";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { useTheme } from "@mui/material";
@@ -25,14 +26,15 @@ import { logout, setCredentials } from "../auth/authSlice";
 const settings = ["Profile", "Get Question", "Logout"];
 
 function Header() {
-	const [anchorElNav, setAnchorElNav] = useState(null);
-	const [anchorElUser, setAnchorElUser] = useState(null);
-	const { setOpenSnackBar, setSB } = useContext(SnackBarContext);
-	const { mode, setMode } = useContext(ModeContext);
-	const navigate = useNavigate();
-	const theme = useTheme();
-	const { userInfo } = useSelector((state) => state.auth);
-	const dispatch = useDispatch();
+  const [anchorElNav, setAnchorElNav] = useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+  const { setOpenSnackBar, setSB } = useContext(SnackBarContext);
+  const { mode, setMode } = useContext(ModeContext);
+  const { log_out } = useContext(FirebaseContext);
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const { userInfo } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
 	// automatically authenticate user if token is found
 	const { data, isFetching } = useGetUserDetailsQuery("userDetails", {
@@ -209,49 +211,51 @@ function Header() {
             ))} */}
 					</Box>
 
-					{userInfo ? (
-						<Box sx={{ flexGrow: 0 }}>
-							<Tooltip title="Open settings">
-								<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-									<Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-								</IconButton>
-							</Tooltip>
-							<Menu
-								sx={{ mt: "45px" }}
-								id="menu-appbar"
-								anchorEl={anchorElUser}
-								anchorOrigin={{
-									vertical: "top",
-									horizontal: "right",
-								}}
-								keepMounted
-								transformOrigin={{
-									vertical: "top",
-									horizontal: "right",
-								}}
-								open={Boolean(anchorElUser)}
-								onClose={handleCloseUserMenu}
-							>
-								{settings.map((setting) => (
-									<MenuItem
-										key={setting}
-										onClick={() =>
-											setting.toLowerCase() === "logout"
-												? dispatch(logout()) && handleCloseUserMenu(setting)
-												: handleCloseUserMenu(setting)
-										}
-									>
-										<Typography textAlign="center">{setting}</Typography>
-									</MenuItem>
-								))}
-							</Menu>
-						</Box>
-					) : (
-						<></>
-					)}
-				</Toolbar>
-			</Container>
-		</AppBar>
-	);
+          {userInfo ? (
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: "45px" }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {settings.map((setting) => (
+                  <MenuItem
+                    key={setting}
+                    onClick={() =>
+                      setting.toLowerCase() === "logout"
+                        ? dispatch(logout()) &&
+                          log_out() &&
+                          handleCloseUserMenu(setting)
+                        : handleCloseUserMenu(setting)
+                    }
+                  >
+                    <Typography textAlign="center">{setting}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+          ) : (
+            <></>
+          )}
+        </Toolbar>
+      </Container>
+    </AppBar>
+  );
 }
 export default Header;

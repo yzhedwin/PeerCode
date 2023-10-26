@@ -1,41 +1,83 @@
 import React, { useContext } from "react";
 import "../css/signup.scss";
+import SnackBar from "../components/common/SnackBar";
 import bgimage from "../assets/PeerCode.png";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import LoadingIcon from "../components/common/LoadingIcon";
 import { registerUser } from "../components/auth/authActions";
 import { SnackBarContext } from "../contexts/SnackBarContext";
+import { FirebaseContext } from "../contexts/FirebaseContext";
 import { useNavigate } from "react-router";
 
 function SignUp() {
-	const { loading, userInfo, error, success } = useSelector(
-		(state) => state.auth
-	);
-	const dispatch = useDispatch();
-	const { register, handleSubmit } = useForm();
-	const { setSB, setOpenSnackBar } = useContext(SnackBarContext);
-	const navigate = useNavigate();
+  const { loading, userInfo, error, success } = useSelector(
+    (state) => state.auth
+  );
+  const dispatch = useDispatch();
+  const { register, handleSubmit } = useForm();
+  const { sb, setSB, openSnackBar, setOpenSnackBar } =
+    useContext(SnackBarContext);
+  const { signup } = useContext(FirebaseContext);
+  const navigate = useNavigate();
 
-	const submitForm = (data) => {
-		// check if passwords match
-		if (data.password !== data.confirmPassword) {
-			setSB({ msg: "Password mismatched", severity: "error" });
-			setOpenSnackBar(true);
-		}
-		setSB({ msg: "Successfully registered", severity: "success" });
-		setOpenSnackBar(true);
-		// transform email string to lowercase to avoid case sensitivity issues in login
-		data.email = data.email.toLowerCase();
-		dispatch(registerUser(data));
-	};
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackBar(false);
+  };
 
-	return (
-		<section>
-			<div className="signup-container">
-				<div className="col-2">
-					<img src={bgimage} alt="" />
-				</div>
+  const submitForm = async (data) => {
+    // check if passwords match
+    if (data.password !== data.confirmPassword) {
+      setSB({ msg: "Password mismatched", severity: "error" });
+      setOpenSnackBar(true);
+      return;
+    }
+    // transform email string to lowercase to avoid case sensitivity issues in login
+    data.email = data.email.toLowerCase();
+    try {
+      dispatch(registerUser(data));
+      await signup(data.email, data.password);
+      setSB({ msg: "Successfully registered", severity: "success" });
+      setOpenSnackBar(true);
+      navigate("/login");
+    } catch (e) {
+      console.log(e.code);
+      switch (e.code) {
+        case "auth/weak-password":
+          setSB({
+            msg: "Password must be at least 6 characters",
+            severity: "error",
+          });
+          break;
+        case "auth/email-already-in-use":
+          setSB({
+            msg: "Email is already in use",
+            severity: "error",
+          });
+          break;
+        default:
+          setSB({ msg: "An error occured", severity: "error" });
+          break;
+      }
+      setOpenSnackBar(true);
+    }
+  };
+
+  return (
+    <section>
+      <SnackBar
+        msg={sb.msg}
+        handleCloseSnackBar={handleCloseSnackBar}
+        openSnackBar={openSnackBar}
+        severity={sb.severity}
+      />
+      <div className="signup-container">
+        <div className="col-2">
+          <img src={bgimage} alt="" />
+        </div>
 
 				<div className="col-1">
 					<h2>Sign Up</h2>
