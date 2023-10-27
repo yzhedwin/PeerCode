@@ -41,7 +41,9 @@ function CoolButton(props) {
 						<LoadingIcon text={text} />
 					</div>
 				) : (
-					<span style={{ color: mode === "dark" ? "white" : "black" }}>
+					<span
+						style={{ color: mode === "dark" ? "white" : "black" }}
+					>
 						{text}
 					</span>
 				)}

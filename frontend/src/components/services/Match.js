@@ -14,7 +14,8 @@ var timeout_id = null;
 function Match() {
 	const { setOpenSnackBar, setSB } = useContext(SnackBarContext);
 	const { setQuestion } = useContext(QuestionContext);
-	const { match, findMatch, hasInit, setFindMatch } = useContext(MatchContext);
+	const { match, findMatch, hasInit, setFindMatch } =
+		useContext(MatchContext);
 	const { setMessage } = useContext(ProblemContext);
 	const navigate = useNavigate();
 
@@ -82,19 +83,19 @@ function Match() {
 					<>
 						<CoolButton
 							text={"Easy"}
-							loading={findMatch}
+							loading={findMatch || !hasInit}
 							onClick={() => getMatch("Easy")}
 							disabled={!hasInit}
 						/>
 						<CoolButton
 							text={"Medium"}
-							loading={findMatch}
+							loading={findMatch || !hasInit}
 							onClick={() => getMatch("Medium")}
 							disabled={!hasInit}
 						/>
 						<CoolButton
 							text={"Hard"}
-							loading={findMatch}
+							loading={findMatch || !hasInit}
 							onClick={() => getMatch("Hard")}
 							disabled={!hasInit}
 						/>
