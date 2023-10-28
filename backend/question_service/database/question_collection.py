@@ -44,10 +44,3 @@ async def delete_one_question(client: AsyncIOMotorClient, title):
 async def delete_all_questions(client: AsyncIOMotorClient):
     await client[COLLECTION_NAME].delete_many({})
     return True
-
-async def fetch_all_same_tag_questions(client: AsyncIOMotorClient, tagList):
-    questions = [] 
-    cursor = client[COLLECTION_NAME].find({"topicTags": {"$in": tagList}})
-    async for document in cursor:
-        questions.append(Question(**document))
-    return questions

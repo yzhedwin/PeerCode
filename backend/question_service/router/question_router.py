@@ -12,7 +12,6 @@ from database.question_collection import (
     delete_all_questions,
     delete_one_question,
     create_question,
-    fetch_all_same_tag_questions
 
 )
 from database.submision_collection import (
@@ -154,5 +153,3 @@ async def add_submission_to_db(submission: Submission, db: AsyncIOMotorClient = 
 async def delete_all_submissions_from_db(db: AsyncIOMotorClient = Depends(get_database)):
     return await remove_all_submissions(db)
 
-# @router.post("problem/{topicTags}")
-# async def get_all_same_tag_questions(tagList):
