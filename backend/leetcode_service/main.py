@@ -47,12 +47,13 @@ class QuestionService():
     }
     """
         )
-        for i in range(0, 3000, 500):
-            result = await client.execute_async(
-                query, {"categorySlug": "", "skip": i, "limit": i+500, "filters": {}}
-            )
-            self.producer.produce(config.kafka_topic_question_bank, json.dumps(dict(result)["problemsetQuestionList"]["questions"][i:i+500]))
-            self.producer.flush()
+        
+        # for i in range(0, 3000, 500):
+        result = await client.execute_async(
+            query, {"categorySlug": "", "skip": 0, "limit": 100, "filters": {}}
+        )
+        self.producer.produce(config.kafka_topic_question_bank, json.dumps(dict(result)["problemsetQuestionList"]["questions"][0:100]))
+        self.producer.flush()
 
     async def get_all_questions(self):
         try:
