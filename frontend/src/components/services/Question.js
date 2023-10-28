@@ -16,6 +16,16 @@ function Question() {
     () => [
       { headerName: "No.", valueGetter: "node.id" },
       { field: "title", headerName: "Title" },
+      { headerName: "Tags", 
+        valueGetter: (params) => {
+          if (Array.isArray(params.data.topicTags)) {
+            return params.data.topicTags.map((tag) => tag.name).join(', ');
+          }
+          return '';
+        },
+        filter: true,
+        filterParams: {},
+      },
       {
         field: "difficulty",
         headerName: "Difficulty",
