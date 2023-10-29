@@ -2,7 +2,7 @@ import { useContext, useRef, useState } from "react";
 import { QuestionContext } from "../contexts/QuestionContext";
 import parse from "html-react-parser";
 import Editor from "@monaco-editor/react";
-import { Box, Modal, TextField, Typography } from "@mui/material";
+import { TextField } from "@mui/material";
 import { socket } from "../components/common/WebSocket";
 import { MatchContext } from "../contexts/MatchContext";
 import ChatBox from "../components/common/ChatBox";
@@ -23,6 +23,7 @@ function ProblemPage(props) {
 		message,
 		code,
 		language,
+		snippets,
 		setLanguage,
 		setCode,
 		setMessage,
@@ -40,6 +41,11 @@ function ProblemPage(props) {
 	function handleEditorDidMount(editor, monaco) {
 		editorRef.current = editor;
 		monacoRef.current = monaco;
+		setCode(
+			snippets?.find((snippet) => {
+				return snippet.langSlug === language.raw;
+			})?.code
+		);
 	}
 
 	const handleCloseSnackBar = (event, reason) => {
@@ -114,11 +120,17 @@ function ProblemPage(props) {
 			console.log(e.message);
 		}
 	};
+
 	function handleLanguageChange(event) {
 		setLanguage(JSON.parse(event.target.value));
 		if (type === "coop") {
 			socket.emit("code-language", match, event.target.value);
 		}
+		setCode(
+			snippets?.find((snippet) => {
+				return snippet.langSlug === JSON.parse(event.target.value).raw;
+			})?.code
+		);
 	}
 	function handleCodeChanges(code) {
 		setCode(code);
@@ -175,7 +187,9 @@ function ProblemPage(props) {
 						className="console-and-chat-container"
 						style={{ height: `${chatHeight}%` }}
 					>
-						{hide && <ConsoleButton onClick={onShow} title={"Show"} />}
+						{hide && (
+							<ConsoleButton onClick={onShow} title={"Show"} />
+						)}
 						{!hide && (
 							<>
 								<div className="console-options">
@@ -186,10 +200,15 @@ function ProblemPage(props) {
 									/>
 
 									{!showConsole ? (
-										<ConsoleButton onClick={setShowConsole} title={"Console"} />
+										<ConsoleButton
+											onClick={setShowConsole}
+											title={"Console"}
+										/>
 									) : (
 										<ConsoleButton
-											onClick={() => setShowConsole(false)}
+											onClick={() =>
+												setShowConsole(false)
+											}
 											title={"Chat"}
 											disabled={type === "solo"}
 										/>
@@ -213,12 +232,16 @@ function ProblemPage(props) {
 										</div>
 										<div className="chat-input">
 											<TextField
-												style={{ backgroundColor: "#cccccc" }}
+												style={{
+													backgroundColor: "#cccccc",
+												}}
 												fullWidth
 												size="small"
 												onKeyDown={onSubmitChat}
 												onChange={(e) => {
-													setTextInput(e.target.value);
+													setTextInput(
+														e.target.value
+													);
 												}}
 												value={textInput}
 											/>

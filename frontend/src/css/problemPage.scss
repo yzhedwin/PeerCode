@@ -1,72 +1,74 @@
 @import "./_colors.scss";
 
 .problem-page-container {
-  display: flex;
-  margin-top: 2vh;
-  margin-inline: 1vw;
-  height: 90vh;
+	display: flex;
+	margin-top: 2vh;
+	margin-inline: 1vw;
+	height: 90vh;
 }
 
 .problem-description-container {
-  flex: 1;
-  overflow: scroll;
+	flex: 1;
+	overflow: scroll;
 }
 .editor-container {
-  flex: 1;
-  height: 100%;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+	flex: 1;
+	height: 100%;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
 }
 .editor-component {
-  flex: 1;
+	flex: 1;
 }
 .console-and-chat-container {
-  transition-property: height;
-  transition-duration: 0.5s;
-  transition-timing-function: linear;
-  display: flex;
-  flex-direction: column;
+	transition-property: height;
+	transition-duration: 0.5s;
+	transition-timing-function: linear;
+	display: flex;
+	flex-direction: column;
 }
 .chat-message-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background-color: $text-white;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	background-color: $text-white;
 }
 .chat-message {
-  flex: 1;
-  background-color: $text-white;
-  overflow-y: scroll;
+	flex: 1;
+	background-color: $text-white;
+	overflow-y: scroll;
 }
 .chat-input {
-  //style chat input
+	//style chat input
 }
 .console-options {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
 }
 .console-message {
-  flex: 1;
-  border: black solid 1px;
+	flex: 1;
+	border: black solid 1px;
+	overflow-y: scroll;
 }
 .submissions-container {
-  height: 100%;
+	height: 100%;
 }
 .ag-theme-alpine {
-  --ag-foreground-color: black;
-  --ag-secondary-foreground-color: rgb(164, 146, 146);
-  --ag-background-color: #333333;
-  --ag-data-color: white;
-  --ag-row-hover-color: rgba(255, 255, 255, 0.229);
-  --ag-header-foreground-color: white;
-  --ag-header-background-color: #333333;
-  --ag-row-border-color: #333333;
-  --ag-font-size: 12px;
-  --ag-font-family: monospace;
-  --ag-borders: none;
-  --ag-selected-row-background-color: none;
-  --ag-range-selection-border-color: none;
-  --ag-range-selection-border-style: none;
+	--ag-foreground-color: black;
+	--ag-secondary-foreground-color: rgb(164, 146, 146);
+	--ag-background-color: #333333;
+	--ag-data-color: white;
+	--ag-row-hover-color: rgba(255, 255, 255, 0.229);
+	--ag-header-foreground-color: white;
+	--ag-header-background-color: #333333;
+	--ag-row-border-color: #333333;
+	--ag-font-size: 12px;
+	--ag-font-family: monospace;
+	--ag-borders: none;
+	--ag-selected-row-background-color: none;
+	--ag-range-selection-border-color: none;
+	--ag-range-selection-border-style: none;
+	--ag-odd-row-background-color: #333333;
 }

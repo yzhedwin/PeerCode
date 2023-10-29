@@ -25,7 +25,9 @@ function TabPanel(props) {
 		>
 			{value === index && (
 				<Box sx={{ height: "100%" }}>
-					<Typography style={{ height: "100%" }}>{children}</Typography>
+					<Typography style={{ height: "100%" }}>
+						{children}
+					</Typography>
 				</Box>
 			)}
 		</div>
@@ -101,7 +103,7 @@ export default function ProblemPageTabs(props) {
 	const handleChange = useCallback(async (event, newValue) => {
 		setValue(newValue);
 	}, []);
-	const onGridReady = useCallback(async (params) => {
+	const onSubmissionReady = useCallback(async (params) => {
 		try {
 			const { data } = await axios.get(
 				`${API_GATEWAY}/api/v1/question/history?userID=${userID}&titleSlug=${titleSlug}`
@@ -119,8 +121,15 @@ export default function ProblemPageTabs(props) {
 					).name,
 				};
 			});
-
 			setRowData(tableData);
+		} catch (e) {
+			console.log(e);
+		}
+	}, []);
+	const onSolutionReady = useCallback(async (params) => {
+		try {
+			//fetch community solutions
+			console.log("");
 		} catch (e) {
 			console.log(e);
 		}
@@ -155,7 +164,21 @@ export default function ProblemPageTabs(props) {
 					{description}
 				</TabPanel>
 				<TabPanel value={value} index={1} dir={theme.direction}>
-					solutions
+					<div
+						className="ag-theme-alpine"
+						style={{ width: "100%", height: "100%" }}
+					>
+						<AgGridReact
+							ref={gridRef} // Ref for accessing Grid's API
+							rowData={rowData} // Row Data for Rows
+							columnDefs={columnDefs} // Column Defs for Columns
+							defaultColDef={defaultColDef} // Default Column Properties
+							animateRows={true} // Optional - set to 'true' to have rows animate when sorted
+							rowSelection="single" // Options - allows click selection of rows
+							// onCellClicked={handleOpenSolution} // Optional - registering for Grid Event
+							onGridReady={onSolutionReady}
+						/>
+					</div>
 				</TabPanel>
 				<TabPanel value={value} index={2} dir={theme.direction}>
 					<div className="submissions-container">
@@ -171,7 +194,7 @@ export default function ProblemPageTabs(props) {
 								animateRows={true} // Optional - set to 'true' to have rows animate when sorted
 								rowSelection="single" // Options - allows click selection of rows
 								onCellClicked={handleOpenSubmission} // Optional - registering for Grid Event
-								onGridReady={onGridReady}
+								onGridReady={onSubmissionReady}
 							/>
 						</div>
 					</div>

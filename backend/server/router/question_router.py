@@ -28,10 +28,50 @@ async def get_question_by_title(title):
     except Exception as e:
         return e
 
-@router.get("/problem/{titleSlug}")
-async def get_question_problem(titleSlug):
+@router.get("/problem")
+async def get_question_problem(titleSlug: str):
     try:
-        response = requests.get(config.question_service_url + f"/problem/{titleSlug}")
+        response = requests.get(config.question_service_url + f"/problem", params={"titleSlug": titleSlug})
+        return response.json()
+    except Exception as e:
+        return e
+
+@router.get("/solution/official")
+async def get_official_solution(titleSlug: str):
+    try:
+        response = requests.get(config.question_service_url + f"/solution/official", params={"titleSlug": titleSlug})
+        return response.json()
+    except Exception as e:
+        return e
+    
+@router.get("/solution/community/list")
+async def get_community_solutions(titleSlug: str, language: str):
+    try:
+        response = requests.get(config.question_service_url + f"/solution/community/list", params={"titleSlug": titleSlug, "language": language})
+        return response.json()
+    except Exception as e:
+        return e
+    
+@router.get("/solution/community")
+async def get_community_solutions(id: int):
+    try:
+        response = requests.get(config.question_service_url + f"/solution/community", params={"id": id})
+        return response.json()
+    except Exception as e:
+        return e
+    
+@router.get("/exampletestcase")
+async def get_testcase(titleSlug: str):
+    try:
+        response = requests.get(config.question_service_url + f"/exampletestcase", params={"titleSlug": titleSlug})
+        return response.json()
+    except Exception as e:
+        return e
+    
+@router.get("/codesnippets")
+async def get_code_snippets(titleSlug: str):
+    try:
+        response = requests.get(config.question_service_url + f"/codesnippets", params={"titleSlug": titleSlug})
         return response.json()
     except Exception as e:
         return e
@@ -79,7 +119,7 @@ async def get_submissions_from_question(userID:str, titleSlug:str):
 @router.post("/history")
 async def add_submission_to_db(submission: Submission):
     try:
-        response = requests.post(config.question_service_url + "/history", data=submission.dict())
+        response = requests.post(config.question_service_url + "/history", json=submission)
         return response.json()
     except Exception as e:
         return e

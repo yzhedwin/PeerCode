@@ -61,8 +61,8 @@ async def get_question_problem(titleSlug: str):
         return "Question not found"
     return result.get("question").get("content")
 
-@router.get("/problem/solution/official")
-async def get_problem_official_solution(titleSlug: str):
+@router.get("/solution/official")
+async def get_official_solution(titleSlug: str):
     transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
     client = Client(transport=transport, fetch_schema_from_transport=False)
     query = gql("""query officialSolution($titleSlug: String!) {
@@ -113,15 +113,134 @@ async def get_problem_official_solution(titleSlug: str):
     result = await client.execute_async(
         query, {"titleSlug":  titleSlug}
     )
+
     if result.get("question") is None:
         return "Question not found"
-    if result.get("question").get("submission") is None:
+    if result.get("question").get("solution") is None:
         return "Solution does not exist"
-    return result.get("question").get("solution").get("content")
+    return result.get("question").get("solution")
+
+@router.get("/solution/community/list")
+async def get_community_solutions(titleSlug: str, language: str):
+    transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+    query = gql("""query communitySolutions($questionSlug: String!, $skip: Int!, $first: Int!, $query: String, $orderBy: TopicSortingOption, $languageTags: [String!], $topicTags: [String!]) {
+  questionSolutions(
+    filters: {questionSlug: $questionSlug, skip: $skip, first: $first, query: $query, orderBy: $orderBy, languageTags: $languageTags, topicTags: $topicTags}
+  ) {
+    hasDirectResults
+    totalNum
+    solutions {
+      id
+      title
+      commentCount
+      topLevelCommentCount
+      viewCount
+      pinned
+      isFavorite
+      solutionTags {
+        name
+        slug
+      }
+      post {
+        id
+        status
+        voteCount
+        creationDate
+        isHidden
+        author {
+          username
+          isActive
+          nameColor
+          activeBadge {
+            displayName
+            icon
+          }
+          profile {
+            userAvatar
+            reputation
+          }
+        }
+      }
+      searchMeta {
+        content
+        contentType
+        commentAuthor {
+          username
+        }
+        replyAuthor {
+          username
+        }
+        highlights
+      }
+    }
+  }
+}""")
+    result = await client.execute_async(
+        query, {"languageTags": language, "topicTags": [], "questionSlug": titleSlug, "skip": 0, "first": 15, "orderBy": "hot"}
+    )
+    return result.get("questionSolutions").get("solutions")
+
+@router.get("/solution/community")
+async def get_community_solutions(id: int):
+  try:
+    transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+    query = gql("""query communitySolution($topicId: Int!) {
+  topic(id: $topicId) {
+    id
+    viewCount
+    topLevelCommentCount
+    subscribed
+    title
+    pinned
+    solutionTags {
+      name
+      slug
+    }
+    hideFromTrending
+    commentCount
+    isFavorite
+    post {
+      id
+      voteCount
+      voteStatus
+      content
+      updationDate
+      creationDate
+      status
+      isHidden
+      author {
+        isDiscussAdmin
+        isDiscussStaff
+        username
+        nameColor
+        activeBadge {
+          displayName
+          icon
+        }
+        profile {
+          userAvatar
+          reputation
+        }
+        isActive
+      }
+      authorIsModerator
+      isOwnPost
+    }
+  }
+}""")
+    result = await client.execute_async(
+        query, {"topicId": id}
+    )
+    return result.get("topic")
+  except Exception as e:
+      return e.errors
 
 
-@router.get("/problem/exampleTestCase")
-async def get_problem_testcase(titleSlug: str):
+
+@router.get("/exampletestcase")
+async def get_testcase(titleSlug: str):
     transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
     client = Client(transport=transport, fetch_schema_from_transport=False)
     query = gql("""query consolePanelConfig($titleSlug: String!) {
@@ -145,8 +264,8 @@ async def get_problem_testcase(titleSlug: str):
         return "Question not found"
     return result.get("question").get("exampleTestcaseList")
     
-@router.get("/problem/codeSnippets")
-async def get_problem_code_snippets(titleSlug: str) -> list:
+@router.get("/codesnippets")
+async def get_code_snippets(titleSlug: str) -> list:
     transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
     client = Client(transport=transport, fetch_schema_from_transport=False)
     query = gql("""  query questionEditorData($titleSlug: String!) {
@@ -256,8 +375,11 @@ async def get_submissions_from_question(userID:str, titleSlug:str, db: AsyncIOMo
 
 @router.post("/history")
 async def add_submission_to_db(submission: Submission, db: AsyncIOMotorClient = Depends(get_database)):
-    response = await add_one_submission(db, submission.dict())
-    return response
+    try:
+      response = await add_one_submission(db, submission.dict())
+      return response
+    except Exception as e:
+        print(e)
 
 @router.delete("/history")
 async def delete_all_submissions_from_db(db: AsyncIOMotorClient = Depends(get_database)):
