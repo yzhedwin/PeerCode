@@ -3,6 +3,7 @@ import { socket } from "./Websocket";
 import CoolButton from "./button/CoolButton";
 import { MATCHMAKING_TIMEOUT } from "../utils/constants";
 import { MatchContext } from "../contexts/MatchContext";
+import { getHash } from 'emoji-hash-gen';
 
 var timeout_id = null;
 export default function Match() {
@@ -43,7 +44,7 @@ export default function Match() {
 				style={{ display: "flex", justifyContent: "space-around", flex: 1 }}
 			>
 				{match.success ? (
-					<div>Matched: {match?.room_id}</div>
+					<div>Matched: {getHash(match?.room_id)}</div>
 				) : findMatch ? (
 					<CoolButton
 						text={"Cancel"}
