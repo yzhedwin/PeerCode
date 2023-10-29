@@ -55,11 +55,13 @@
   height: 100%;
 }
 .ag-theme-alpine {
-  --ag-foreground-color: white;
+  --ag-foreground-color: black;
+  --ag-secondary-foreground-color: rgb(164, 146, 146);
   --ag-background-color: #333333;
+  --ag-data-color: white;
+  --ag-row-hover-color: rgba(255, 255, 255, 0.229);
   --ag-header-foreground-color: white;
   --ag-header-background-color: #333333;
-  --ag-odd-row-background-color: #333333;
   --ag-row-border-color: #333333;
   --ag-font-size: 12px;
   --ag-font-family: monospace;

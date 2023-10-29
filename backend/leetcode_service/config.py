@@ -14,6 +14,7 @@ class Config(BaseSettings):
     kafka_topic_question_bank: str
     kafka_topic_question_of_the_day: str
     kafka_group_leetcode_service: str
+    leetcode_fetch_limit: int
 
 def get_config():
     return Config()

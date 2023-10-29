@@ -7,7 +7,17 @@ import {
   signOut,
   sendPasswordResetEmail,
 } from "firebase/auth";
+import React, { useContext, useState } from "react";
+import { auth } from "../config/firebase";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+  sendPasswordResetEmail,
+} from "firebase/auth";
 
+const AuthContext = React.createContext();
 const AuthContext = React.createContext();
 
 export function useAuth() {
@@ -15,6 +25,8 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }) {
+  const [currentUser, setCurrentUser] = useState();
+  const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState();
   const [loading, setLoading] = useState(true);
 
@@ -37,7 +49,22 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     await signOut(auth);
   };
+  const logout = async () => {
+    await signOut(auth);
+  };
 
+  const resetPassword = async (email) => {
+    await sendPasswordResetEmail(auth, email);
+  };
+
+  onAuthStateChanged(
+    auth,
+    (user) => {
+      setCurrentUser(user);
+      setLoading(false);
+    },
+    []
+  );
   const resetPassword = async (email) => {
     await sendPasswordResetEmail(auth, email);
   };
