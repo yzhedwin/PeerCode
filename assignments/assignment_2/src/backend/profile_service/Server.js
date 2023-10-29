@@ -25,6 +25,17 @@ function callStoredProcQuery(storedProcName, ...args) {
 
 function updateSQL(stringQuery) {
   let db = connectionRequest();
+  db.query("USE peerPrepAssignment", (err, dbres) => {
+    try {
+      console.log(dbres);
+      if (err) {
+        db.destroy();
+        throw err;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  });
   db.query(stringQuery, (err, dbres) => {
     try {
       console.log(dbres);
@@ -38,6 +49,7 @@ function updateSQL(stringQuery) {
   });
   db.end();
 }
+
 
 app.post("/insert", (req, res) => {
   let db = connectionRequest();
@@ -65,7 +77,6 @@ app.post("/insert", (req, res) => {
 
 app.post("/read", (req, res) => {
   let db = connectionRequest();
-
   let userObject = req.body.user;
   let stringQuery = callStoredProcQuery(
     "peerPrepAssignment.GetUserProfile",
