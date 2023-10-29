@@ -27,7 +27,7 @@ const style = {
 export default function WebSocket() {
 	// eslint-disable-next-line no-unused-vars
 	const [isConnected, setIsConnected] = useState(socket.connected);
-	const { match, setMatch } = useContext(MatchContext);
+	const { match, setMatch, setHasInit } = useContext(MatchContext);
 	const { message, setMessage, setCode, setLanguage, setConsoleResult } =
 		useContext(ProblemContext);
 	const { setOpenSnackBar, setSB } = useContext(SnackBarContext);
@@ -37,48 +37,60 @@ export default function WebSocket() {
 	const handleClose = () => setOpen(false);
 	const navigate = useNavigate();
 
-	function onConnect() {
+	const onConnect = useCallback(() => {
 		console.log("connected");
 		setIsConnected(true);
-	}
+	}, []);
 
-	function onDisconnect() {
+	const onDisconnect = useCallback(() => {
 		console.log("client is disconnected");
 		setIsConnected(false);
-	}
-	function onMatchSuccess(room) {
+	}, []);
+
+	const initMatchQueue = useCallback(() => {
+		console.log("Match Queue initialized");
+		setHasInit(true);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	const onMatchSuccess = useCallback((room) => {
 		setSB({ msg: "Found a match!", severity: "success" });
 		setOpenSnackBar(true);
 		socket.emit("join_room", room);
 		setMatch(room);
-	}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 	const onCodeChanged = useCallback((code) => {
 		setCode(code);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	const onChatChanged = (msg) => {
+	const onChatChanged = useCallback((msg) => {
 		setNewMessage(msg);
-	};
-	const onConsoleChanged = (result) => {
+	}, []);
+	const onConsoleChanged = useCallback((result) => {
 		setConsoleResult(result);
-	};
-	const onCodeLanguageChanged = (language) => {
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+	const onCodeLanguageChanged = useCallback((language) => {
 		setLanguage(JSON.parse(language));
-	};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
-	function onMatchQuit() {
+	const onMatchQuit = useCallback(() => {
 		handleOpen();
-	}
+	}, []);
 
-	function onMatchQuitConfirm() {
+	const onMatchQuitConfirm = useCallback(() => {
 		setSB({ msg: "Left the match!", severity: "error" });
 		setOpenSnackBar(true);
 		setMatch(null);
 		handleClose();
 		socket.emit("connection-lost", match, "User has left");
 		navigate("/dashboard");
-	}
-	function onMatchQuitDeny() {
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+	const onMatchQuitDeny = useCallback(() => {
 		let currentMessage = [...message];
 		currentMessage.push({
 			user: "me",
@@ -90,16 +102,20 @@ export default function WebSocket() {
 			data: "refused to leave",
 		});
 		handleClose();
-	}
-	function onConnectionLost(msg) {
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [message, match]);
+
+	const onConnectionLost = useCallback((msg) => {
 		setSB({ msg: msg, severity: "error" });
 		setOpenSnackBar(true);
 		setMatch(null);
-	}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 	useEffect(() => {
 		let update = [...message];
 		update.push(newMessage);
 		setMessage(update);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [newMessage]);
 
 	useEffect(() => {
@@ -114,6 +130,7 @@ export default function WebSocket() {
 		socket.on("chatroom-chat", onChatChanged);
 		socket.on("chatroom-console-result", onConsoleChanged);
 		socket.on("chatroom-code-language", onCodeLanguageChanged);
+		socket.on("initMatchQueue", initMatchQueue);
 
 		return () => {
 			socket.off("connect", onConnect);
@@ -126,9 +143,11 @@ export default function WebSocket() {
 			socket.off("chatroom-chat", onChatChanged);
 			socket.off("chatroom-console-result", onConsoleChanged);
 			socket.off("chatroom-code-language", onCodeLanguageChanged);
-
+			socket.off("initMatchQueue", initMatchQueue);
 			socket.disconnect();
+			setHasInit(false);
 		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 	return (
 		<>

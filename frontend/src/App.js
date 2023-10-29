@@ -58,6 +58,17 @@ function App() {
 							contrastText: grey[900],
 					  }),
 			},
+			editor: {
+				...(mode === "dark"
+					? {
+							main: grey[900],
+							contrastText: "#fff",
+					  }
+					: {
+							main: "#ffff",
+							contrastText: grey[900],
+					  }),
+			},
 			question_easy: {
 				...(mode === "dark"
 					? {

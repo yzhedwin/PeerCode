@@ -47,11 +47,12 @@ class QuestionService():
     }
     """
         )
-        for i in range(0, 3000, 500):
+        
+        for i in range(0, config.leetcode_fetch_limit, 500):
             result = await client.execute_async(
-                query, {"categorySlug": "", "skip": i, "limit": i+500, "filters": {}}
+                query, {"categorySlug": "", "skip": i, "limit": config.leetcode_fetch_limit, "filters": {}}
             )
-            self.producer.produce(config.kafka_topic_question_bank, json.dumps(dict(result)["problemsetQuestionList"]["questions"][i:i+500]))
+            self.producer.produce(config.kafka_topic_question_bank, json.dumps(dict(result)["problemsetQuestionList"]["questions"]))
             self.producer.flush()
 
     async def get_all_questions(self):

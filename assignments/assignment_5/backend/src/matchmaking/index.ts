@@ -1,7 +1,8 @@
 import rabbitmq from '../message-queue/rabbitmq';
 
 // Matchmaking server
-(async () => {
+run();
+async function run() {
   await rabbitmq.initialize();
   //manage chat rooms here
   await rabbitmq.matchMaking('easy', (players) => {
@@ -25,4 +26,4 @@ import rabbitmq from '../message-queue/rabbitmq';
       rabbitmq.setCancelled(true);
     }
   });
-})();
+}

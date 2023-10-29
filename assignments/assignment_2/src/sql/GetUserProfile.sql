@@ -3,5 +3,5 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `GetUserProfile`(
 	)
 BEGIN
 	SELECT * from users 
-    WHERE email = email;
+    WHERE users.email = email;
 END

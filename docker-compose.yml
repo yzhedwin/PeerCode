@@ -82,6 +82,7 @@ services:
       KAFKA_TOPIC_QUESTION_BANK: ${KAFKA_TOPIC_QUESTION_BANK}
       KAFKA_TOPIC_QUESTION_OF_THE_DAY: ${KAFKA_TOPIC_QUESTION_OF_THE_DAY}
       KAFKA_GROUP_LEETCODE_SERVICE: ${KAFKA_GROUP_LEETCODE_SERVICE}
+      LEETCODE_FETCH_LIMIT: ${LEETCODE_FETCH_LIMIT}
     networks:
       - network
   peercode_match_service:
@@ -91,13 +92,16 @@ services:
     build:
       context: ./backend/match_service
       dockerfile: Dockerfile
-    command: node server.js
+    command: bash run.sh
     ports:
       - 5002:5002
     # depends_on:
     environment:
       MATCH_SERVICE_PORT: ${MATCH_SERVICE_PORT}
       REACT_APP_URL: ${REACT_APP_URL}
+      RABBITMQ_URL: ${RABBITMQ_URL}
+      MATCH_TIMEOUT: ${MATCH_TIMEOUT}
+
     networks:
       - network
   peercode_user_service:

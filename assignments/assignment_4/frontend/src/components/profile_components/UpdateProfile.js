@@ -1,19 +1,26 @@
-import React, { useRef, useState } from 'react'
-import { Col, Button, Row, Container, Card, Form, Alert } from 'react-bootstrap';
-import { useAuth } from '../../contexts/AuthContext';
-import { Link } from 'react-router-dom';
+import React, { useRef, useState } from "react";
+import {
+  Col,
+  Button,
+  Row,
+  Container,
+  Card,
+  Form,
+  Alert,
+} from "react-bootstrap";
+import { useAuth } from "../../contexts/AuthContext";
+import { Link } from "react-router-dom";
 
-import Axios from 'axios';
+import Axios from "axios";
 
 export default function UpdateProfile() {
   const displayNameRef = useRef();
   const usernameRef = useRef();
   const proficiencyLevelRef = useRef();
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const { currentUser } = useAuth();
-
 
   const updateUserProfile = (event) => {
     event.preventDefault();
@@ -21,25 +28,24 @@ export default function UpdateProfile() {
       email: currentUser.email,
       displayName: displayNameRef.current.value,
       username: usernameRef.current.value,
-      proficiency: proficiencyLevelRef.current.value
-    }
+      proficiency: proficiencyLevelRef.current.value,
+    };
     Axios.post("http://localhost:3001/update", { user })
-      .then(res => {
+      .then((res) => {
         setLoading(true);
       })
-      .catch(err => {
+      .catch((err) => {
         setError("Error occurred, try again later!");
-        return
-      })
-      if (error === ""){
-        setMessage("Changes updated successfully!");
-      }
-  }
+        return;
+      });
+    if (error === "") {
+      setMessage("Changes updated successfully!");
+    }
+  };
 
   return (
     <>
       <Container>
-
         <Row className="vh-100 d-flex justify-content-center align-items-center">
           <Col md={8} lg={6} xs={12}>
             {error && <Alert variant="danger">{error}</Alert>}
@@ -52,19 +58,33 @@ export default function UpdateProfile() {
                   <p className=" mb-5">Customise your profile here!</p>
 
                   <Form className="mb-3" onSubmit={updateUserProfile}>
-
                     <Form.Group className="mb-3" controlId="formDisplayName">
-                      <Form.Label className="text-center">Display Name</Form.Label>
-                      <Form.Control type="text" ref={displayNameRef} placeholder="Enter your Display Name" />
+                      <Form.Label className="text-center">
+                        Display Name
+                      </Form.Label>
+                      <Form.Control
+                        type="text"
+                        ref={displayNameRef}
+                        placeholder="Enter your Display Name"
+                      />
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formUserName">
                       <Form.Label className="text-center">Username</Form.Label>
-                      <Form.Control type="text" ref={usernameRef} placeholder="Enter your Username" />
+                      <Form.Control
+                        type="text"
+                        ref={usernameRef}
+                        placeholder="Enter your Username"
+                      />
                     </Form.Group>
 
-                    <Form.Group className="mb-3" controlId="formProficiencyLevel">
-                      <Form.Label className="text-center">Proficiency Level</Form.Label>
+                    <Form.Group
+                      className="mb-3"
+                      controlId="formProficiencyLevel"
+                    >
+                      <Form.Label className="text-center">
+                        Proficiency Level
+                      </Form.Label>
                       <Form.Select ref={proficiencyLevelRef}>
                         <option>Expert</option>
                         <option>Intermediate</option>
@@ -73,11 +93,18 @@ export default function UpdateProfile() {
                     </Form.Group>
 
                     <div className="d-grid">
-                      <Button disabled={loading} variant="primary" type="submit">Update Changes</Button>
+                      <Button
+                        disabled={loading}
+                        variant="primary"
+                        type="submit"
+                      >
+                        Update Changes
+                      </Button>
                     </div>
-
                   </Form>
-                  <Link to="/profile" className="btn btn-primary w-100 mt-3">Back</Link>
+                  <Link to="/profile" className="btn btn-primary w-100 mt-3">
+                    Back
+                  </Link>
                 </div>
               </Card.Body>
             </Card>
@@ -85,5 +112,5 @@ export default function UpdateProfile() {
         </Row>
       </Container>
     </>
-  )
+  );
 }

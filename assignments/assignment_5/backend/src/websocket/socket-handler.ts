@@ -4,7 +4,7 @@ import RabbitMQService from '../message-queue/rabbitmq'; // Import the RabbitMQ 
 export function initializeSocketHandlers(io: Server) {
   io.on('connection', (socket: Socket) => {
     console.log(`User connected with socket ID: ${socket.id}`);
-    RabbitMQService.initialize().then(() => {
+    RabbitMQService.initialize().then(async () => {
       //Tell web app that system is ready for matchmaking
       socket.emit('initMatchQueue', 'initialized');
       // Handle user disconnect
@@ -36,26 +36,33 @@ export function initializeSocketHandlers(io: Server) {
       });
 
       // Get matched users here
-      RabbitMQService.consumeMessage('matched', (message, consumer_id) => {
-        if (message) {
-          const data = JSON.parse(message);
-          const room_id =
-            data['difficulty'] +
-            '-' +
-            data['players'][0]['userId'] +
-            '-' +
-            data['players'][1]['userId'];
-          //Emit room_id to both users so users can join room
-          socket.to(data['players'][0]['userId']).emit('matchSuccess', room_id);
-          socket.to(data['players'][1]['userId']).emit('matchSuccess', room_id);
-          RabbitMQService.setConsumerID(consumer_id);
-          RabbitMQService.getChannel()
-            ?.checkQueue('matched')
-            .then((status) => {
-              console.log(data, status);
-            });
+      await RabbitMQService.consumeMessage(
+        'matched',
+        (message, consumer_id) => {
+          if (message) {
+            const data = JSON.parse(message);
+            const room_id =
+              data['difficulty'] +
+              '-' +
+              data['players'][0]['userId'] +
+              '-' +
+              data['players'][1]['userId'];
+            //Emit room_id to both users so users can join room
+            socket
+              .to(data['players'][0]['userId'])
+              .emit('matchSuccess', room_id);
+            socket
+              .to(data['players'][1]['userId'])
+              .emit('matchSuccess', room_id);
+            RabbitMQService.setConsumerID(consumer_id);
+            RabbitMQService.getChannel()
+              ?.checkQueue('matched')
+              .then((status) => {
+                console.log(data, status);
+              });
+          }
         }
-      });
+      );
     });
   });
 }

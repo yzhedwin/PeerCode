@@ -2,7 +2,7 @@ import { useContext, useRef, useState } from "react";
 import { QuestionContext } from "../contexts/QuestionContext";
 import parse from "html-react-parser";
 import Editor from "@monaco-editor/react";
-import { TextField } from "@mui/material";
+import { Box, Modal, TextField, Typography } from "@mui/material";
 import { socket } from "../components/common/WebSocket";
 import { MatchContext } from "../contexts/MatchContext";
 import ChatBox from "../components/common/ChatBox";
@@ -31,7 +31,6 @@ function ProblemPage(props) {
 	const { openSnackBar, setOpenSnackBar, sb, setSB } =
 		useContext(SnackBarContext);
 	const [hide, setHide] = useState(true);
-	const [description, setDescription] = useState(true);
 	const [showConsole, setShowConsole] = useState(type === "solo");
 	const [chatHeight, setChatHeight] = useState(5);
 	const [textInput, setTextInput] = useState("");
