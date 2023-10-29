@@ -41,7 +41,16 @@ function Question() {
   const columnDefs = useMemo(
     () => [
       { headerName: "No.", valueGetter: "node.id" },
-      { field: "title", headerName: "Title" },
+      {
+        field: "slugPair",
+        headerName: "Title",
+        cellRenderer: TitleCellRenderer,
+        cellRendererParams: {
+          clicked: function (field) {
+            cellClickedListener(field);
+          },
+        },
+      },
       {
         headerName: "Tags",
         valueGetter: (params) => {

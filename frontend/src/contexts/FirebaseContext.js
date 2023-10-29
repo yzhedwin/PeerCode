@@ -85,6 +85,7 @@ export function FirebaseProvider({ children }) {
 
   const log_out = async () => {
     await signOut(auth);
+    setCurrentUser(null);
     setIsAdmin(false);
   };
 
