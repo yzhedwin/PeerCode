@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { memo, useCallback, useContext, useRef, useState } from "react";
 import { QuestionContext } from "../contexts/QuestionContext";
 import parse from "html-react-parser";
 import Editor from "@monaco-editor/react";
@@ -38,51 +38,57 @@ function ProblemPage(props) {
 	const editorRef = useRef(null);
 	const monacoRef = useRef(null);
 
-	function handleEditorDidMount(editor, monaco) {
-		editorRef.current = editor;
-		monacoRef.current = monaco;
-		setCode(
-			snippets?.find((snippet) => {
-				return snippet.langSlug === language.raw;
-			})?.code
-		);
-	}
+	const handleEditorDidMount = useCallback(
+		(editor, monaco) => {
+			editorRef.current = editor;
+			monacoRef.current = monaco;
+			setCode(
+				snippets?.find((snippet) => {
+					return snippet.langSlug === language.raw;
+				})?.code
+			);
+		},
+		[snippets, language.raw]
+	);
 
-	const handleCloseSnackBar = (event, reason) => {
+	const handleCloseSnackBar = useCallback((event, reason) => {
 		if (reason === "clickaway") {
 			return;
 		}
 		setOpenSnackBar(false);
-	};
+	}, []);
 
 	// function getCursorPos() {
 	//   console.log(editorRef.current.getPosition()); //get current position useful to show peer where you are currently at
 	// }
-	function onHide() {
+	const onHide = useCallback(() => {
 		setHide(true);
 		setChatHeight(5);
-	}
-	function onShow() {
+	}, []);
+	const onShow = useCallback(() => {
 		setHide(false);
 		setChatHeight(30);
-	}
+	}, []);
 
-	function onSubmitChat(e) {
-		if (e.keyCode === 13) {
-			let currentMessage = [...message];
-			currentMessage.push({
-				user: "me",
-				data: e.target.value,
-			});
-			setMessage(currentMessage);
-			socket.emit("room-message", match, {
-				user: "edwin", //change to username
-				data: e.target.value,
-			});
-			setTextInput("");
-		}
-	}
-	const onRun = async () => {
+	const onSubmitChat = useCallback(
+		(e) => {
+			if (e.keyCode === 13) {
+				let currentMessage = [...message];
+				currentMessage.push({
+					user: "me",
+					data: e.target.value,
+				});
+				setMessage(currentMessage);
+				socket.emit("room-message", match, {
+					user: "edwin", //change to username
+					data: e.target.value,
+				});
+				setTextInput("");
+			}
+		},
+		[message, match]
+	);
+	const onRun = useCallback(async () => {
 		try {
 			const r1 = await axios.post(
 				"http://localhost:5000/api/v1/judge/submission",
@@ -119,32 +125,42 @@ function ProblemPage(props) {
 		} catch (e) {
 			console.log(e.message);
 		}
-	};
+	}, [code, match, question, language.id, type]);
 
-	function handleLanguageChange(event) {
-		setLanguage(JSON.parse(event.target.value));
-		if (type === "coop") {
-			socket.emit("code-language", match, event.target.value);
-		}
-		setCode(
-			snippets?.find((snippet) => {
-				return snippet.langSlug === JSON.parse(event.target.value).raw;
-			})?.code
-		);
-	}
-	function handleCodeChanges(code) {
-		setCode(code);
-		if (type === "coop") {
-			socket.emit("code-changes", match, code);
-		}
-	}
-	function handleLeaveRoom() {
+	const handleLanguageChange = useCallback(
+		(event) => {
+			setLanguage(JSON.parse(event.target.value));
+			if (type === "coop") {
+				socket.emit("code-language", match, event.target.value);
+			}
+			setCode(
+				snippets?.find((snippet) => {
+					return (
+						snippet.langSlug === JSON.parse(event.target.value).raw
+					);
+				})?.code
+			);
+		},
+		[type, match, snippets]
+	);
+
+	const handleCodeChanges = useCallback(
+		(code) => {
+			setCode(code);
+			if (type === "coop") {
+				socket.emit("code-changes", match, code);
+			}
+		},
+		[match, type]
+	);
+
+	const handleLeaveRoom = useCallback(() => {
 		if (type === "coop") {
 			socket.emit("match-quit", match);
 			setSB({ msg: "Requested to quit session...", severity: "success" });
 			setOpenSnackBar(true);
 		}
-	}
+	}, [match, type]);
 
 	return (
 		<>
@@ -257,4 +273,4 @@ function ProblemPage(props) {
 	);
 }
 
-export default ProblemPage;
+export default memo(ProblemPage);

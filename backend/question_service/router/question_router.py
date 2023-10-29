@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from database.mongodb import AsyncIOMotorClient, get_database
 from config import get_config, get_producer
+from typing import Union
 from gql import Client, gql
 from gql.transport.aiohttp import AIOHTTPTransport
 import json
@@ -121,7 +122,7 @@ async def get_official_solution(titleSlug: str):
     return result.get("question").get("solution")
 
 @router.get("/solution/community/list")
-async def get_community_solutions(titleSlug: str, language: str):
+async def get_community_solutions(titleSlug: str, language: Union[str, None] = None):
     transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
     client = Client(transport=transport, fetch_schema_from_transport=False)
     query = gql("""query communitySolutions($questionSlug: String!, $skip: Int!, $first: Int!, $query: String, $orderBy: TopicSortingOption, $languageTags: [String!], $topicTags: [String!]) {
@@ -182,51 +183,14 @@ async def get_community_solutions(titleSlug: str, language: str):
     return result.get("questionSolutions").get("solutions")
 
 @router.get("/solution/community")
-async def get_community_solutions(id: int):
+async def get_community_solution(id: int):
   try:
     transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
     client = Client(transport=transport, fetch_schema_from_transport=False)
     query = gql("""query communitySolution($topicId: Int!) {
   topic(id: $topicId) {
-    id
-    viewCount
-    topLevelCommentCount
-    subscribed
-    title
-    pinned
-    solutionTags {
-      name
-      slug
-    }
-    hideFromTrending
-    commentCount
-    isFavorite
     post {
-      id
-      voteCount
-      voteStatus
       content
-      updationDate
-      creationDate
-      status
-      isHidden
-      author {
-        isDiscussAdmin
-        isDiscussStaff
-        username
-        nameColor
-        activeBadge {
-          displayName
-          icon
-        }
-        profile {
-          userAvatar
-          reputation
-        }
-        isActive
-      }
-      authorIsModerator
-      isOwnPost
     }
   }
 }""")

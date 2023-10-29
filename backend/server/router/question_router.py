@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from config import get_config
 import requests
 from model.judge import Submission
+from typing import Union
 
 router = APIRouter(
     prefix="/api/v1/question",
@@ -45,7 +46,7 @@ async def get_official_solution(titleSlug: str):
         return e
     
 @router.get("/solution/community/list")
-async def get_community_solutions(titleSlug: str, language: str):
+async def get_community_solutions(titleSlug: str, language: Union[str, None] = None):
     try:
         response = requests.get(config.question_service_url + f"/solution/community/list", params={"titleSlug": titleSlug, "language": language})
         return response.json()
@@ -53,7 +54,7 @@ async def get_community_solutions(titleSlug: str, language: str):
         return e
     
 @router.get("/solution/community")
-async def get_community_solutions(id: int):
+async def get_community_solution(id: int):
     try:
         response = requests.get(config.question_service_url + f"/solution/community", params={"id": id})
         return response.json()

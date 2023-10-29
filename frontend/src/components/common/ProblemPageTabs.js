@@ -5,12 +5,13 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { API_GATEWAY, EDITOR_SUPPORTED_LANGUAGES } from "../../utils/constants";
 import axios from "axios";
 import { AgGridReact } from "ag-grid-react"; // the AG Grid React Component
-import SubmissionPopup from "./SubmissionPopup";
+import SubmissionPopup from "./popup/SubmissionPopup";
 import "../../css/problemPage.scss";
+import Solutions from "../solution/Solutions";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -47,16 +48,15 @@ function a11yProps(index) {
 	};
 }
 
-export default function ProblemPageTabs(props) {
+function ProblemPageTabs(props) {
 	const { description, userID, titleSlug } = props;
 	const theme = useTheme();
 	const [value, setValue] = useState(0);
 	const [submission, setSubmission] = useState({});
 	const [openSubmission, setOpenSubmission] = useState(false);
 	const [rowData, setRowData] = useState(); // Set rowData to Array of Objects, one Object per Row
-
 	const gridRef = useRef(); // Optional - for accessing Grid's API
-
+	const [solutions, setSolutions] = useState([]);
 	// Each Column Definition results in one Column.
 	const columnDefs = useMemo(
 		() => [
@@ -99,10 +99,51 @@ export default function ProblemPageTabs(props) {
 		}),
 		[]
 	);
+	const getSolutions = useCallback(async () => {
+		const { data } = await axios.get(
+			`${API_GATEWAY}/api/v1/question/solution/community/list`,
+			{ params: { titleSlug: titleSlug } }
+		);
+		console.log(data);
+		const list = data.map((d) => {
+			const {
+				id,
+				title,
+				commentCount,
+				solutionTags,
+				viewCount,
+				post: {
+					voteCount,
+					creationDate,
+					author: {
+						username,
+						profile: { userAvatar, reputation },
+					},
+				},
+			} = d;
+			return {
+				id,
+				title,
+				commentCount,
+				solutionTags,
+				viewCount,
+				voteCount,
+				username,
+				userAvatar,
+				creationDate,
+				reputation,
+			};
+		});
+		setSolutions(list);
+	}, []);
 
+	useEffect(() => {
+		getSolutions();
+	}, []);
 	const handleChange = useCallback(async (event, newValue) => {
 		setValue(newValue);
 	}, []);
+
 	const onSubmissionReady = useCallback(async (params) => {
 		try {
 			const { data } = await axios.get(
@@ -122,14 +163,6 @@ export default function ProblemPageTabs(props) {
 				};
 			});
 			setRowData(tableData);
-		} catch (e) {
-			console.log(e);
-		}
-	}, []);
-	const onSolutionReady = useCallback(async (params) => {
-		try {
-			//fetch community solutions
-			console.log("");
 		} catch (e) {
 			console.log(e);
 		}
@@ -164,21 +197,7 @@ export default function ProblemPageTabs(props) {
 					{description}
 				</TabPanel>
 				<TabPanel value={value} index={1} dir={theme.direction}>
-					<div
-						className="ag-theme-alpine"
-						style={{ width: "100%", height: "100%" }}
-					>
-						<AgGridReact
-							ref={gridRef} // Ref for accessing Grid's API
-							rowData={rowData} // Row Data for Rows
-							columnDefs={columnDefs} // Column Defs for Columns
-							defaultColDef={defaultColDef} // Default Column Properties
-							animateRows={true} // Optional - set to 'true' to have rows animate when sorted
-							rowSelection="single" // Options - allows click selection of rows
-							// onCellClicked={handleOpenSolution} // Optional - registering for Grid Event
-							onGridReady={onSolutionReady}
-						/>
-					</div>
+					<Solutions list={solutions} />
 				</TabPanel>
 				<TabPanel value={value} index={2} dir={theme.direction}>
 					<div className="submissions-container">
@@ -208,3 +227,4 @@ export default function ProblemPageTabs(props) {
 		</>
 	);
 }
+export default memo(ProblemPageTabs);

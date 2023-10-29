@@ -1,7 +1,7 @@
 import { Box, IconButton, Modal, Typography } from "@mui/material";
 import { Editor } from "@monaco-editor/react";
 import CloseIcon from "@mui/icons-material/Close";
-import { EDITOR_SUPPORTED_LANGUAGES } from "../../utils/constants";
+import { EDITOR_SUPPORTED_LANGUAGES } from "../../../utils/constants";
 import React, { useCallback, useRef } from "react";
 
 function SubmissionPopup(props) {
@@ -21,7 +21,9 @@ function SubmissionPopup(props) {
 						if (key === "finished_at") {
 							const date = new Date(submission[key]);
 							return (
-								<div>{`${key.charAt(0).toUpperCase()}${key.substring(
+								<div>{`${key
+									.charAt(0)
+									.toUpperCase()}${key.substring(
 									1
 								)}: ${date.getFullYear()}/${
 									date.getMonth() + 1
@@ -38,7 +40,9 @@ function SubmissionPopup(props) {
 							);
 						}
 						return (
-							<div>{`${key.charAt(0).toUpperCase()}${key.substring(1)}: ${
+							<div>{`${key
+								.charAt(0)
+								.toUpperCase()}${key.substring(1)}: ${
 								submission[key]
 							}`}</div>
 						);
