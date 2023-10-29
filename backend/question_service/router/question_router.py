@@ -43,8 +43,8 @@ async def get_question_by_title(title, db: AsyncIOMotorClient = Depends(get_data
         return response
     raise HTTPException(404, f"There is no question with the name {title}")
 
-@router.get("/problem/{titleSlug}")
-async def get_question_problem(titleSlug):
+@router.get("/problem")
+async def get_question_problem(titleSlug: str):
     transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
     client = Client(transport=transport, fetch_schema_from_transport=False)
     query = gql("""
@@ -60,6 +60,116 @@ async def get_question_problem(titleSlug):
     if result.get("question") is None:
         return "Question not found"
     return result.get("question").get("content")
+
+@router.get("/problem/solution/official")
+async def get_problem_official_solution(titleSlug: str):
+    transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+    query = gql("""query officialSolution($titleSlug: String!) {
+  question(titleSlug: $titleSlug) {
+    solution {
+      id
+      title
+      content
+      contentTypeId
+      paidOnly
+      hasVideoSolution
+      paidOnlyVideo
+      canSeeDetail
+      rating {
+        count
+        average
+        userRating {
+          score
+        }
+      }
+      topic {
+        id
+        commentCount
+        topLevelCommentCount
+        viewCount
+        subscribed
+        solutionTags {
+          name
+          slug
+        }
+        post {
+          id
+          status
+          creationDate
+          author {
+            username
+            isActive
+            profile {
+              userAvatar
+              reputation
+            }
+          }
+        }
+      }
+    }
+  }
+}""")
+    result = await client.execute_async(
+        query, {"titleSlug":  titleSlug}
+    )
+    if result.get("question") is None:
+        return "Question not found"
+    if result.get("question").get("submission") is None:
+        return "Solution does not exist"
+    return result.get("question").get("solution").get("content")
+
+
+@router.get("/problem/exampleTestCase")
+async def get_problem_testcase(titleSlug: str):
+    transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+    query = gql("""query consolePanelConfig($titleSlug: String!) {
+  question(titleSlug: $titleSlug) {
+    questionId
+    questionFrontendId
+    questionTitle
+    enableDebugger
+    enableRunCode
+    enableSubmit
+    enableTestMode
+    exampleTestcaseList
+    metaData
+  }
+}
+                   """)
+    result = await client.execute_async(
+        query, {"titleSlug":  titleSlug}
+    )
+    if result.get("question") is None:
+        return "Question not found"
+    return result.get("question").get("exampleTestcaseList")
+    
+@router.get("/problem/codeSnippets")
+async def get_problem_code_snippets(titleSlug: str) -> list:
+    transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
+    client = Client(transport=transport, fetch_schema_from_transport=False)
+    query = gql("""  query questionEditorData($titleSlug: String!) {
+  question(titleSlug: $titleSlug) {
+    questionId
+    questionFrontendId
+    codeSnippets {
+      lang
+      langSlug
+      code
+    }
+    envInfo
+    enableRunCode
+  }
+}
+                   """)
+    result = await client.execute_async(
+        query, {"titleSlug":  titleSlug}
+    )
+    if result.get("question") is None:
+        return "Question not found"
+    return result.get("question").get("codeSnippets")
+
 
 @router.delete("/title/{title}")
 async def delete_question(title, db: AsyncIOMotorClient = Depends(get_database)):
