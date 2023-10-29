@@ -46,6 +46,7 @@ async def get_question_by_title(titleSlug, db: AsyncIOMotorClient = Depends(get_
         return response
     raise HTTPException(404, f"There is no question with the name {titleSlug}")
 
+
 @router.get("/problem/{titleSlug}")
 async def get_question_problem(titleSlug,  db: AsyncIOMotorClient = Depends(get_database)):
     response = await fetch_one_question(db, titleSlug)
@@ -59,19 +60,22 @@ async def add_question_to_db(question: Question, db: AsyncIOMotorClient = Depend
     response = await create_question(db, question.dict())
     return response
 
+
 @router.post("/update/{titleSlug}")
 async def update_question(titleSlug, question: Question, db: AsyncIOMotorClient = Depends(get_database)):
     result = await fetch_one_question(db, titleSlug)
     if not result:
-        raise HTTPException(400, f"Question with titleSlug {titleSlug} does not exist")
+        raise HTTPException(
+            400, f"Question with titleSlug {titleSlug} does not exist")
     print(question)
-    response = await update_one_question(db, question.dict(), titleSlug)    
+    response = await update_one_question(db, question.dict(), titleSlug)
     if response:
         return "Successfully updated question"
 
-@router.delete("/title/{title}")
-async def delete_question(title, db: AsyncIOMotorClient = Depends(get_database)):
-    question = await fetch_one_question(db, title)
+
+@router.delete("/title/{titleSlug}")
+async def delete_question(titleSlug, db: AsyncIOMotorClient = Depends(get_database)):
+    question = await fetch_one_question(db, titleSlug)
     if not question:
         raise HTTPException(400, f"Question {titleSlug} does not exist")
     response = await delete_one_question(db, titleSlug)
@@ -90,9 +94,11 @@ async def delete_questions(db: AsyncIOMotorClient = Depends(get_database)):
 @router.post("/leetcode")
 async def add_questions_from_leetcode():
     producer = get_producer()
-    producer.produce(config.kafka_topic_question_service, json.dumps("GET QUESTIONS FROM LEETCODE"))
+    producer.produce(config.kafka_topic_question_service,
+                     json.dumps("GET QUESTIONS FROM LEETCODE"))
     producer.flush()
     return "Successfully added questions from Leetcode"
+
 
 @router.post("")
 async def add_one_question(question: Question, db: AsyncIOMotorClient = Depends(get_database)):
@@ -133,8 +139,8 @@ async def get_question_of_the_day():
   }
 }""")
     r1 = await client.execute_async(
-            query
-        )
+        query
+    )
     query = gql("""query questionContent($titleSlug: String!) {
     question(titleSlug: $titleSlug) {
         content
@@ -145,27 +151,31 @@ async def get_question_of_the_day():
         query, {"titleSlug":  r1["activeDailyCodingChallengeQuestion"]["question"]["titleSlug"]})
     r1["activeDailyCodingChallengeQuestion"]["question"]["problem"] = r2["question"]["content"]
     return Question(**r1["activeDailyCodingChallengeQuestion"]["question"])
-   
+
 
 @router.get("/history/user/question")
-async def get_submissions_from_question(userID:str, titleSlug:str, db: AsyncIOMotorClient = Depends(get_database)):
+async def get_submissions_from_question(userID: str, titleSlug: str, db: AsyncIOMotorClient = Depends(get_database)):
     response = await get_all_submission_from_question(db, userID, titleSlug)
     return response
 
+
 @router.get("/history/user")
-async def get_submissions_from_question(userID:str, db: AsyncIOMotorClient = Depends(get_database)):
+async def get_submissions_from_question(userID: str, db: AsyncIOMotorClient = Depends(get_database)):
     response = await get_all_submission_from_user(db, userID)
     return response
+
 
 @router.get("/history")
 async def get_submissions(db: AsyncIOMotorClient = Depends(get_database)):
     response = await get_all_submission(db)
     return response
 
+
 @router.post("/history")
 async def add_submission_to_db(submission: Submission, db: AsyncIOMotorClient = Depends(get_database)):
     response = await add_one_submission(db, submission.dict())
     return response
+
 
 @router.delete("/history")
 async def delete_all_submissions_from_db(db: AsyncIOMotorClient = Depends(get_database)):

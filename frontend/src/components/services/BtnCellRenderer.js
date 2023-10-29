@@ -1,4 +1,6 @@
 import React from "react";
+import { Button } from "react-bootstrap";
+import { Pencil, Trash } from "react-bootstrap-icons";
 
 export class BtnCellRenderer extends React.Component {
   constructor(props) {
@@ -15,8 +17,12 @@ export class BtnCellRenderer extends React.Component {
   render() {
     return (
       <div>
-        <button onClick={this.btnClickedEditHandler}>Edit Question</button>
-        <button onClick={this.btnClickedDeleteHandler}>Delete Question</button>
+        <button className="action-btn" onClick={this.btnClickedEditHandler}>
+          <Pencil size={25}></Pencil>
+        </button>
+        <button className="action-btn" onClick={this.btnClickedDeleteHandler}>
+          <Trash size={25}></Trash>
+        </button>
       </div>
     );
   }

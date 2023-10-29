@@ -5,6 +5,7 @@ import { QuestionContext } from "../../contexts/QuestionContext";
 import { useNavigate } from "react-router-dom";
 
 import { SnackBarContext } from "../../contexts/SnackBarContext";
+import { FirebaseContext } from "../../contexts/FirebaseContext";
 import { TitleCellRenderer } from "./TitleCellRenderer";
 import { BtnCellRenderer } from "./BtnCellRenderer";
 
@@ -14,6 +15,7 @@ function Question() {
   const navigate = useNavigate();
   const { setQuestion } = useContext(QuestionContext);
   const { setSB, setOpenSnackBar } = useContext(SnackBarContext);
+  const { isAdmin } = useContext(FirebaseContext);
   const gridRef = useRef(); // Optional - for accessing Grid's API
   const [rowData, setRowData] = useState(); // Set rowData to Array of Objects, one Object per Row
   // Each Column Definition results in one Column.
@@ -64,6 +66,7 @@ function Question() {
       {
         field: "titleSlug",
         headerName: "Actions",
+        hide: !isAdmin,
         cellRenderer: BtnCellRenderer,
         cellRendererParams: {
           clicked: function (event) {
@@ -89,7 +92,7 @@ function Question() {
         },
       },
     ],
-    [rowData]
+    [rowData, isAdmin]
   );
 
   // DefaultColDef sets props common to all Columns
@@ -155,7 +158,7 @@ function Question() {
             <Modal.Title>Delete Question</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Are you sure you want to delete this question {titleSlug}?
+            Are you sure you want to delete this question?
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>

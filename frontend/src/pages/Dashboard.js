@@ -50,9 +50,7 @@ export default function Dashboard() {
         </div>
         <Question />
       </div>
-      <div>{JSON.stringify(currentUser.uid)}</div>
-      <div>{JSON.stringify(isAdmin)}</div>
-      <div>{JSON.stringify(currentName)}</div>
+      <br></br>
     </>
   );
 }
