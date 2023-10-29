@@ -78,6 +78,13 @@ Runs the user profile backend service, to allow CRUD of user profiles in the pla
 
 ### Management of Elevated Priorities
 
+- For normal registered users, they would not have the ability to add, update and delete questions from the question repository. However, they would be able to view the questions in the repository.
+![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/1961d64a-a276-4c4b-a653-f193237253d4)
+
+- For admins (users with elevated priorities), they would have the ability to add, update and delete questions.
+![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/633a3131-ebdc-44d8-bb9f-006decc9a192)
+- The priority can be assigned within Firebase itself, by setting the user's 'role' parameter to true. The users can be identified by Firebase's auto-assigned UUID.
+![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/70eea334-bece-4c47-8dfd-ae348a42da76)
 
 
 ## Requirements Fulfilled
