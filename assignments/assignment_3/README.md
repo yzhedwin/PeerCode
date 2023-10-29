@@ -6,8 +6,8 @@ The following objectives are achieved:
 - Full authentication capabilities with email and password (unique email).
 - Users are able to create an account, login, logout, reset password, powered by Firebase's authentication and authorisation service.
 - Certain users have elevated administrative roles (maintainers) who has privileges to update and delete questions in the question repository.
-- Registered users are allowed to read questions from the question repository, but not add, update and delete.
-- Unauthenticated and unauthorised users (those that who do not have an account) cannot access the question repository completely.
+- Registered users are allowed to read questions from the question repository, but not add, update, or delete.
+- Unauthenticated and unauthorised users (those who do not have an account) cannot access the question repository completely.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -17,15 +17,15 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 After cloning the project in your personal device, navigate the directory to ay2324s1-course-assessment-g33/assignments/assignment_3 using `cd` commands in the terminal.
 
-Within the project directory, create an environment file (.env.local). You can request for the environment file containing our API secrets from our group over email, at woobt123@gmail.com.
-This allows you to access mongoDB, Firebase, and AWS RDS servers.
+Within the project directory, create an environment file (.env.local). You can request the environment file containing our API secrets from our group over email, at woobt123@gmail.com.
+This allows you to access MongoDB, Firebase, and AWS RDS servers.
 
 In the project directory, you can run:
 
 ### `npm i`
 
 This installs the necessary node module packages key to running the assignment.
-Please ensure that your node version is set to version 16, with npm version set to version 8.
+Please ensure that your node version is set to version 16, with the npm version set to version 8.
 
 ### `npm start`
 
@@ -72,16 +72,16 @@ Runs the user profile backend service, to allow CRUD of user profiles in the pla
 - Click the link provided in the email to reset your password.
 ![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/5accf894-f59b-4456-8b17-179cc67d6e67)
 
-- To verify for authorisation, you can enter <i>http://localhost:3000/profile</i>. If you are not authorised, you will be see the following page.
+- To verify for authorisation, you can enter <i>http://localhost:3000/profile</i>. If you are not authorised, you will see the following page.
 ![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/d8a8117d-3683-433d-bc9c-3896e415e814)
 
 
 ### Management of Elevated Priorities
 
-- For normal registered users, they would not have the ability to add, update and delete questions from the question repository. However, they would be able to view the questions in the repository.
+- Normal registered users would not have the ability to add, update, and delete questions from the question repository. However, they would be able to view the questions in the repository.
 ![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/1961d64a-a276-4c4b-a653-f193237253d4)
 
-- For admins (users with elevated priorities), they would have the ability to add, update and delete questions.
+- Admins (users with elevated priorities) would have the ability to add, update, and delete questions.
 ![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/633a3131-ebdc-44d8-bb9f-006decc9a192)
 - The priority can be assigned within Firebase itself, by setting the user's 'role' parameter to true. The users can be identified by Firebase's auto-assigned UUID.
 ![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/70eea334-bece-4c47-8dfd-ae348a42da76)
