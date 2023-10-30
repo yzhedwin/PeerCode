@@ -9,20 +9,18 @@ import {
 import { QuestionContext } from "../contexts/QuestionContext";
 import parse from "html-react-parser";
 import Editor from "@monaco-editor/react";
-import { TextField } from "@mui/material";
 import { socket } from "../components/common/WebSocket";
 import { MatchContext } from "../contexts/MatchContext";
-import ChatBox from "../components/common/ChatBox";
 import { ProblemContext } from "../contexts/ProblemContext";
 import axios from "axios";
 import SelectLanguage from "../components/common/SelectLanguage";
-import Console from "../components/common/Console";
 import ConsoleButton from "../components/common/ConsoleButton";
 import ProblemPageTabs from "../components/common/ProblemPageTabs";
 import SnackBar from "../components/common/SnackBar";
 import { SnackBarContext } from "../contexts/SnackBarContext";
 import ConsoleTabs from "../components/common/ConsoleTabs";
-
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 function ProblemPage(props) {
 	const { type } = props;
 	const { question } = useContext(QuestionContext);
@@ -42,6 +40,7 @@ function ProblemPage(props) {
 	const [hide, setHide] = useState(true);
 	const [textInput, setTextInput] = useState("");
 	const [chatHeight, setChatHeight] = useState(5);
+	const [testCase, setTestCase] = useState([]);
 	const editorRef = useRef(null);
 	const monacoRef = useRef(null);
 
@@ -169,9 +168,17 @@ function ProblemPage(props) {
 		}
 	}, [match, type]);
 
+	const getTestCase = async () => {
+		const { data } = await axios.get(
+			`http://localhost:5000/api/v1/question/exampletestcase`,
+			{ params: { titleSlug: question?.titleSlug } }
+		);
+		setTestCase(data);
+	};
 	useEffect(() => {
 		console.log("problem page");
 		//get Test case here once
+		getTestCase();
 	}, []);
 
 	return (
@@ -229,6 +236,7 @@ function ProblemPage(props) {
 								setTextInput={setTextInput}
 								textInput={textInput}
 								chatDisabled={type !== "coop"}
+								testCase={testCase}
 							/>
 						</div>
 					)}
@@ -236,13 +244,15 @@ function ProblemPage(props) {
 						{hide ? (
 							<ConsoleButton
 								onClick={onShow}
-								title={"Show"}
+								icon={<KeyboardArrowUpIcon />}
+								title={"Console"}
 								sx={{ marginInline: 1 }}
 							/>
 						) : (
 							<ConsoleButton
+								icon={<KeyboardArrowDownIcon />}
 								onClick={onHide}
-								title={"Hide"}
+								title={"Console"}
 								sx={{ marginInline: 1 }}
 							/>
 						)}

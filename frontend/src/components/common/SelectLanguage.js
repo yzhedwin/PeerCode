@@ -28,6 +28,7 @@ export default function SelectLanguage(props) {
 				onChange={handleChange}
 				MenuProps={MenuProps}
 				displayEmpty
+				title="Select Editor Language"
 			>
 				{EDITOR_SUPPORTED_LANGUAGES.map((language) => {
 					return (

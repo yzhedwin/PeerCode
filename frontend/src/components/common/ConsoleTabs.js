@@ -38,7 +38,8 @@ function a11yProps(index) {
 	};
 }
 function ConsoleTabs(props) {
-	const { onSubmitChat, textInput, setTextInput, chatDisabled } = props;
+	const { onSubmitChat, textInput, setTextInput, chatDisabled, testCase } =
+		props;
 	const [value, setValue] = useState(0);
 	const handleChange = useCallback(async (event, newValue) => {
 		setValue(newValue);
@@ -74,7 +75,7 @@ function ConsoleTabs(props) {
 				</Tabs>
 			</AppBar>
 			<TabPanel value={value} index={0} dir={theme.direction}>
-				<Testcase />
+				<Testcase testCase={testCase} />
 			</TabPanel>
 			<TabPanel value={value} index={1} dir={theme.direction}>
 				<Console />
