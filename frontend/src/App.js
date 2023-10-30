@@ -20,6 +20,7 @@ import store from "./store";
 import ProtectedRoute from "./components/routing/ProtectedRoutes";
 import SignUp from "./pages/SignUp";
 import { ProblemProvider } from "./contexts/ProblemContext";
+import { useBeforeRender } from "./utils/helper";
 
 function App() {
 	const { mode } = useContext(ModeContext);
@@ -131,7 +132,22 @@ function App() {
 			},
 		},
 	});
-
+	useBeforeRender(() => {
+		window.addEventListener("error", (e) => {
+			if (e) {
+				const resizeObserverErrDiv = document.getElementById(
+					"webpack-dev-server-client-overlay-div"
+				);
+				const resizeObserverErr = document.getElementById(
+					"webpack-dev-server-client-overlay"
+				);
+				if (resizeObserverErr)
+					resizeObserverErr.className = "hide-resize-observer";
+				if (resizeObserverErrDiv)
+					resizeObserverErrDiv.className = "hide-resize-observer";
+			}
+		});
+	}, []);
 	return (
 		<Provider store={store}>
 			<Router>
@@ -144,22 +160,47 @@ function App() {
 									<Header />
 									<Routes>
 										{/* <Route element={<ProtectedRoute />}> */}
-										<Route exact path="/dashboard" element={<Dashboard />} />
+										<Route
+											exact
+											path="/dashboard"
+											element={<Dashboard />}
+										/>
 										<Route
 											exact
 											path="/problem"
-											element={<ProblemPage type={"solo"} />}
+											element={
+												<ProblemPage type={"solo"} />
+											}
 										/>
 										<Route
 											exact
 											path="/match"
-											element={<ProblemPage type={"coop"} />}
+											element={
+												<ProblemPage type={"coop"} />
+											}
 										/>
-										<Route exact path="/profile" element={<Profile />} />
+										<Route
+											exact
+											path="/profile"
+											element={<Profile />}
+										/>
 										{/* </Route> */}
-										<Route exact path="/" element={<Login />} />
-										<Route exact path="/signup" element={<SignUp />} />
-										<Route path="*" element={<Navigate to="/" replace />} />
+										<Route
+											exact
+											path="/"
+											element={<Login />}
+										/>
+										<Route
+											exact
+											path="/signup"
+											element={<SignUp />}
+										/>
+										<Route
+											path="*"
+											element={
+												<Navigate to="/" replace />
+											}
+										/>
 									</Routes>
 								</ProblemProvider>
 							</MatchProvider>

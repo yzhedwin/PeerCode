@@ -1,4 +1,11 @@
-import { memo, useCallback, useContext, useRef, useState } from "react";
+import {
+	memo,
+	useCallback,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { QuestionContext } from "../contexts/QuestionContext";
 import parse from "html-react-parser";
 import Editor from "@monaco-editor/react";
@@ -14,6 +21,7 @@ import ConsoleButton from "../components/common/ConsoleButton";
 import ProblemPageTabs from "../components/common/ProblemPageTabs";
 import SnackBar from "../components/common/SnackBar";
 import { SnackBarContext } from "../contexts/SnackBarContext";
+import ConsoleTabs from "../components/common/ConsoleTabs";
 
 function ProblemPage(props) {
 	const { type } = props;
@@ -32,9 +40,8 @@ function ProblemPage(props) {
 	const { openSnackBar, setOpenSnackBar, sb, setSB } =
 		useContext(SnackBarContext);
 	const [hide, setHide] = useState(true);
-	const [showConsole, setShowConsole] = useState(type === "solo");
-	const [chatHeight, setChatHeight] = useState(5);
 	const [textInput, setTextInput] = useState("");
+	const [chatHeight, setChatHeight] = useState(5);
 	const editorRef = useRef(null);
 	const monacoRef = useRef(null);
 
@@ -162,6 +169,11 @@ function ProblemPage(props) {
 		}
 	}, [match, type]);
 
+	useEffect(() => {
+		console.log("problem page");
+		//get Test case here once
+	}, []);
+
 	return (
 		<>
 			<SnackBar
@@ -178,7 +190,14 @@ function ProblemPage(props) {
 						description={parse(question["problem"])}
 					/>
 				</div>
+
 				<div className="editor-container">
+					<div>
+						<SelectLanguage
+							language={language}
+							handleChange={handleLanguageChange}
+						/>
+					</div>
 					<div
 						className="editor-component"
 						style={{ height: `${100 - chatHeight}%` }}
@@ -199,73 +218,42 @@ function ProblemPage(props) {
 							}}
 						/>
 					</div>
-					<div
-						className="console-and-chat-container"
-						style={{ height: `${chatHeight}%` }}
-					>
-						{hide && (
-							<ConsoleButton onClick={onShow} title={"Show"} />
-						)}
-						{!hide && (
-							<>
-								<div className="console-options">
-									<ConsoleButton
-										onClick={onHide}
-										title={"Hide"}
-										sx={{ marginInline: 1 }}
-									/>
 
-									{!showConsole ? (
-										<ConsoleButton
-											onClick={setShowConsole}
-											title={"Console"}
-										/>
-									) : (
-										<ConsoleButton
-											onClick={() =>
-												setShowConsole(false)
-											}
-											title={"Chat"}
-											disabled={type === "solo"}
-										/>
-									)}
-									<SelectLanguage
-										language={language}
-										handleChange={handleLanguageChange}
-									/>
-									<ConsoleButton
-										title={"Leave"}
-										onClick={handleLeaveRoom}
-										sx={{ marginLeft: "auto", mr: 1 }}
-									/>
-								</div>
-								{showConsole ? (
-									<Console onRun={onRun} />
-								) : (
-									<div className="chat-message-container">
-										<div className="chat-message">
-											<ChatBox />
-										</div>
-										<div className="chat-input">
-											<TextField
-												style={{
-													backgroundColor: "#cccccc",
-												}}
-												fullWidth
-												size="small"
-												onKeyDown={onSubmitChat}
-												onChange={(e) => {
-													setTextInput(
-														e.target.value
-													);
-												}}
-												value={textInput}
-											/>
-										</div>
-									</div>
-								)}
-							</>
+					{!hide && (
+						<div
+							className="console-tabs-container"
+							style={{ height: `${chatHeight}%` }}
+						>
+							<ConsoleTabs
+								onSubmitChat={onSubmitChat}
+								setTextInput={setTextInput}
+								textInput={textInput}
+								chatDisabled={type !== "coop"}
+							/>
+						</div>
+					)}
+					<div className="console-options">
+						{hide ? (
+							<ConsoleButton
+								onClick={onShow}
+								title={"Show"}
+								sx={{ marginInline: 1 }}
+							/>
+						) : (
+							<ConsoleButton
+								onClick={onHide}
+								title={"Hide"}
+								sx={{ marginInline: 1 }}
+							/>
 						)}
+						{type === "coop" && (
+							<ConsoleButton
+								title={"Leave"}
+								onClick={handleLeaveRoom}
+								sx={{ marginLeft: "auto", mr: 1 }}
+							/>
+						)}
+						<ConsoleButton onClick={onRun} title={"Run"} />
 					</div>
 				</div>
 			</div>

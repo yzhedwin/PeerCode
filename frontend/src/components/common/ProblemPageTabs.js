@@ -19,7 +19,7 @@ function TabPanel(props) {
 		<div
 			role="tabpanel"
 			hidden={value !== index}
-			id={`full-width-tabpanel-${index}`}
+			id={`problempage-full-width-tabpanel-${index}`}
 			aria-labelledby={`full-width-tab-${index}`}
 			style={{ height: "100%" }}
 			{...other}
@@ -43,7 +43,7 @@ TabPanel.propTypes = {
 
 function a11yProps(index) {
 	return {
-		id: `full-width-tab-${index}`,
+		id: `problempage-full-width-tab-${index}`,
 		"aria-controls": `full-width-tabpanel-${index}`,
 	};
 }

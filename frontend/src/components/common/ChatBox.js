@@ -16,7 +16,7 @@ function ChatBox() {
 		});
 	}, [message]);
 
-	return <>{getMessages()}</>;
+	return <div className="chat-message">{getMessages()}</div>;
 }
 
 export default ChatBox;

@@ -12,18 +12,18 @@
 	overflow: scroll;
 }
 .editor-container {
-	flex: 1;
-	height: 100%;
-	overflow: hidden;
 	display: flex;
+	flex: 1;
+	overflow: hidden;
 	flex-direction: column;
 }
 .editor-component {
+	display: flex;
 	flex: 1;
 }
-.console-and-chat-container {
+.console-tabs-container {
 	transition-property: height;
-	transition-duration: 0.5s;
+	transition-duration: 0.2s;
 	transition-timing-function: linear;
 	display: flex;
 	flex-direction: column;
@@ -46,9 +46,11 @@
 	display: flex;
 	flex-direction: row;
 	align-items: center;
+	justify-content: space-between;
+	margin-top: 5px;
 }
 .console-message {
-	flex: 1;
+	height: 100%;
 	border: black solid 1px;
 	overflow-y: scroll;
 }
@@ -71,4 +73,8 @@
 	--ag-range-selection-border-color: none;
 	--ag-range-selection-border-style: none;
 	--ag-odd-row-background-color: #333333;
+}
+.MuiTabs-root {
+	min-height: 0 !important;
+	align-items: center;
 }
