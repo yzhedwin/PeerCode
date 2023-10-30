@@ -4,6 +4,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { marked } from "marked";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { Chip } from "@mui/material";
 
 function SolutionCode(props) {
 	const { snippetsIndex, description } = props;
@@ -11,6 +12,7 @@ function SolutionCode(props) {
 	let ref = useRef([]);
 	let solutions = [];
 	let solutionIndex = 0;
+
 	solutions[solutionIndex] = [];
 	snippetsIndex.forEach((_, index) => {
 		let snippet = description
@@ -36,6 +38,7 @@ function SolutionCode(props) {
 			solutions[solutionIndex].push(snippet);
 		}
 	});
+	// Get all headers: Solution 1, Solution 2 etc
 	const titles = solutions.map((solution) => {
 		if (typeof solution[0] === "string" && solution[0].startsWith("#")) {
 			const header = solution[0];
@@ -44,7 +47,8 @@ function SolutionCode(props) {
 		}
 	});
 
-	//TODO: let user select which language instead of cycling
+	//TODO: let user select which language instead of cycle
+	// Get code snippets
 	const codes = solutions.map((solution, index) => {
 		ref.current.push(0);
 		return (
@@ -58,10 +62,13 @@ function SolutionCode(props) {
 							ref.current[index] += 1;
 						}
 						setRefresh((prevState) => prevState * -1);
-						console.log(ref.current[index]);
 					}}
 				>
-					{solution[ref.current[index]].language.name}
+					<Chip
+						label={solution[ref.current[index]].language.name}
+						size="small"
+						sx={{ ml: 1, color: "black" }}
+					/>
 				</div>
 				<SyntaxHighlighter
 					style={vscDarkPlus}
