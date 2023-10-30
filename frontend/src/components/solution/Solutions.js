@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useCallback, useState } from "react";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { Divider } from "@mui/material";
@@ -7,7 +7,7 @@ import SolutionPopup from "../common/popup/SolutionPopup";
 import axios from "axios";
 import { API_GATEWAY } from "../../utils/constants";
 
-export default function Solutions(props) {
+function Solutions(props) {
 	const { list } = props;
 	const [open, setOpen] = useState(false);
 	const [solution, setSolution] = useState({
@@ -21,7 +21,7 @@ export default function Solutions(props) {
 		reputation: "",
 		solutionTags: [],
 	});
-	const handleOpen = async (item) => {
+	const handleOpen = useCallback(async (item) => {
 		try {
 			const { data } = await axios.get(
 				`${API_GATEWAY}/api/v1/question/solution/community`,
@@ -42,8 +42,8 @@ export default function Solutions(props) {
 		} catch (e) {
 			console.log(e);
 		}
-	};
-	const handleClose = () => setOpen(false);
+	}, []);
+	const handleClose = useCallback(() => setOpen(false), []);
 
 	return (
 		<Box sx={{ width: "100%" }}>
@@ -63,3 +63,4 @@ export default function Solutions(props) {
 		</Box>
 	);
 }
+export default memo(Solutions);

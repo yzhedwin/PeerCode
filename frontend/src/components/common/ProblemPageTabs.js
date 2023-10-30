@@ -104,7 +104,6 @@ function ProblemPageTabs(props) {
 			`${API_GATEWAY}/api/v1/question/solution/community/list`,
 			{ params: { titleSlug: titleSlug } }
 		);
-		console.log(data);
 		const list = data.map((d) => {
 			const {
 				id,

@@ -3,11 +3,20 @@ import CloseIcon from "@mui/icons-material/Close";
 import { memo } from "react";
 import { marked } from "marked";
 import HTMLReactParser from "html-react-parser";
+import SolutionCode from "../../solution/SolutionCode";
+import SolutionItem from "../../solution/SolutionItem";
 
 function SolutionPopup(props) {
 	const { open, handleClose, solution } = props;
-	const html = marked.parse(solution?.content);
-
+	const description = solution.content.replaceAll("\\n", "\n");
+	const introduction = description.split("```")[0];
+	let snippetsIndex = [];
+	for (let i = 0; i < description.length; i++) {
+		if (description.substring(i, i + 3) === "```") {
+			snippetsIndex.push(i);
+			i += 2;
+		}
+	}
 	return (
 		<Modal
 			open={open}
@@ -23,7 +32,6 @@ function SolutionPopup(props) {
 					transform: "translate(-50%, -50%)",
 					width: "70%",
 					height: "70%",
-					bgcolor: "background.paper",
 					border: "2px solid #000",
 					boxShadow: 24,
 					p: 4,
@@ -39,7 +47,6 @@ function SolutionPopup(props) {
 						color: "secondary.contrastText",
 					}}
 				>
-					<div>{solution?.user}'s Solution</div>
 					<IconButton
 						style={{
 							position: "absolute",
@@ -57,6 +64,7 @@ function SolutionPopup(props) {
 						flexDirection: "column",
 						backgroundColor: "primary.main",
 						height: "100%",
+						borderRadius: 5,
 					}}
 				>
 					<Box
@@ -65,7 +73,29 @@ function SolutionPopup(props) {
 							overflow: "scroll",
 						}}
 					>
-						{HTMLReactParser(html.replace(/\\n/g, "<br>"))}
+						<div>
+							<SolutionItem item={solution} />
+						</div>
+						<div style={{ padding: "10px" }}>
+							{HTMLReactParser(marked.parse(introduction))}
+						</div>
+						<div style={{ padding: "10px" }}>
+							<SolutionCode
+								snippetsIndex={snippetsIndex}
+								description={description}
+							/>
+						</div>
+						<div style={{ padding: "10px" }}>
+							{HTMLReactParser(
+								marked.parse(
+									description
+										.split("```")
+										[
+											description.split("```").length - 1
+										].replaceAll("\\n", "\n")
+								)
+							)}
+						</div>
 					</Box>
 				</Box>
 			</Box>
