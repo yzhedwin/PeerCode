@@ -38,9 +38,9 @@ function Match() {
 	const getRandomEasyQuestion = async () => {
 		try {
 			const { data } = await axios.get(
-				`http://localhost:5000/api/v1/question/problem/3Sum`
+				`http://localhost:5000/api/v1/question/problem/two-sum`
 			);
-			setQuestion({ titleSlug: "3Sum", problem: data });
+			setQuestion({ titleSlug: "two-sum", problem: data });
 			navigate("/match");
 		} catch (e) {
 			setSB({ msg: e.message, severity: "error" });
