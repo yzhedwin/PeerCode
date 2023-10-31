@@ -13,7 +13,7 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function SolutionItem(props) {
 	const { item, handleOpen } = props;
 	return (
-		<Item onClick={() => handleOpen(item)}>
+		<Item onClick={() => handleOpen && handleOpen(item)}>
 			<div className="solution-item-container-1">
 				<img
 					alt="user-avatar"

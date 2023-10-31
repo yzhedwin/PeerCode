@@ -26,9 +26,7 @@ function TabPanel(props) {
 		>
 			{value === index && (
 				<Box sx={{ height: "100%" }}>
-					<Typography style={{ height: "100%" }}>
-						{children}
-					</Typography>
+					<Typography style={{ height: "100%" }}>{children}</Typography>
 				</Box>
 			)}
 		</div>
@@ -100,40 +98,44 @@ function ProblemPageTabs(props) {
 		[]
 	);
 	const getSolutions = useCallback(async () => {
-		const { data } = await axios.get(
-			`${API_GATEWAY}/api/v1/question/solution/community/list`,
-			{ params: { titleSlug: titleSlug } }
-		);
-		const list = data.map((d) => {
-			const {
-				id,
-				title,
-				commentCount,
-				solutionTags,
-				viewCount,
-				post: {
-					voteCount,
-					creationDate,
-					author: {
-						username,
-						profile: { userAvatar, reputation },
+		try {
+			const { data } = await axios.get(
+				`${API_GATEWAY}/api/v1/question/solution/community/list`,
+				{ params: { titleSlug: titleSlug } }
+			);
+			const list = data?.map((d) => {
+				const {
+					id,
+					title,
+					commentCount,
+					solutionTags,
+					viewCount,
+					post: {
+						voteCount,
+						creationDate,
+						author: {
+							username,
+							profile: { userAvatar, reputation },
+						},
 					},
-				},
-			} = d;
-			return {
-				id,
-				title,
-				commentCount,
-				solutionTags,
-				viewCount,
-				voteCount,
-				username,
-				userAvatar,
-				creationDate,
-				reputation,
-			};
-		});
-		setSolutions(list);
+				} = d;
+				return {
+					id,
+					title,
+					commentCount,
+					solutionTags,
+					viewCount,
+					voteCount,
+					username,
+					userAvatar,
+					creationDate,
+					reputation,
+				};
+			});
+			setSolutions(list);
+		} catch (e) {
+			console.log(e);
+		}
 	}, []);
 
 	useEffect(() => {
@@ -148,7 +150,7 @@ function ProblemPageTabs(props) {
 			const { data } = await axios.get(
 				`${API_GATEWAY}/api/v1/question/history?userID=${userID}&titleSlug=${titleSlug}`
 			);
-			const tableData = data.map((d) => {
+			const tableData = data?.map((d) => {
 				const { feedback, submission } = d;
 				return {
 					status: feedback.status.description,
@@ -200,10 +202,7 @@ function ProblemPageTabs(props) {
 				</TabPanel>
 				<TabPanel value={value} index={2} dir={theme.direction}>
 					<div className="submissions-container">
-						<div
-							className="ag-theme-alpine"
-							style={{ width: "100%", height: "100%" }}
-						>
+						<div className="ag-theme-alpine" style={{ width: "100%", height: "100%" }}>
 							<AgGridReact
 								ref={gridRef} // Ref for accessing Grid's API
 								rowData={rowData} // Row Data for Rows

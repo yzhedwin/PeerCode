@@ -5,18 +5,19 @@ import { marked } from "marked";
 import HTMLReactParser from "html-react-parser";
 import SolutionCode from "../../solution/SolutionCode";
 import SolutionItem from "../../solution/SolutionItem";
+import { EDITOR_SUPPORTED_LANGUAGES } from "../../../utils/constants";
 
 function SolutionPopup(props) {
 	const { open, handleClose, solution } = props;
-	const description = solution.content.replaceAll("\\n", "\n");
-	const introduction = description.split("```")[0];
-	let snippetsIndex = [];
-	for (let i = 0; i < description.length; i++) {
-		if (description.substring(i, i + 3) === "```") {
-			snippetsIndex.push(i);
-			i += 2;
-		}
-	}
+	const description = solution?.content?.replaceAll("\\n", "\n");
+	const introduction = description?.split("```")[0];
+	let codeLanguages = [];
+	const c = solution.solutionTags.map((tag) => {
+		return EDITOR_SUPPORTED_LANGUAGES.find(
+			(lang) => lang.raw === tag.slug || lang.name === tag.name
+		)?.name;
+	});
+	c.forEach((c) => c && codeLanguages.push(c));
 	return (
 		<Modal
 			open={open}
@@ -73,28 +74,12 @@ function SolutionPopup(props) {
 							overflow: "scroll",
 						}}
 					>
-						<div>
-							<SolutionItem item={solution} />
-						</div>
+						<SolutionItem item={solution} />
 						<div style={{ padding: "10px" }}>
 							{HTMLReactParser(marked.parse(introduction))}
 						</div>
 						<div style={{ padding: "10px" }}>
-							<SolutionCode
-								snippetsIndex={snippetsIndex}
-								description={description}
-							/>
-						</div>
-						<div style={{ padding: "10px" }}>
-							{HTMLReactParser(
-								marked.parse(
-									description
-										.split("```")
-										[
-											description.split("```").length - 1
-										].replaceAll("\\n", "\n")
-								)
-							)}
+							<SolutionCode description={description} codeLanguages={codeLanguages} />
 						</div>
 					</Box>
 				</Box>

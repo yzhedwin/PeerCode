@@ -48,11 +48,15 @@ function ProblemPage(props) {
 		(editor, monaco) => {
 			editorRef.current = editor;
 			monacoRef.current = monaco;
-			setCode(
-				snippets?.find((snippet) => {
-					return snippet.langSlug === language.raw;
-				})?.code
-			);
+			try {
+				setCode(
+					snippets?.find((snippet) => {
+						return snippet?.langSlug === language.raw;
+					})?.code
+				);
+			} catch (e) {
+				console.log(e);
+			}
 		},
 		[snippets, language.raw]
 	);
@@ -193,8 +197,12 @@ function ProblemPage(props) {
 				<div className="problem-description-container">
 					<ProblemPageTabs
 						userID={"1234"}
-						titleSlug={question["titleSlug"]}
-						description={parse(question["problem"])}
+						titleSlug={question?.titleSlug}
+						description={parse(
+							typeof question?.problem === "string"
+								? question.problem
+								: "Failed to load"
+						)}
 					/>
 				</div>
 
@@ -246,14 +254,12 @@ function ProblemPage(props) {
 								onClick={onShow}
 								icon={<KeyboardArrowUpIcon />}
 								title={"Console"}
-								sx={{ marginInline: 1 }}
 							/>
 						) : (
 							<ConsoleButton
 								icon={<KeyboardArrowDownIcon />}
 								onClick={onHide}
 								title={"Console"}
-								sx={{ marginInline: 1 }}
 							/>
 						)}
 						{type === "coop" && (

@@ -1,99 +1,123 @@
 import HTMLReactParser from "html-react-parser";
 import { EDITOR_SUPPORTED_LANGUAGES } from "../../utils/constants";
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState, useCallback } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { marked } from "marked";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Chip } from "@mui/material";
+import detectLang from "lang-detector";
 
 function SolutionCode(props) {
-	const { snippetsIndex, description } = props;
-	const [refresh, setRefresh] = useState(1);
-	let ref = useRef([]);
-	let solutions = [];
-	let solutionIndex = 0;
-
-	solutions[solutionIndex] = [];
-	snippetsIndex.forEach((_, index) => {
-		let snippet = description
-			.substring(snippetsIndex[index] + 3, snippetsIndex[index + 1])
-			.trim();
-		if (snippet.startsWith("#")) {
-			solutionIndex++;
-			solutions[solutionIndex] = [snippet];
-		} else if (
-			snippet
-				.substring(snippet.indexOf("]") + 1)
-				.trim()
-				.startsWith("class")
-		) {
-			snippet = {
-				language: EDITOR_SUPPORTED_LANGUAGES.find((lang) => {
-					return lang.name.includes(
-						snippet.substring(0, snippet.indexOf("[")).trim()
-					);
-				}),
-				code: snippet.substring(snippet.indexOf("]") + 1),
-			};
-			solutions[solutionIndex].push(snippet);
+	const { description, codeLanguages } = props;
+	const [solutions, setSolutions] = useState([]);
+	const [selectLanguage, setSelectLanguage] = useState();
+	let snippetsIndex = [];
+	for (let i = 0; i < description.length; i++) {
+		if (description.substring(i, i + 3) === "```") {
+			snippetsIndex.push(i);
+			i += 2;
 		}
-	});
-	// Get all headers: Solution 1, Solution 2 etc
-	const titles = solutions.map((solution) => {
-		if (typeof solution[0] === "string" && solution[0].startsWith("#")) {
-			const header = solution[0];
-			solution.splice(0, 1);
-			return header;
-		}
-	});
+	}
 
-	//TODO: let user select which language instead of cycle
-	// Get code snippets
-	const codes = solutions.map((solution, index) => {
-		ref.current.push(0);
-		return (
-			<>
-				<div
-					style={{ cursor: "pointer" }}
-					onClick={() => {
-						if (ref.current[index] >= codes.length - 1) {
-							ref.current[index] = 0;
-						} else {
-							ref.current[index] += 1;
-						}
-						setRefresh((prevState) => prevState * -1);
-					}}
-				>
-					<Chip
-						label={solution[ref.current[index]].language.name}
-						size="small"
-						sx={{ ml: 1, color: "black" }}
-					/>
-				</div>
-				<SyntaxHighlighter
-					style={vscDarkPlus}
-					language={solution[ref.current[index]].language.raw}
-				>
-					{solution[ref.current[index]].code}
-				</SyntaxHighlighter>
-			</>
-		);
-	});
-	return (
-		<>
-			{codes[0]}
-			{titles.map((title, index) => {
-				if (index + 1 < titles.length) {
-					return (
-						<>
-							{HTMLReactParser(marked.parse(titles[index + 1]))}
-							{codes[index + 1]}
-						</>
-					);
+	const groupBySolution = useCallback(() => {
+		let solutions = [];
+		let solutionIndex = 0;
+		solutions.push({});
+		let count = codeLanguages.length;
+		snippetsIndex.forEach((_, index) => {
+			let snippet = description.substring(snippetsIndex[index] + 3, snippetsIndex[index + 1]);
+			if (snippet.includes("class")) {
+				snippet = snippet.substring(snippet.indexOf("class"));
+				solutions[solutionIndex][detectLang(snippet)] = snippet;
+				count--;
+			}
+			if (count < 1) {
+				count = codeLanguages.length;
+				solutionIndex += 1;
+				if (solutionIndex < codeLanguages.length) {
+					solutions.push({});
 				}
-			})}
-		</>
-	);
+			}
+		});
+		let selectLanguage = [];
+		solutions.forEach((solution) => {
+			selectLanguage.push(Object.keys(solution)[0]);
+		});
+		setSelectLanguage(selectLanguage);
+		setSolutions(solutions);
+	}, []);
+
+	useEffect(() => {
+		groupBySolution();
+	}, []);
+
+	const ProcessCodeBlock = () => {
+		let solutionIndex = -1;
+		let count = codeLanguages.length;
+		return snippetsIndex.map((_, index) => {
+			const snippet = description.substring(
+				snippetsIndex[index] + 3,
+				snippetsIndex[index + 1]
+			);
+			if (snippet.includes("class")) {
+				console.log(count);
+				if (count === 1) {
+					solutionIndex += 1;
+					count = codeLanguages.length;
+					console.log(solutions[solutionIndex]);
+					if (solutions[solutionIndex]) {
+						return (
+							<>
+								{Object.keys(solutions[solutionIndex]).map((key) => {
+									return (
+										<Chip
+											label={
+												<span
+													id={solutionIndex}
+													title={`Solution ${solutionIndex}`}
+												>
+													{key}
+												</span>
+											}
+											size="small"
+											sx={{
+												ml: 1,
+												color: "black",
+											}}
+											onClick={(e) => {
+												let id;
+												e.target.id
+													? (id = e.target.id)
+													: (id = e.target.firstChild.id);
+												let newLanguage = [...selectLanguage];
+												newLanguage[id] = key;
+												setSelectLanguage(newLanguage);
+											}}
+										/>
+									);
+								})}
+								<SyntaxHighlighter
+									style={vscDarkPlus}
+									language={
+										EDITOR_SUPPORTED_LANGUAGES.find((lang) => {
+											return lang.name.includes(detectLang(snippet));
+										})?.raw
+									}
+								>
+									{solutions[solutionIndex][selectLanguage[solutionIndex]]}
+								</SyntaxHighlighter>
+							</>
+						);
+					}
+				}
+				count -= 1;
+			} else {
+				return HTMLReactParser(marked.parse(snippet));
+			}
+		});
+	};
+
+	return <ProcessCodeBlock />;
 }
 
-export default memo(SolutionCode);
+export default SolutionCode;
