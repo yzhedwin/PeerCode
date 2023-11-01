@@ -161,6 +161,7 @@ export default function Dashboard() {
 				className="match-container"
 				style={{
 					display: "flex",
+					flexDirection: "column",
 				}}
 			>
 				<Match />
