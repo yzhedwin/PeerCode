@@ -5,12 +5,13 @@
 	margin-top: 2vh;
 	margin-inline: 1vw;
 	height: 90vh;
+	overflow: hidden;
 }
 
-.problem-description-container {
+.problem-tabs-container {
 	flex: 1;
-	overflow: scroll;
 }
+
 .editor-container {
 	display: flex;
 	flex: 1;
@@ -20,6 +21,13 @@
 .editor-component {
 	display: flex;
 	flex: 1;
+}
+.editor-options {
+	display: flex;
+}
+.editor-options > div {
+	margin-inline: 10px;
+	margin-bottom: 5px;
 }
 .console-tabs-container {
 	transition-property: height;
@@ -57,14 +65,14 @@
 .submissions-container {
 	height: 100%;
 }
-.ag-theme-alpine {
-	--ag-foreground-color: black;
+.ag-theme-alpine-submission {
+	--ag-foreground-color: white;
 	--ag-secondary-foreground-color: rgb(164, 146, 146);
-	--ag-background-color: #333333;
+	--ag-background-color: rgb(30, 30, 30);
 	--ag-data-color: white;
 	--ag-row-hover-color: rgba(255, 255, 255, 0.229);
 	--ag-header-foreground-color: white;
-	--ag-header-background-color: #333333;
+	--ag-header-background-color: rgb(30, 30, 30);
 	--ag-row-border-color: #333333;
 	--ag-font-size: 12px;
 	--ag-font-family: monospace;
@@ -72,7 +80,7 @@
 	--ag-selected-row-background-color: none;
 	--ag-range-selection-border-color: none;
 	--ag-range-selection-border-style: none;
-	--ag-odd-row-background-color: #333333;
+	--ag-odd-row-background-color: rgb(30, 30, 30);
 }
 .MuiTabs-root {
 	min-height: 0 !important;

@@ -5,7 +5,7 @@ import { QuestionContext } from "../../contexts/QuestionContext";
 import { useNavigate } from "react-router-dom";
 import { SnackBarContext } from "../../contexts/SnackBarContext";
 import { ProblemContext } from "../../contexts/ProblemContext";
-
+import "../../css/question.scss";
 function Question() {
 	const navigate = useNavigate();
 	const { setSnippets } = useContext(ProblemContext);
@@ -22,9 +22,7 @@ function Question() {
 				headerName: "Tags",
 				valueGetter: (params) => {
 					if (Array.isArray(params.data.topicTags)) {
-						return params.data.topicTags
-							.map((tag) => tag.name)
-							.join(", ");
+						return params.data.topicTags.map((tag) => tag.name).join(", ");
 					}
 					return "";
 				},
@@ -89,9 +87,7 @@ function Question() {
 
 	const onGridReady = useCallback(async (params) => {
 		try {
-			const { data } = await axios.get(
-				"http://localhost:5000/api/v1/question"
-			);
+			const { data } = await axios.get("http://localhost:5000/api/v1/question");
 			setRowData(data);
 		} catch (e) {
 			setSB({ msg: `Question Service: ${e.message}`, severity: "error" });
@@ -102,7 +98,7 @@ function Question() {
 	return (
 		<div className="question-container">
 			<div
-				className="ag-theme-alpine"
+				className="ag-theme-alpine ag-theme-alpine-dashboard"
 				style={{ width: "100%", height: "100%" }}
 			>
 				<AgGridReact

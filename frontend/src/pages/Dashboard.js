@@ -4,7 +4,7 @@ import Question from "../components/services/Question";
 import QuestionOTD from "../components/services/QuestionOTD";
 import { SnackBarContext } from "../contexts/SnackBarContext";
 import { useContext } from "react";
-
+import "../css/dashboard.scss";
 export default function Dashboard() {
 	const { openSnackBar, setOpenSnackBar, sb } = useContext(SnackBarContext);
 

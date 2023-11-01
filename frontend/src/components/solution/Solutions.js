@@ -23,10 +23,9 @@ function Solutions(props) {
 	});
 	const handleOpen = useCallback(async (item) => {
 		try {
-			const { data } = await axios.get(
-				`${API_GATEWAY}/api/v1/question/solution/community`,
-				{ params: { id: item.id } }
-			);
+			const { data } = await axios.get(`${API_GATEWAY}/api/v1/question/solution/community`, {
+				params: { id: item.id },
+			});
 			setSolution({
 				username: item?.username,
 				content: data?.post?.content,
@@ -46,16 +45,9 @@ function Solutions(props) {
 	const handleClose = useCallback(() => setOpen(false), []);
 
 	return (
-		<Box sx={{ width: "100%" }}>
-			<SolutionPopup
-				open={open}
-				handleClose={handleClose}
-				solution={solution}
-			/>
-			<Stack
-				spacing={0}
-				divider={<Divider orientation="horizontal" flexItem />}
-			>
+		<Box sx={{ width: "100%", overflow: "scroll", height: "95%" }}>
+			<SolutionPopup open={open} handleClose={handleClose} solution={solution} />
+			<Stack spacing={0} divider={<Divider orientation="horizontal" flexItem />}>
 				{list.map((l) => {
 					return <SolutionItem item={l} handleOpen={handleOpen} />;
 				})}

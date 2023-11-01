@@ -1,4 +1,4 @@
-import { AppBar, Box, Tab, Tabs, Typography } from "@mui/material";
+import { AppBar, Box, Tab, Tabs } from "@mui/material";
 import { useCallback, useState } from "react";
 import PropTypes from "prop-types";
 import { useTheme } from "@mui/material/styles";
@@ -38,8 +38,7 @@ function a11yProps(index) {
 	};
 }
 function ConsoleTabs(props) {
-	const { onSubmitChat, textInput, setTextInput, chatDisabled, testCase } =
-		props;
+	const { onSubmitChat, textInput, setTextInput, chatDisabled, testCase } = props;
 	const [value, setValue] = useState(0);
 	const handleChange = useCallback(async (event, newValue) => {
 		setValue(newValue);

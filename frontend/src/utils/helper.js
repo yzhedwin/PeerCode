@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { loader } from "@monaco-editor/react";
+import { EDITOR_SUPPORTED_THEMES } from "./constants";
 
 export function dateDiffInDays(a, b) {
 	const _MS_PER_DAY = 1000 * 60 * 60 * 24;
@@ -18,4 +20,16 @@ export const useBeforeRender = (callback, deps) => {
 	}
 
 	useEffect(() => () => setIsRun(false), deps);
+};
+
+export const defineTheme = async (theme) => {
+	return new Promise((res) => {
+		Promise.all([
+			loader.init(),
+			import(`monaco-themes/themes/${EDITOR_SUPPORTED_THEMES[theme]}.json`),
+		]).then(([monaco, themeData]) => {
+			monaco.editor.defineTheme(theme, themeData);
+			res();
+		});
+	});
 };

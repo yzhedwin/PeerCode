@@ -5,7 +5,7 @@ function Testcase(props) {
 
 	return (
 		<div>
-			{[...testCase].map((tc, index) => {
+			{[...testCase]?.map((tc, index) => {
 				console.log(tc.split("\n"));
 				return tc;
 			})}

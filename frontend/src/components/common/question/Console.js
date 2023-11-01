@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { ProblemContext } from "../../contexts/ProblemContext";
+import { ProblemContext } from "../../../contexts/ProblemContext";
 import { Box } from "@mui/material";
 
 function Console() {

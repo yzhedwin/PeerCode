@@ -1,26 +1,24 @@
-import {
-	memo,
-	useCallback,
-	useContext,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { memo, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { QuestionContext } from "../contexts/QuestionContext";
 import parse from "html-react-parser";
 import Editor from "@monaco-editor/react";
-import { socket } from "../components/common/WebSocket";
+import { socket } from "../components/services/WebSocket";
 import { MatchContext } from "../contexts/MatchContext";
 import { ProblemContext } from "../contexts/ProblemContext";
 import axios from "axios";
-import SelectLanguage from "../components/common/SelectLanguage";
-import ConsoleButton from "../components/common/ConsoleButton";
-import ProblemPageTabs from "../components/common/ProblemPageTabs";
+import ConsoleButton from "../components/common/question/ConsoleButton";
+import ProblemPageTabs from "../components/common/question/ProblemPageTabs";
 import SnackBar from "../components/common/SnackBar";
 import { SnackBarContext } from "../contexts/SnackBarContext";
-import ConsoleTabs from "../components/common/ConsoleTabs";
+import ConsoleTabs from "../components/common/question/ConsoleTabs";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import "../css/problemPage.scss";
+import { EDITOR_SUPPORTED_LANGUAGES, EDITOR_SUPPORTED_THEMES } from "../utils/constants";
+import { defineTheme } from "../utils/helper";
+import CustomSelect from "../components/common/question/CustomSelect";
+import EditorOptions from "../components/common/question/EditorOptions";
+
 function ProblemPage(props) {
 	const { type } = props;
 	const { question } = useContext(QuestionContext);
@@ -35,15 +33,18 @@ function ProblemPage(props) {
 		setMessage,
 		setConsoleResult,
 	} = useContext(ProblemContext);
-	const { openSnackBar, setOpenSnackBar, sb, setSB } =
-		useContext(SnackBarContext);
+	const { openSnackBar, setOpenSnackBar, sb, setSB } = useContext(SnackBarContext);
 	const [hide, setHide] = useState(true);
 	const [textInput, setTextInput] = useState("");
 	const [chatHeight, setChatHeight] = useState(5);
+	const [editorTheme, setEditorTheme] = useState({
+		name: "vs-dark",
+		value: "vs-dark",
+		key: "vs-dark",
+	});
 	const [testCase, setTestCase] = useState([]);
 	const editorRef = useRef(null);
 	const monacoRef = useRef(null);
-
 	const handleEditorDidMount = useCallback(
 		(editor, monaco) => {
 			editorRef.current = editor;
@@ -100,15 +101,12 @@ function ProblemPage(props) {
 	);
 	const onRun = useCallback(async () => {
 		try {
-			const r1 = await axios.post(
-				"http://localhost:5000/api/v1/judge/submission",
-				{
-					userID: "1234",
-					titleSlug: question["titleSlug"],
-					language_id: language.id,
-					source_code: code,
-				}
-			);
+			const r1 = await axios.post("http://localhost:5000/api/v1/judge/submission", {
+				userID: "1234",
+				titleSlug: question["titleSlug"],
+				language_id: language.id,
+				source_code: code,
+			});
 			const { data } = await axios.get(
 				`http://localhost:5000/api/v1/judge/submission?token=${r1.data.token}`
 			);
@@ -145,14 +143,20 @@ function ProblemPage(props) {
 			}
 			setCode(
 				snippets?.find((snippet) => {
-					return (
-						snippet.langSlug === JSON.parse(event.target.value).raw
-					);
+					return snippet.langSlug === JSON.parse(event.target.value).raw;
 				})?.code
 			);
 		},
 		[type, match, snippets]
 	);
+	const handleThemeChange = useCallback((event) => {
+		const theme = JSON.parse(event.target.value);
+		if (["light", "vs-dark"].includes(theme.name)) {
+			setEditorTheme(theme);
+		} else {
+			defineTheme(theme.value).then((_) => setEditorTheme(theme));
+		}
+	});
 
 	const handleCodeChanges = useCallback(
 		(code) => {
@@ -173,10 +177,9 @@ function ProblemPage(props) {
 	}, [match, type]);
 
 	const getTestCase = async () => {
-		const { data } = await axios.get(
-			`http://localhost:5000/api/v1/question/exampletestcase`,
-			{ params: { titleSlug: question?.titleSlug } }
-		);
+		const { data } = await axios.get(`http://localhost:5000/api/v1/question/exampletestcase`, {
+			params: { titleSlug: question?.titleSlug },
+		});
 		setTestCase(data);
 	};
 	useEffect(() => {
@@ -194,7 +197,7 @@ function ProblemPage(props) {
 				severity={sb.severity}
 			/>
 			<div className="problem-page-container">
-				<div className="problem-description-container">
+				<div className="problem-tabs-container">
 					<ProblemPageTabs
 						userID={"1234"}
 						titleSlug={question?.titleSlug}
@@ -205,22 +208,18 @@ function ProblemPage(props) {
 						)}
 					/>
 				</div>
-
 				<div className="editor-container">
-					<div>
-						<SelectLanguage
-							language={language}
-							handleChange={handleLanguageChange}
-						/>
-					</div>
-					<div
-						className="editor-component"
-						style={{ height: `${100 - chatHeight}%` }}
-					>
+					<EditorOptions
+						language={language}
+						editorTheme={editorTheme}
+						handleLanguageChange={handleLanguageChange}
+						handleThemeChange={handleThemeChange}
+					/>
+					<div className="editor-component" style={{ height: `${100 - chatHeight}%` }}>
 						<Editor
 							height="100%"
 							language={language?.raw}
-							theme="vs-dark"
+							theme={editorTheme?.value}
 							value={code}
 							onChange={handleCodeChanges}
 							onMount={handleEditorDidMount}

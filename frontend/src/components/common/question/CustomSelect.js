@@ -2,10 +2,9 @@ import * as React from "react";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import { EDITOR_SUPPORTED_LANGUAGES } from "../../utils/constants";
 
-export default function SelectLanguage(props) {
-	const { language, handleChange } = props;
+export default function CustomSelect(props) {
+	const { title, list, value, handleChange } = props;
 	const ITEM_HEIGHT = 48;
 	const ITEM_PADDING_TOP = 8;
 	const MenuProps = {
@@ -18,25 +17,19 @@ export default function SelectLanguage(props) {
 	};
 
 	return (
-		<FormControl
-			sx={{ m: 0, minWidth: 120, backgroundColor: "secondary.main" }}
-			size="small"
-		>
+		<FormControl sx={{ m: 0, minWidth: 120, backgroundColor: "secondary.main" }} size="small">
 			<Select
-				id="select-small-ide-language"
-				value={JSON.stringify(language)}
+				id="select-small-ide-"
+				value={JSON.stringify(value)}
 				onChange={handleChange}
 				MenuProps={MenuProps}
 				displayEmpty
-				title="Select Editor Language"
+				title={`Select ${title}`}
 			>
-				{EDITOR_SUPPORTED_LANGUAGES.map((language) => {
+				{list.map((value) => {
 					return (
-						<MenuItem
-							key={language.name}
-							value={JSON.stringify(language)}
-						>
-							{language.name}
+						<MenuItem key={value.name} value={JSON.stringify(value)}>
+							{value.name}
 						</MenuItem>
 					);
 				})}

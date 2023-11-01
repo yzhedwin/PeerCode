@@ -1,4 +1,4 @@
-import { socket } from "../common/WebSocket";
+import { socket } from "../services/WebSocket";
 import { SnackBarContext } from "../../contexts/SnackBarContext";
 import { useContext, useEffect } from "react";
 import { MatchContext } from "../../contexts/MatchContext";
@@ -14,8 +14,7 @@ var timeout_id = null;
 function Match() {
 	const { setOpenSnackBar, setSB } = useContext(SnackBarContext);
 	const { setQuestion } = useContext(QuestionContext);
-	const { match, findMatch, hasInit, setFindMatch } =
-		useContext(MatchContext);
+	const { match, findMatch, hasInit, setFindMatch } = useContext(MatchContext);
 	const { setMessage } = useContext(ProblemContext);
 	const navigate = useNavigate();
 
@@ -37,9 +36,7 @@ function Match() {
 
 	const getRandomEasyQuestion = async () => {
 		try {
-			const { data } = await axios.get(
-				`http://localhost:5000/api/v1/question/problem/3Sum`
-			);
+			const { data } = await axios.get(`http://localhost:5000/api/v1/question/problem/3Sum`);
 			setQuestion({ titleSlug: "3Sum", problem: data });
 			navigate("/match");
 		} catch (e) {

@@ -6,12 +6,12 @@ import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { API_GATEWAY, EDITOR_SUPPORTED_LANGUAGES } from "../../utils/constants";
+import { API_GATEWAY, EDITOR_SUPPORTED_LANGUAGES } from "../../../utils/constants";
 import axios from "axios";
 import { AgGridReact } from "ag-grid-react"; // the AG Grid React Component
-import SubmissionPopup from "./popup/SubmissionPopup";
-import "../../css/problemPage.scss";
-import Solutions from "../solution/Solutions";
+import SubmissionPopup from "../popup/SubmissionPopup";
+import "../../../css/problemPage.scss";
+import Solutions from "../../solution/Solutions";
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -63,8 +63,15 @@ function ProblemPageTabs(props) {
 				headerName: "Status",
 				cellStyle: (params) => {
 					if (params.value === "Accepted") {
-						//mark police cells as red
 						return { color: "rgb(59, 255, 59)" };
+					} else if (
+						params.value.split(" ").findIndex((e) => {
+							return e.toLowerCase().includes("error");
+						})
+					) {
+						return { color: "red" };
+					} else {
+						return { color: "white" };
 					}
 				},
 			},
@@ -179,7 +186,7 @@ function ProblemPageTabs(props) {
 
 	return (
 		<>
-			<Box sx={{ bgcolor: "secondary", width: "95%", height: "100%" }}>
+			<Box sx={{ width: "95%", height: "100%" }}>
 				<AppBar position="static">
 					<Tabs
 						value={value}
@@ -195,14 +202,19 @@ function ProblemPageTabs(props) {
 					</Tabs>
 				</AppBar>
 				<TabPanel value={value} index={0} dir={theme.direction}>
-					{description}
+					<div style={{ height: "90%", overflow: "scroll", padding: 10 }}>
+						{description}
+					</div>
 				</TabPanel>
 				<TabPanel value={value} index={1} dir={theme.direction}>
 					<Solutions list={solutions} />
 				</TabPanel>
 				<TabPanel value={value} index={2} dir={theme.direction}>
 					<div className="submissions-container">
-						<div className="ag-theme-alpine" style={{ width: "100%", height: "100%" }}>
+						<div
+							className="ag-theme-alpine ag-theme-alpine-submission"
+							style={{ width: "100%", height: "95%" }}
+						>
 							<AgGridReact
 								ref={gridRef} // Ref for accessing Grid's API
 								rowData={rowData} // Row Data for Rows
@@ -212,6 +224,8 @@ function ProblemPageTabs(props) {
 								rowSelection="single" // Options - allows click selection of rows
 								onCellClicked={handleOpenSubmission} // Optional - registering for Grid Event
 								onGridReady={onSubmissionReady}
+								pagination={true}
+								paginationPageSize={20}
 							/>
 						</div>
 					</div>

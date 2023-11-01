@@ -9,7 +9,7 @@ import ProblemPage from "./pages/ProblemPage";
 import { Navigate, BrowserRouter as Router } from "react-router-dom";
 import { Route, Routes } from "react-router-dom";
 import Profile from "./pages/Profile";
-import WebSocket from "./components/common/WebSocket";
+import WebSocket from "./components/services/WebSocket";
 import { SnackBarProvider } from "./contexts/SnackBarContext";
 import { MatchProvider } from "./contexts/MatchContext";
 import { ModeContext } from "./contexts/ModeContext";
@@ -141,10 +141,8 @@ function App() {
 				const resizeObserverErr = document.getElementById(
 					"webpack-dev-server-client-overlay"
 				);
-				if (resizeObserverErr)
-					resizeObserverErr.className = "hide-resize-observer";
-				if (resizeObserverErrDiv)
-					resizeObserverErrDiv.className = "hide-resize-observer";
+				if (resizeObserverErr) resizeObserverErr.className = "hide-resize-observer";
+				if (resizeObserverErrDiv) resizeObserverErrDiv.className = "hide-resize-observer";
 			}
 		});
 	}, []);
@@ -160,47 +158,22 @@ function App() {
 									<Header />
 									<Routes>
 										{/* <Route element={<ProtectedRoute />}> */}
-										<Route
-											exact
-											path="/dashboard"
-											element={<Dashboard />}
-										/>
+										<Route exact path="/dashboard" element={<Dashboard />} />
 										<Route
 											exact
 											path="/problem"
-											element={
-												<ProblemPage type={"solo"} />
-											}
+											element={<ProblemPage type={"solo"} />}
 										/>
 										<Route
 											exact
 											path="/match"
-											element={
-												<ProblemPage type={"coop"} />
-											}
+											element={<ProblemPage type={"coop"} />}
 										/>
-										<Route
-											exact
-											path="/profile"
-											element={<Profile />}
-										/>
+										<Route exact path="/profile" element={<Profile />} />
 										{/* </Route> */}
-										<Route
-											exact
-											path="/"
-											element={<Login />}
-										/>
-										<Route
-											exact
-											path="/signup"
-											element={<SignUp />}
-										/>
-										<Route
-											path="*"
-											element={
-												<Navigate to="/" replace />
-											}
-										/>
+										<Route exact path="/" element={<Login />} />
+										<Route exact path="/signup" element={<SignUp />} />
+										<Route path="*" element={<Navigate to="/" replace />} />
 									</Routes>
 								</ProblemProvider>
 							</MatchProvider>

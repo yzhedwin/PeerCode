@@ -86,7 +86,7 @@ function Header() {
 					<SvgIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
-							enable-background="new 0 0 25 25"
+							enableBackground="new 0 0 25 25"
 							viewBox="0 0 25 25"
 							id="leetcode"
 						>
@@ -119,11 +119,7 @@ function Header() {
 						PeerCode
 					</Typography>
 					<IconButton sx={{ ml: 1 }} onClick={toggleColorMode} color="inherit">
-						{theme.palette.mode === "dark" ? (
-							<Brightness7Icon />
-						) : (
-							<Brightness4Icon />
-						)}
+						{theme.palette.mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
 					</IconButton>
 					<Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
 						<IconButton
@@ -164,7 +160,7 @@ function Header() {
 					<SvgIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
-							enable-background="new 0 0 25 25"
+							enableBackground="new 0 0 25 25"
 							viewBox="0 0 25 25"
 							id="leetcode"
 						>
