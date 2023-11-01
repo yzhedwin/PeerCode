@@ -84,12 +84,15 @@
 	--ag-odd-row-background-color: #282828;
 	--ag-control-panel-background-color: #282828;
 }
-.ag-root ::-webkit-scrollbar {
-	width: 2em;
-	height: 2em;
-}
 
 ​.MuiTabs-root {
 	min-height: 0 !important;
 	align-items: center;
+}
+.MuiButtonBase-root {
+	min-height: 0 !important;
+}
+.MuiTabs-flexContainer {
+	min-height: 0 !important;
+	height: 30px;
 }

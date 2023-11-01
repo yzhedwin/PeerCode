@@ -190,6 +190,12 @@ function ProblemPageTabs(props) {
 			<Box sx={{ width: "95%", height: "100%" }}>
 				<AppBar position="static">
 					<Tabs
+						sx={{
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "space-around",
+							minHeight: "40px",
+						}}
 						value={value}
 						onChange={handleChange}
 						indicatorColor="secondary"

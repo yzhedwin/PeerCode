@@ -29,7 +29,7 @@ function ConsoleTabs(props) {
 				<Tabs
 					TabIndicatorProps={{
 						style: {
-							height: "5px",
+							height: "2px",
 						},
 					}}
 					value={value}
@@ -38,6 +38,10 @@ function ConsoleTabs(props) {
 					textColor="inherit"
 					variant="fullWidth"
 					aria-label="full width tabs example"
+					sx={{
+						height: "30px",
+						minHeight: "30px",
+					}}
 				>
 					<Tab label="Testcase" {...a11yProps(0)} />
 					<Tab label="Result" {...a11yProps(1)} />

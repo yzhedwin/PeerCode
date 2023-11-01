@@ -45,7 +45,8 @@ function ProblemPage(props) {
 	});
 	const [defaultTestCases, setDefaultTestCases] = useState([]);
 	const [stdin, setStdin] = useState();
-	const [codeIsLoading, setCodeIsLoading] = useState(false);
+	const [isRunning, setIsRunning] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 	const editorRef = useRef(null);
 	const monacoRef = useRef(null);
 	const handleEditorDidMount = useCallback(
@@ -107,7 +108,7 @@ function ProblemPage(props) {
 			clearInterval(interval_id);
 			setSB({ msg: "Submission timedout", severity: "error" });
 			setOpenSnackBar(true);
-			setCodeIsLoading(false);
+			setIsRunning(false);
 		}, 10000);
 		interval_id = setInterval(async () => {
 			const { data } = await axios.get(
@@ -125,11 +126,47 @@ function ProblemPage(props) {
 					message: data.message ? atob(data.message) : "None",
 					status: data.status,
 				};
-				console.log(feedback);
 				if (type === "coop") {
 					socket.emit("code-submission", match, feedback);
 				}
 				setConsoleResult(feedback);
+				setIsRunning(false);
+				setSB({ msg: "Code Submitted", severity: "success" });
+				setOpenSnackBar(true);
+			}
+		}, 2000);
+	}, []);
+
+	const getSubmissionAndSubmit = useCallback((token) => {
+		timeout_id = setTimeout(() => {
+			clearInterval(interval_id);
+			setSB({ msg: "Submission timedout", severity: "error" });
+			setOpenSnackBar(true);
+			setIsSubmitting(false);
+		}, 10000);
+		interval_id = setInterval(async () => {
+			const { data } = await axios.get(
+				`http://localhost:5000/api/v1/judge/submission?token=${token}`
+			);
+			if (data.status.id !== 1 && data.status.id !== 2) {
+				clearInterval(interval_id);
+				clearTimeout(timeout_id);
+				const feedback = {
+					stdout: data.stdout ? atob(data.stdout) : "None",
+					time: data.time,
+					memory: data.memory,
+					stderr: data.stderr ? atob(data.stderr) : "None",
+					compile_output: data.compile_output ? atob(data.compile_output) : "None",
+					message: data.message ? atob(data.message) : "None",
+					status: data.status,
+				};
+				if (type === "coop") {
+					socket.emit("code-submission", match, feedback);
+				}
+				setConsoleResult(feedback);
+				setIsSubmitting(false);
+				setSB({ msg: "Code Submitted", severity: "success" });
+				setOpenSnackBar(true);
 				await axios.post(`http://localhost:5000/api/v1/question/history`, {
 					submission: {
 						userID: "1234",
@@ -139,14 +176,26 @@ function ProblemPage(props) {
 					},
 					feedback: data,
 				});
-				setCodeIsLoading(false);
-				setSB({ msg: "Code Submitted", severity: "success" });
-				setOpenSnackBar(true);
 			}
 		}, 2000);
 	}, []);
-	const onSubmit = () => {
+
+	const onSubmit = async () => {
+		//save to db
 		console.log("submit, run against all test cases");
+		try {
+			const { data } = await axios.post("http://localhost:5000/api/v1/judge/submission", {
+				userID: "1234",
+				titleSlug: question["titleSlug"],
+				language_id: language.id,
+				source_code: btoa(code),
+				stdin: btoa(JSON.stringify(stdin)),
+			});
+			setIsSubmitting(true);
+			getSubmissionAndSubmit(data.token);
+		} catch (e) {
+			console.log(e.message);
+		}
 	};
 	const onRun = useCallback(async () => {
 		try {
@@ -157,7 +206,7 @@ function ProblemPage(props) {
 				source_code: btoa(code),
 				stdin: btoa(JSON.stringify(stdin)),
 			});
-			setCodeIsLoading(true);
+			setIsRunning(true);
 			getSubmission(data.token);
 		} catch (e) {
 			console.log(e.message);
@@ -312,13 +361,15 @@ function ProblemPage(props) {
 						<ConsoleButton
 							onClick={onRun}
 							title={"Run"}
-							loading={codeIsLoading}
+							loading={isRunning}
+							disabled={isSubmitting}
 							sx={{ marginLeft: "auto", mr: 1 }}
 						/>
 						<ConsoleButton
 							onClick={onSubmit}
 							title={"Submit"}
-							loading={codeIsLoading}
+							loading={isSubmitting}
+							disabled={isRunning}
 							sx={{ backgroundColor: "green" }}
 						/>
 					</div>
