@@ -7,7 +7,7 @@ function timeout(time: any) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
 
-const queue_suffix = process.env.NODE_ENV === "production" ? "prod" : "dev";
+const queue_suffix = process.env.NODE_ENV === "production" ? "-as5-prod" : "-as5-dev";
 
 class RabbitMQService {
   private connection: amqp.Connection | null = null;
