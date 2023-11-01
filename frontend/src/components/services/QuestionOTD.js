@@ -1,5 +1,6 @@
 import { Box, Button } from "@mui/material";
 import { useEffect, useState } from "react";
+
 import axios from "axios";
 function QuestionOTD() {
   const [qotd, setQOTD] = useState({});
@@ -18,6 +19,7 @@ function QuestionOTD() {
   }, []);
 
   const handleClick = () => {
+    console.log();
     console.log(qotd);
   };
 
