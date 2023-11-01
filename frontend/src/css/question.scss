@@ -12,3 +12,27 @@
   height: 500px;
   margin-inline: 100px;
 }
+
+.title-div:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.button-div {
+  padding: -100px
+}
+
+.action-btn {
+  color: white;
+  background-color: transparent;
+  border: 0px;
+  height: 3em;
+  border-radius: 5px;
+  margin-right: 5%;
+}
+
+.action-btn:hover {
+  color: black;
+  cursor: pointer;
+}
+
