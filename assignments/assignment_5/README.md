@@ -4,12 +4,11 @@ A web application with a frontend and backend, using RabbitMQ as a Message Queue
 
 The following objectives are achieved:
 
-<!-- - Creating and managing user profiles, with the capacity of CRUD actions
-- User profiles are stored in a MySQL database (RDBMS)
-- A REST API is required to communicate user actions such as registering, deregistering, creating, and the update of profiles from the front-end to the back-end.
-- Enhancement of the question repository from Assignment 1 by integrating the requirements of Assignment 1 into Assignment 2 -->
+- Let the user match using RabbitMQ, a queuing technology under AMQP.
+- Develop a front-end that communicates with the back-end for matching services.
+- Enhancement of the front-end by integrating the front end from Assignment 2 into Assignment 5, using the auth. 
 
-This project was created from Assignment 2
+This project was created using the front-end from Assignment 2
 
 ## Set-up
 
@@ -64,24 +63,32 @@ On successful set-up, your browser should look as follows:
 
 ### Authentication
 
-Please refer to [Assignment 2's user guide for authentication](#TODO)
+Please refer to [Assignment 2's user guide for authentication](https://github.com/CS3219-AY2324S1/ay2324s1-course-assessment-g33/blob/master/assignments/assignment_2/README.md)
 
 ### Matching
 
-<!-- TODO -->
+After the user is logged in, he will be presented with three buttons to show which queue he wants to be match in.
+
+![home](https://github.com/francisyzy/ay2324s1-course-assessment-g33/assets/24467184/7e759252-7982-44a7-928f-7e9dd7ad7c1f)
+
+The matching is currently set to 5s for demonstration purposes.
+
+![matching](https://github.com/francisyzy/ay2324s1-course-assessment-g33/assets/24467184/102fa5b7-6260-4a9a-8ea7-b06b616b750b)
+
+After a successful match, the match code/room will be shown.
+
+![matched](https://github.com/francisyzy/ay2324s1-course-assessment-g33/assets/24467184/b88ace61-a807-4f65-bbf4-aa07aaa0b0fb)
+
+If no matches are found, message will be shown to the user.
+
+![fail](https://github.com/francisyzy/ay2324s1-course-assessment-g33/assets/24467184/b2194ca5-0f4d-46f0-96e8-018b06939449)
 
 ## Requirements Fulfilled
 
-<!-- TODO -->
-
-<!-- - Users can sign up and register to be on the platform
-- Users can log out from the platform
-- Users can create a profile on the platform, in a database with data persistence
-- Users can delete their profile from the platform
-- Users can view their profile when they are using the application
-- Users can update the profile when they are on the platform when they like
-- Users can maintain the question repository from the question bank with data persistence (integrated from Assignment 1)
-- System robustness includes users cannot share the same email as others (unique) --> -->
+- Demonstrating the two users’ inputs to specify the criteria for matching
+- Front-end timer + feedback + handling no match
+- Demonstrating the valid matching
+- Containerizing the application
 
 ## Learn More
 
