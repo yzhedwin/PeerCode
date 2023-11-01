@@ -15,15 +15,23 @@ function SubmissionPopup(props) {
 	}
 	const SubmissionDetails = useCallback(() => {
 		return (
-			<Box sx={{ flex: 1, width: "100%", marginInline: "10px" }}>
+			<Box
+				sx={{
+					display: "flex",
+					flexDirection: "column",
+					justifyContent: "center",
+					flex: 1,
+					width: "100%",
+					marginInline: "10px",
+					color: "primary.contrastText",
+				}}
+			>
 				{Object.keys(submission).map((key) => {
 					if (key !== "code") {
 						if (key === "finished_at") {
 							const date = new Date(submission[key]);
 							return (
-								<div>{`${key
-									.charAt(0)
-									.toUpperCase()}${key.substring(
+								<div>{`${key.charAt(0).toUpperCase()}${key.substring(
 									1
 								)}: ${date.getFullYear()}/${
 									date.getMonth() + 1
@@ -40,9 +48,7 @@ function SubmissionPopup(props) {
 							);
 						}
 						return (
-							<div>{`${key
-								.charAt(0)
-								.toUpperCase()}${key.substring(1)}: ${
+							<div>{`${key.charAt(0).toUpperCase()}${key.substring(1)}: ${
 								submission[key]
 							}`}</div>
 						);
@@ -67,7 +73,7 @@ function SubmissionPopup(props) {
 					transform: "translate(-50%, -50%)",
 					width: "70%",
 					height: "70%",
-					bgcolor: "background.paper",
+					backgroundColor: "primary.main",
 					border: "2px solid #000",
 					boxShadow: 24,
 					p: 4,
@@ -79,8 +85,8 @@ function SubmissionPopup(props) {
 					component="h2"
 					textAlign={"center"}
 					sx={{
-						backgroundColor: "secondary.main",
-						color: "secondary.contrastText",
+						backgroundColor: "primary.main",
+						color: "primary.contrastText",
 					}}
 				>
 					<div> Submission</div>

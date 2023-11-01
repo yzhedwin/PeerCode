@@ -2,10 +2,10 @@
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+	justify-items: center;
 }
 .testcase-item {
 	padding: 5px;
-	margin: 5px;
 	color: white;
 }
 .testcase-param-title {

@@ -38,8 +38,8 @@ function App() {
 			primary: {
 				...(mode === "dark"
 					? {
-							main: "rgb(30,30,30)",
-							console: grey[900],
+							main: "#282828",
+							console: "#282828",
 							contrastText: "#fff",
 					  }
 					: {

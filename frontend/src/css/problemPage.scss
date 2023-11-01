@@ -26,8 +26,8 @@
 	display: flex;
 }
 .editor-options > div {
-	margin-inline: 10px;
 	margin-bottom: 5px;
+	padding-right: 5px;
 }
 .console-tabs-container {
 	transition-property: height;
@@ -68,22 +68,28 @@
 }
 .ag-theme-alpine-submission {
 	--ag-foreground-color: white;
-	--ag-secondary-foreground-color: rgb(164, 146, 146);
-	--ag-background-color: rgb(30, 30, 30);
+	--ag-secondary-foreground-color: white;
+	--ag-background-color: #282828;
 	--ag-data-color: white;
 	--ag-row-hover-color: rgba(255, 255, 255, 0.229);
 	--ag-header-foreground-color: white;
-	--ag-header-background-color: rgb(30, 30, 30);
-	--ag-row-border-color: #333333;
+	--ag-header-background-color: #282828;
+	--ag-row-border-color: #282828;
 	--ag-font-size: 12px;
 	--ag-font-family: monospace;
 	--ag-borders: none;
 	--ag-selected-row-background-color: none;
 	--ag-range-selection-border-color: none;
 	--ag-range-selection-border-style: none;
-	--ag-odd-row-background-color: rgb(30, 30, 30);
+	--ag-odd-row-background-color: #282828;
+	--ag-control-panel-background-color: #282828;
 }
-.MuiTabs-root {
+.ag-root ::-webkit-scrollbar {
+	width: 2em;
+	height: 2em;
+}
+
+​.MuiTabs-root {
 	min-height: 0 !important;
 	align-items: center;
 }
