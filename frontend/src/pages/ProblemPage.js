@@ -21,17 +21,21 @@ function ProblemPage(props) {
   const { match } = useContext(MatchContext);
   const {
     message,
+    aiMessage,
     code,
     language,
     setLanguage,
     setCode,
     setMessage,
+    setAIMessage,
     setConsoleResult,
   } = useContext(ProblemContext);
   const { openSnackBar, setOpenSnackBar, sb, setSB } =
     useContext(SnackBarContext);
   const [hide, setHide] = useState(true);
-  const [showConsole, setShowConsole] = useState(type === "solo");
+  const [showConsole, setShowConsole] = useState(true);
+  const [showChat, setShowChat] = useState(false);
+  const [showAIChat, setShowAIChat] = useState(false);
   const [chatHeight, setChatHeight] = useState(5);
   const [textInput, setTextInput] = useState("");
   const editorRef = useRef(null);
@@ -61,6 +65,24 @@ function ProblemPage(props) {
     setChatHeight(30);
   }
 
+  function onConsoleChange() {
+    setShowConsole(true);
+    setShowAIChat(false);
+    setShowChat(false);
+  }
+
+  function onChatChange() {
+    setShowChat(true);
+    setShowConsole(false);
+    setShowAIChat(false);
+  }
+
+  function onAIChatChange() {
+    setShowAIChat(true);
+    setShowConsole(false);
+    setShowChat(false);
+  } //lmao
+
   function onSubmitChat(e) {
     if (e.keyCode === 13) {
       let currentMessage = [...message];
@@ -76,6 +98,31 @@ function ProblemPage(props) {
       setTextInput("");
     }
   }
+
+  async function onSubmitAIChat(e) {
+    if (e.keyCode === 13) {
+      let currentAIMessage = [...aiMessage];
+      const prompt = e.target.value;
+      currentAIMessage.push({
+        user: "me",
+        data: prompt,
+      });
+      setAIMessage(currentAIMessage);
+      await axios
+        .post("http://localhost:8020/chat", { prompt })
+        .then((res) => {
+          console.log(res.data);
+          currentAIMessage.push({
+            user: "AI",
+            data: res.data,
+          });
+        })
+        .catch((error) => console.log(error));
+      setAIMessage(currentAIMessage);
+      setTextInput("");
+    }
+  }
+
   const onRun = async () => {
     try {
       const r1 = await axios.post(
@@ -147,8 +194,7 @@ function ProblemPage(props) {
           <ProblemPageTabs
             userID={"1234"}
             titleSlug={question["titleSlug"]}
-            description={question["problem"]}
-            //description={parse(question["problem"])}
+            description={parse(question["problem"])}
           />
         </div>
         <div className="editor-container">
@@ -187,15 +233,16 @@ function ProblemPage(props) {
                     sx={{ marginInline: 1 }}
                   />
 
-                  {!showConsole ? (
-                    <ConsoleButton onClick={setShowConsole} title={"Console"} />
-                  ) : (
-                    <ConsoleButton
-                      onClick={() => setShowConsole(false)}
-                      title={"Chat"}
-                      disabled={type === "solo"}
-                    />
+                  <ConsoleButton onClick={onConsoleChange} title={"Console"} />
+
+                  {type !== "solo" && (
+                    <ConsoleButton onClick={onChatChange} title={"Chat"} />
                   )}
+                  <ConsoleButton
+                    onClick={onAIChatChange}
+                    title={"Chat AI"}
+                    sx={{ marginInline: 1 }}
+                  />
                   <SelectLanguage
                     language={language}
                     handleChange={handleLanguageChange}
@@ -206,12 +253,32 @@ function ProblemPage(props) {
                     sx={{ marginLeft: "auto", mr: 1 }}
                   />
                 </div>
-                {showConsole ? (
-                  <Console onRun={onRun} />
-                ) : (
+                {showConsole && <Console onRun={onRun} />}
+                {showChat && (
                   <div className="chat-message-container">
                     <div className="chat-message">
-                      <ChatBox />
+                      <ChatBox isAI={false} />
+                    </div>
+                    <div className="chat-input">
+                      <TextField
+                        style={{
+                          backgroundColor: "#dddddd",
+                        }}
+                        fullWidth
+                        size="small"
+                        onKeyDown={onSubmitChat}
+                        onChange={(e) => {
+                          setTextInput(e.target.value);
+                        }}
+                        value={textInput}
+                      />
+                    </div>
+                  </div>
+                )}
+                {showAIChat && (
+                  <div className="chat-message-container">
+                    <div className="chat-message">
+                      <ChatBox isAI={true} />
                     </div>
                     <div className="chat-input">
                       <TextField
@@ -220,7 +287,7 @@ function ProblemPage(props) {
                         }}
                         fullWidth
                         size="small"
-                        onKeyDown={onSubmitChat}
+                        onKeyDown={onSubmitAIChat}
                         onChange={(e) => {
                           setTextInput(e.target.value);
                         }}

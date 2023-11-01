@@ -174,6 +174,7 @@ async def get_submissions(db: AsyncIOMotorClient = Depends(get_database)):
 
 @router.post("/history")
 async def add_submission_to_db(submission: Submission, db: AsyncIOMotorClient = Depends(get_database)):
+    print("fuck")
     response = await add_one_submission(db, submission.dict())
     return response
 

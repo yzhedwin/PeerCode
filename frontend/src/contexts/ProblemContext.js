@@ -4,6 +4,7 @@ export const ProblemContext = createContext();
 
 export const ProblemProvider = ({ children }) => {
   const [message, setMessage] = useState([]);
+  const [aiMessage, setAIMessage] = useState([]);
   const [code, setCode] = useState("console.log('hello world')");
   const [consoleResult, setConsoleResult] = useState({});
   const [language, setLanguage] = useState({
@@ -15,10 +16,12 @@ export const ProblemProvider = ({ children }) => {
     <ProblemContext.Provider
       value={{
         message,
+        aiMessage,
         language,
         code,
         consoleResult,
         setMessage,
+        setAIMessage,
         setLanguage,
         setCode,
         setConsoleResult,
