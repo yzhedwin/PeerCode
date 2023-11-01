@@ -22,7 +22,7 @@ class JudgeOutput(BaseModel):
     stderr: Union[str, None] = None
     compile_output: Union[str, None] = None
     message: Union[str, None] = None
-    status: SubmissionStatus
+    status: Union[SubmissionStatus, None] = None
     finished_at: Union[str, None] = None
 
 class Submission(BaseModel):

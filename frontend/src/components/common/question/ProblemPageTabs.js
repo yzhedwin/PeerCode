@@ -148,6 +148,7 @@ function ProblemPageTabs(props) {
 	useEffect(() => {
 		getSolutions();
 	}, []);
+
 	const handleChange = useCallback(async (event, newValue) => {
 		setValue(newValue);
 	}, []);

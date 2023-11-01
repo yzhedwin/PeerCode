@@ -18,7 +18,8 @@ import { EDITOR_SUPPORTED_LANGUAGES, EDITOR_SUPPORTED_THEMES } from "../utils/co
 import { defineTheme } from "../utils/helper";
 import CustomSelect from "../components/common/question/CustomSelect";
 import EditorOptions from "../components/common/question/EditorOptions";
-
+var interval_id = null;
+var timeout_id = null;
 function ProblemPage(props) {
 	const { type } = props;
 	const { question } = useContext(QuestionContext);
@@ -43,6 +44,7 @@ function ProblemPage(props) {
 		key: "vs-dark",
 	});
 	const [testCase, setTestCase] = useState([]);
+	const [codeIsLoading, setCodeIsLoading] = useState(false);
 	const editorRef = useRef(null);
 	const monacoRef = useRef(null);
 	const handleEditorDidMount = useCallback(
@@ -99,19 +101,32 @@ function ProblemPage(props) {
 		},
 		[message, match]
 	);
-	const onRun = useCallback(async () => {
-		try {
-			const r1 = await axios.post("http://localhost:5000/api/v1/judge/submission", {
-				userID: "1234",
-				titleSlug: question["titleSlug"],
-				language_id: language.id,
-				source_code: code,
-			});
+	const getSubmission = useCallback((token) => {
+		timeout_id = setTimeout(() => {
+			clearInterval(interval_id);
+			setSB({ msg: "Submission timedout", severity: "error" });
+			setOpenSnackBar(true);
+			setCodeIsLoading(false);
+		}, 10000);
+		interval_id = setInterval(async () => {
 			const { data } = await axios.get(
-				`http://localhost:5000/api/v1/judge/submission?token=${r1.data.token}`
+				`http://localhost:5000/api/v1/judge/submission?token=${token}`
 			);
-			if (type === "coop") {
-				socket.emit("code-submission", match, {
+			if (data.status.id !== 1 && data.status.id !== 2) {
+				clearInterval(interval_id);
+				clearTimeout(timeout_id);
+				if (type === "coop") {
+					socket.emit("code-submission", match, {
+						stdout: data.stdout ? atob(data.stdout) : "None",
+						time: data.time,
+						memory: data.memory,
+						stderr: data.stderr ? atob(data.stderr) : "None",
+						compile_output: data.compile_output,
+						message: data.message ? atob(data.message) : "None",
+						status: data.status,
+					});
+				}
+				setConsoleResult({
 					stdout: data.stdout ? atob(data.stdout) : "None",
 					time: data.time,
 					memory: data.memory,
@@ -120,16 +135,32 @@ function ProblemPage(props) {
 					message: data.message ? atob(data.message) : "None",
 					status: data.status,
 				});
+				await axios.post(`http://localhost:5000/api/v1/question/history`, {
+					submission: {
+						userID: "1234",
+						titleSlug: question["titleSlug"],
+						language_id: language.id,
+						source_code: code,
+					},
+					feedback: data,
+				});
+				setCodeIsLoading(false);
+				setSB({ msg: "Code Submitted", severity: "success" });
+				setOpenSnackBar(true);
 			}
-			setConsoleResult({
-				stdout: data.stdout ? atob(data.stdout) : "None",
-				time: data.time,
-				memory: data.memory,
-				stderr: data.stderr ? atob(data.stderr) : "None",
-				compile_output: data.compile_output,
-				message: data.message ? atob(data.message) : "None",
-				status: data.status,
+		}, 2000);
+	}, []);
+
+	const onRun = useCallback(async () => {
+		try {
+			const { data } = await axios.post("http://localhost:5000/api/v1/judge/submission", {
+				userID: "1234",
+				titleSlug: question["titleSlug"],
+				language_id: language.id,
+				source_code: code,
 			});
+			setCodeIsLoading(true);
+			getSubmission(data.token);
 		} catch (e) {
 			console.log(e.message);
 		}
@@ -186,6 +217,9 @@ function ProblemPage(props) {
 		console.log("problem page");
 		//get Test case here once
 		getTestCase();
+		return () => {
+			clearInterval(interval_id);
+		};
 	}, []);
 
 	return (
@@ -268,7 +302,7 @@ function ProblemPage(props) {
 								sx={{ marginLeft: "auto", mr: 1 }}
 							/>
 						)}
-						<ConsoleButton onClick={onRun} title={"Run"} />
+						<ConsoleButton onClick={onRun} title={"Run"} loading={codeIsLoading} />
 					</div>
 				</div>
 			</div>

@@ -13,11 +13,8 @@ config = get_config()
 @router.post("/submission")
 async def add_submission(data: JudgeInput):
     try:
-        response = requests.post(config.judge_service_url + "/submissions?wait=true&fields=stdout,time,memory,stderr,token,compile_output,message,status,finished_at", data=data.dict())
-        jo = JudgeOutput(**response.json())
-        submission = Submission(submission=data, feedback=jo)
-        response = requests.post(config.question_service_url + "/history", data=submission.json())
-        return jo
+        response = requests.post(config.judge_service_url + "/submissions?wait=false&fields=stdout,time,memory,stderr,token,compile_output,message,status,finished_at", data=data.dict())
+        return response.json()
     except Exception as e:
         print(e)
 

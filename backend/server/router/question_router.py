@@ -120,10 +120,11 @@ async def get_submissions_from_question(userID:str, titleSlug:str):
 @router.post("/history")
 async def add_submission_to_db(submission: Submission):
     try:
-        response = requests.post(config.question_service_url + "/history", json=submission)
+        response = requests.post(config.question_service_url + "/history", data=submission.json())
         return response.json()
     except Exception as e:
-        return e
+        print(e)
+        
 @router.delete("/history")
 async def delete_all_submissions_from_db():
     try:
