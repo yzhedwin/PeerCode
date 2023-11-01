@@ -115,18 +115,7 @@ function ProblemPage(props) {
 			if (data.status.id !== 1 && data.status.id !== 2) {
 				clearInterval(interval_id);
 				clearTimeout(timeout_id);
-				if (type === "coop") {
-					socket.emit("code-submission", match, {
-						stdout: data.stdout ? atob(data.stdout) : "None",
-						time: data.time,
-						memory: data.memory,
-						stderr: data.stderr ? atob(data.stderr) : "None",
-						compile_output: data.compile_output,
-						message: data.message ? atob(data.message) : "None",
-						status: data.status,
-					});
-				}
-				setConsoleResult({
+				const feedback = {
 					stdout: data.stdout ? atob(data.stdout) : "None",
 					time: data.time,
 					memory: data.memory,
@@ -134,7 +123,11 @@ function ProblemPage(props) {
 					compile_output: data.compile_output,
 					message: data.message ? atob(data.message) : "None",
 					status: data.status,
-				});
+				};
+				if (type === "coop") {
+					socket.emit("code-submission", match, feedback);
+				}
+				setConsoleResult(feedback);
 				await axios.post(`http://localhost:5000/api/v1/question/history`, {
 					submission: {
 						userID: "1234",
@@ -187,7 +180,7 @@ function ProblemPage(props) {
 		} else {
 			defineTheme(theme.value).then((_) => setEditorTheme(theme));
 		}
-	});
+	}, []);
 
 	const handleCodeChanges = useCallback(
 		(code) => {
@@ -214,11 +207,11 @@ function ProblemPage(props) {
 		setTestCase(data);
 	};
 	useEffect(() => {
-		console.log("problem page");
 		//get Test case here once
 		getTestCase();
 		return () => {
 			clearInterval(interval_id);
+			clearTimeout(timeout_id);
 		};
 	}, []);
 
