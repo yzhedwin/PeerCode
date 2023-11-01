@@ -6,6 +6,7 @@ const rabbitmqUrl = process.env.RABBITMQ_URL;
 function timeout(time) {
     return new Promise((resolve) => setTimeout(resolve, time));
 }
+const queue_suffix = process.env.NODE_ENV === "production" ? "-prod" : "-dev";
 class RabbitMQService {
     connection = null;
     channel = null;
@@ -166,19 +167,19 @@ class RabbitMQService {
         }
     }
 
-    // Helper function to determine the appropriate match queue based on the player's queue
+    // Helper function to determine the appropriate match queue based on the env
     getQueue(queue) {
         switch (queue) {
             case "easy":
-                return "easy";
+                return "easy" + queue_suffix;
             case "medium":
-                return "medium";
+                return "medium" + queue_suffix;
             case "hard":
-                return "hard";
+                return "hard" + queue_suffix;
             case "matched":
-                return "matched";
+                return "matched" + queue_suffix;
             case "cancelMatchmaking":
-                return "cancelMatchmaking";
+                return "cancelMatchmaking" + queue_suffix;
             default:
                 throw new Error(`Invalid queue: ${queue}`);
         }
