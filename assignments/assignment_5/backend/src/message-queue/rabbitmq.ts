@@ -83,9 +83,10 @@ class RabbitMQService {
     }
   }
   async consumeMessage(
-    queue: string,
+    unparsedQueue: string,
     callback: (message: any, tag: string) => void
   ) {
+    const queue = this.getQueue(unparsedQueue)
     if (!this.channel) {
       console.error('RabbitMQ channel not initialized');
       return;

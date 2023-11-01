@@ -110,6 +110,7 @@ class RabbitMQService {
     }
 
     async matchMaking(queue, callback) {
+        queue = this.getQueue(queue);
         if (!this.channel) {
             console.error("RabbitMQ channel not initialized");
             return;
@@ -123,7 +124,6 @@ class RabbitMQService {
                         this.cancelled = false;
                         const player = JSON.parse(message.content.toString());
                         // Find a match for the player based on difficulty level
-                        const matchQueue = this.getQueue(queue);
                         const status = await this.channel?.checkQueue(queue);
                         console.log(status);
                         // find match for x seconds
@@ -139,7 +139,7 @@ class RabbitMQService {
                             console.log(status);
                             matchedPlayer = await this.findMatch(
                                 player,
-                                matchQueue
+                                queue
                             );
                             if (matchedPlayer) {
                                 console.log("matched");

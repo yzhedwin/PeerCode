@@ -9,6 +9,7 @@ const httpServer = createServer(app);
 const PORT = process.env.MATCH_SERVICE_PORT;
 const REACT_APP_URL = process.env.REACT_APP_URL;
 const RabbitMQService = require("./message-queue/rabbitmq");
+const rabbitmq = require("./message-queue/rabbitmq");
 
 const io = new Server(httpServer, {
 	cors: {
@@ -91,7 +92,7 @@ io.on("connection", (socket) => {
 				socket.to(data["players"][1]).emit("match-success", room_id);
 				RabbitMQService.setConsumerID(consumer_id);
 				RabbitMQService.getChannel()
-					?.checkQueue("matched")
+					?.checkQueue(rabbitmq.getQueue("matched"))
 					.then((status) => {
 						console.log(data, status);
 					});
