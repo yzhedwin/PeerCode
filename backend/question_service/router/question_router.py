@@ -226,7 +226,7 @@ async def get_testcase(titleSlug: str):
     )
     if result.get("question") is None:
         return "Question not found"
-    return result.get("question").get("exampleTestcaseList")
+    return {"testCases": result.get("question").get("exampleTestcaseList"), "metaData":result.get("question").get("metaData")}
     
 @router.get("/codesnippets")
 async def get_code_snippets(titleSlug: str) -> list:

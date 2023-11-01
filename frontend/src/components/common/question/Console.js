@@ -30,10 +30,17 @@ function Console() {
 					<strong>Message: </strong>
 					{consoleResult?.message}
 				</div>
-				<div>
-					<strong>Output: </strong>
-					{consoleResult?.stdout}
-				</div>
+				{consoleResult?.status?.description?.toLowerCase().includes("error") ? (
+					<div>
+						<strong>Output: </strong>
+						{consoleResult?.stderr}
+					</div>
+				) : (
+					<div>
+						<strong>Output: </strong>
+						{consoleResult?.stdout}
+					</div>
+				)}
 			</Box>
 		</>
 	);

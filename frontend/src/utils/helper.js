@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { loader } from "@monaco-editor/react";
 import { EDITOR_SUPPORTED_THEMES } from "./constants";
+import PropTypes from "prop-types";
+import { Box } from "@mui/material";
 
 export function dateDiffInDays(a, b) {
 	const _MS_PER_DAY = 1000 * 60 * 60 * 24;
@@ -33,3 +35,35 @@ export const defineTheme = async (theme) => {
 		});
 	});
 };
+
+export function TabPanel(props) {
+	const { children, value, index, ...other } = props;
+	return (
+		<div
+			role="tabpanel"
+			hidden={value !== index}
+			id={`full-width-tabpanel-${index}`}
+			aria-labelledby={`full-width-tab-${index}`}
+			style={{
+				flex: 1,
+				overflow: "scroll",
+			}}
+			{...other}
+		>
+			{value === index && <Box sx={{ height: "100%" }}>{children}</Box>}
+		</div>
+	);
+}
+
+TabPanel.propTypes = {
+	children: PropTypes.node,
+	index: PropTypes.number.isRequired,
+	value: PropTypes.number.isRequired,
+};
+
+export function a11yProps(index) {
+	return {
+		id: `full-width-tab-${index}`,
+		"aria-controls": `full-width-tabpanel-${index}`,
+	};
+}

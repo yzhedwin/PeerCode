@@ -1,44 +1,15 @@
 import { AppBar, Box, Tab, Tabs } from "@mui/material";
 import { useCallback, useState } from "react";
-import PropTypes from "prop-types";
 import { useTheme } from "@mui/material/styles";
 import ChatBox from "./ChatBox";
 import ChatInput from "./ChatInput";
 import Console from "./Console";
 import Testcase from "./Testcase";
+import { TabPanel, a11yProps } from "../../../utils/helper";
 
-function TabPanel(props) {
-	const { children, value, index, ...other } = props;
-	return (
-		<div
-			role="tabpanel"
-			hidden={value !== index}
-			id={`full-width-tabpanel-${index}`}
-			aria-labelledby={`full-width-tab-${index}`}
-			style={{
-				flex: 1,
-			}}
-			{...other}
-		>
-			{value === index && <Box sx={{ height: "100%" }}>{children}</Box>}
-		</div>
-	);
-}
-
-TabPanel.propTypes = {
-	children: PropTypes.node,
-	index: PropTypes.number.isRequired,
-	value: PropTypes.number.isRequired,
-};
-
-function a11yProps(index) {
-	return {
-		id: `full-width-tab-${index}`,
-		"aria-controls": `full-width-tabpanel-${index}`,
-	};
-}
 function ConsoleTabs(props) {
-	const { onSubmitChat, textInput, setTextInput, chatDisabled, testCase } = props;
+	const { onSubmitChat, textInput, setTextInput, chatDisabled, defaultTestCases, setStdin } =
+		props;
 	const [value, setValue] = useState(0);
 	const handleChange = useCallback(async (event, newValue) => {
 		setValue(newValue);
@@ -74,7 +45,7 @@ function ConsoleTabs(props) {
 				</Tabs>
 			</AppBar>
 			<TabPanel value={value} index={0} dir={theme.direction}>
-				<Testcase testCase={testCase} />
+				<Testcase defaultTestCases={defaultTestCases} setStdin={setStdin} />
 			</TabPanel>
 			<TabPanel value={value} index={1} dir={theme.direction}>
 				<Console />

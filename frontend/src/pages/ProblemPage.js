@@ -43,7 +43,8 @@ function ProblemPage(props) {
 		value: "vs-dark",
 		key: "vs-dark",
 	});
-	const [testCase, setTestCase] = useState([]);
+	const [defaultTestCases, setDefaultTestCases] = useState([]);
+	const [stdin, setStdin] = useState();
 	const [codeIsLoading, setCodeIsLoading] = useState(false);
 	const editorRef = useRef(null);
 	const monacoRef = useRef(null);
@@ -80,7 +81,7 @@ function ProblemPage(props) {
 	}, []);
 	const onShow = useCallback(() => {
 		setHide(false);
-		setChatHeight(30);
+		setChatHeight(40);
 	}, []);
 
 	const onSubmitChat = useCallback(
@@ -120,10 +121,11 @@ function ProblemPage(props) {
 					time: data.time,
 					memory: data.memory,
 					stderr: data.stderr ? atob(data.stderr) : "None",
-					compile_output: data.compile_output,
+					compile_output: data.compile_output ? atob(data.compile_output) : "None",
 					message: data.message ? atob(data.message) : "None",
 					status: data.status,
 				};
+				console.log(feedback);
 				if (type === "coop") {
 					socket.emit("code-submission", match, feedback);
 				}
@@ -143,21 +145,24 @@ function ProblemPage(props) {
 			}
 		}, 2000);
 	}, []);
-
+	const onSubmit = () => {
+		console.log("submit, run against all test cases");
+	};
 	const onRun = useCallback(async () => {
 		try {
 			const { data } = await axios.post("http://localhost:5000/api/v1/judge/submission", {
 				userID: "1234",
 				titleSlug: question["titleSlug"],
 				language_id: language.id,
-				source_code: code,
+				source_code: btoa(code),
+				stdin: btoa(JSON.stringify(stdin)),
 			});
 			setCodeIsLoading(true);
 			getSubmission(data.token);
 		} catch (e) {
 			console.log(e.message);
 		}
-	}, [code, match, question, language.id, type]);
+	}, [code, match, question, language.id, type, stdin]);
 
 	const handleLanguageChange = useCallback(
 		(event) => {
@@ -200,15 +205,23 @@ function ProblemPage(props) {
 		}
 	}, [match, type]);
 
-	const getTestCase = async () => {
+	const getDefaultTestCases = async () => {
 		const { data } = await axios.get(`http://localhost:5000/api/v1/question/exampletestcase`, {
 			params: { titleSlug: question?.titleSlug },
 		});
-		setTestCase(data);
+		const testcases = data?.testCases?.map((tc) => {
+			const arr = tc.split("\n").map((param, index) => {
+				return {
+					[JSON.parse(data.metaData).params[index].name]: param,
+				};
+			});
+			return Object.assign(...arr);
+		});
+		setDefaultTestCases(testcases);
 	};
 	useEffect(() => {
 		//get Test case here once
-		getTestCase();
+		getDefaultTestCases();
 		return () => {
 			clearInterval(interval_id);
 			clearTimeout(timeout_id);
@@ -270,7 +283,8 @@ function ProblemPage(props) {
 								setTextInput={setTextInput}
 								textInput={textInput}
 								chatDisabled={type !== "coop"}
-								testCase={testCase}
+								defaultTestCases={defaultTestCases}
+								setStdin={setStdin}
 							/>
 						</div>
 					)}
@@ -295,7 +309,18 @@ function ProblemPage(props) {
 								sx={{ marginLeft: "auto", mr: 1 }}
 							/>
 						)}
-						<ConsoleButton onClick={onRun} title={"Run"} loading={codeIsLoading} />
+						<ConsoleButton
+							onClick={onRun}
+							title={"Run"}
+							loading={codeIsLoading}
+							sx={{ marginLeft: "auto", mr: 1 }}
+						/>
+						<ConsoleButton
+							onClick={onSubmit}
+							title={"Submit"}
+							loading={codeIsLoading}
+							sx={{ backgroundColor: "green" }}
+						/>
 					</div>
 				</div>
 			</div>

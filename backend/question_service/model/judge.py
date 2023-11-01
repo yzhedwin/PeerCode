@@ -8,7 +8,7 @@ class JudgeInput(BaseModel):
     titleSlug: str
     source_code: str
     language_id: int
-    stdin: Union[list, None]
+    stdin: Union[dict, None]
 
 class SubmissionStatus(BaseModel):
     id: int
