@@ -40,21 +40,21 @@ class RabbitMQService {
       await this.channel.assertExchange('matchmaking', 'direct', {
         durable: true,
       });
-      await this.channel.assertQueue('easy', { durable: true });
-      await this.channel.assertQueue('medium', { durable: true });
-      await this.channel.assertQueue('hard', { durable: true });
-      await this.channel.assertQueue('matched', { durable: true });
-      await this.channel.assertQueue('cancelMatchmaking', { durable: true });
+      await this.channel.assertQueue(this.getQueue('easy'), { durable: true });
+      await this.channel.assertQueue(this.getQueue('medium'), { durable: true });
+      await this.channel.assertQueue(this.getQueue('hard'), { durable: true });
+      await this.channel.assertQueue(this.getQueue('matched'), { durable: true });
+      await this.channel.assertQueue(this.getQueue('cancelMatchmaking'), { durable: true });
       this.channel.prefetch(1);
       // Bind queues to the exchange with routing keys
-      await this.channel.bindQueue('easy', 'matchmaking', 'easy');
-      await this.channel.bindQueue('medium', 'matchmaking', 'medium');
-      await this.channel.bindQueue('hard', 'matchmaking', 'hard');
-      await this.channel.bindQueue('matched', 'matchmaking', 'matched');
+      await this.channel.bindQueue(this.getQueue('easy'), 'matchmaking', this.getQueue('easy'));
+      await this.channel.bindQueue(this.getQueue('medium'), 'matchmaking', this.getQueue('medium'));
+      await this.channel.bindQueue(this.getQueue('hard'), 'matchmaking', this.getQueue('hard'));
+      await this.channel.bindQueue(this.getQueue('matched'), 'matchmaking', this.getQueue('matched'));
       await this.channel.bindQueue(
-        'cancelMatchmaking',
+        this.getQueue('cancelMatchmaking'),
         'matchmaking',
-        'cancelMatchmaking'
+        this.getQueue('cancelMatchmaking')
       );
       console.log('RabbitMQ initialized successfully');
     } catch (error: any) {
@@ -62,32 +62,8 @@ class RabbitMQService {
     }
   }
 
-  // WIP trying to figure out how to remove people from queue
-  // https://stackoverflow.com/questions/53273463/how-to-remove-specific-message-from-queue-in-rabbitmq
-  // async removeUserFromQueue(queue: string, userId: string) {
-  //   if (!this.channel) {
-  //     console.error('RabbitMQ channel not initialized');
-  //     return;
-  //   }
-
-  //   try {
-  //     for (const consumerTag in this.consumers) {
-  //       if (this.consumers[consumerTag] === userId) {
-  //         await this.channel.cancel(consumerTag);
-  //         console.log(`User ${userId} removed from queue`);
-  //         // Remove the user from the consumers object
-  //         delete this.consumers[consumerTag];
-  //       }
-  //     }
-  //   } catch (error: any) {
-  //     console.error(
-  //       `Error removing user ${userId} from queue "${queue}":`,
-  //       error.message
-  //     );
-  //   }
-  // }
-
-  publishMessage(queue: string, message: string) {
+  publishMessage(unparsedQueue: string, message: string) {
+    const queue = this.getQueue(unparsedQueue)
     if (!this.channel) {
       console.error('RabbitMQ channel not initialized');
       return;
@@ -127,7 +103,8 @@ class RabbitMQService {
     }
   }
 
-  async matchMaking(queue: string, callback: (players: Array<string>) => void) {
+  async matchMaking(unparsedQueue: string, callback: (players: Array<string>) => void) {
+    const queue = this.getQueue(unparsedQueue)
     if (!this.channel) {
       console.error('RabbitMQ channel not initialized');
       return;
@@ -141,7 +118,6 @@ class RabbitMQService {
             this.cancelled = false;
             const player = JSON.parse(message.content.toString());
             // Find a match for the player based on difficulty level
-            const matchQueue = this.getMatchQueue(queue);
             const status = await this.channel?.checkQueue(queue);
             console.log(status);
             // find match for x seconds
@@ -153,7 +129,7 @@ class RabbitMQService {
             ) {
               const status = await this.channel?.checkQueue(queue);
               console.log(status);
-              matchedPlayer = await this.findMatch(player, matchQueue);
+              matchedPlayer = await this.findMatch(player, queue);
               if (matchedPlayer) {
                 console.log('matched');
                 const players = [player, matchedPlayer];
@@ -181,7 +157,7 @@ class RabbitMQService {
   }
 
   // Helper function to determine the appropriate match queue based on the player's queue
-  private getMatchQueue(queue: string): string {
+  public getQueue(queue: string): string {
     switch (queue) {
       case 'easy':
         return 'easy';
@@ -189,6 +165,10 @@ class RabbitMQService {
         return 'medium';
       case 'hard':
         return 'hard';
+      case 'matched':
+        return 'matched';
+      case 'cancelMatchmaking':
+        return 'cancelMatchmaking';
       default:
         throw new Error(`Invalid queue: ${queue}`);
     }
