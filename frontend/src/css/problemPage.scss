@@ -1,72 +1,101 @@
 @import "./_colors.scss";
 
 .problem-page-container {
-  display: flex;
-  margin-top: 2vh;
-  margin-inline: 1vw;
-  height: 90vh;
+	display: flex;
+	margin-top: 2vh;
+	margin-inline: 1vw;
+	height: 90vh;
+	overflow: hidden;
 }
 
-.problem-description-container {
-  flex: 1;
-  overflow: scroll;
+.problem-tabs-container {
+	flex: 1;
 }
+
 .editor-container {
-  flex: 1;
-  height: 100%;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+	display: flex;
+	flex: 1;
+	overflow: hidden;
+	flex-direction: column;
 }
 .editor-component {
-  flex: 1;
+	display: flex;
+	flex: 1;
 }
-.console-and-chat-container {
-  transition-property: height;
-  transition-duration: 0.5s;
-  transition-timing-function: linear;
-  display: flex;
-  flex-direction: column;
+.editor-options {
+	display: flex;
+}
+.editor-options > div {
+	margin-bottom: 5px;
+	padding-right: 5px;
+}
+.console-tabs-container {
+	transition-property: height;
+	transition-duration: 0.2s;
+	transition-timing-function: linear;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
 }
 .chat-message-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background-color: $text-white;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	background-color: $text-white;
+	overflow: hidden;
 }
 .chat-message {
-  flex: 1;
-  background-color: $text-white;
-  overflow-y: scroll;
+	background-color: $text-white;
+	overflow-y: scroll;
+	height: 90%;
 }
 .chat-input {
-  //style chat input
+	//style chat input
+	flex: 1;
 }
 .console-options {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 5px;
+	margin-bottom: 5px;
 }
 .console-message {
-  flex: 1;
-  border: black solid 1px;
+	height: 100%;
+	border: black solid 1px;
+	overflow-y: scroll;
 }
 .submissions-container {
-  height: 100%;
+	height: 100%;
 }
-.ag-theme-alpine {
-  --ag-foreground-color: black;
-  --ag-secondary-foreground-color: rgb(164, 146, 146);
-  --ag-background-color: #333333;
-  --ag-data-color: white;
-  --ag-row-hover-color: rgba(255, 255, 255, 0.229);
-  --ag-header-foreground-color: white;
-  --ag-header-background-color: #333333;
-  --ag-row-border-color: #333333;
-  --ag-font-size: 12px;
-  --ag-font-family: monospace;
-  --ag-borders: none;
-  --ag-selected-row-background-color: none;
-  --ag-range-selection-border-color: none;
-  --ag-range-selection-border-style: none;
+.ag-theme-alpine-submission {
+	--ag-foreground-color: white;
+	--ag-secondary-foreground-color: white;
+	--ag-background-color: #282828;
+	--ag-data-color: white;
+	--ag-row-hover-color: rgba(255, 255, 255, 0.229);
+	--ag-header-foreground-color: white;
+	--ag-header-background-color: #282828;
+	--ag-row-border-color: #282828;
+	--ag-font-size: 12px;
+	--ag-font-family: monospace;
+	--ag-borders: none;
+	--ag-selected-row-background-color: none;
+	--ag-range-selection-border-color: none;
+	--ag-range-selection-border-style: none;
+	--ag-odd-row-background-color: #282828;
+	--ag-control-panel-background-color: #282828;
+}
+
+​.MuiTabs-root {
+	min-height: 0 !important;
+	align-items: center;
+}
+.MuiButtonBase-root {
+	min-height: 0 !important;
+}
+.MuiTabs-flexContainer {
+	min-height: 0 !important;
+	height: 30px;
 }

@@ -1,5 +1,5 @@
 import { useCallback, useContext } from "react";
-import { ProblemContext } from "../../contexts/ProblemContext";
+import { ProblemContext } from "../../../contexts/ProblemContext";
 
 function ChatBox() {
 	const { message } = useContext(ProblemContext);
@@ -16,7 +16,7 @@ function ChatBox() {
 		});
 	}, [message]);
 
-	return <>{getMessages()}</>;
+	return <div className="chat-message">{getMessages()}</div>;
 }
 
 export default ChatBox;

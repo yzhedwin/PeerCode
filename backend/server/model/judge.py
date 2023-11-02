@@ -12,20 +12,20 @@ class JudgeInput(BaseModel):
 
 class SubmissionStatus(BaseModel):
     id: int
-    description: str
+    description: Union[str, None] = None
 
 class JudgeOutput(BaseModel):
-    stdout: str
-    time: float
-    memory: int
-    stderr: Union[str, None]
     token: str 
-    compile_output: Union[str, None]
-    message: Union[str, None]
-    status: SubmissionStatus
-    finished_at: Union[str, None]
+    stdout: Union[str, None] = None
+    time: Union[float, None] = None
+    memory: Union[int, None] = None
+    stderr: Union[str, None] = None
+    compile_output: Union[str, None] = None
+    message: Union[str, None] = None
+    status: Union[SubmissionStatus, None] = None
+    finished_at: Union[str, None] = None
 
 class Submission(BaseModel):
-    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True, index=True, nullable=False)
-    submission: JudgeInput
-    feedback: JudgeOutput
+    id: Union[str, uuid.UUID] = uuid.UUID
+    submission: Union[JudgeInput, None] = None
+    feedback: Union[JudgeOutput, None] = None
