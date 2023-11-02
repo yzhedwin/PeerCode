@@ -54,6 +54,7 @@ function ProblemPage(props) {
 			editorRef.current = editor;
 			monacoRef.current = monaco;
 			try {
+				editorRef.current.getModel().updateOptions({ tabSize: 8 });
 				setCode(
 					snippets?.find((snippet) => {
 						return snippet?.langSlug === language.raw;
@@ -276,14 +277,13 @@ function ProblemPage(props) {
 			clearTimeout(timeout_id);
 		};
 	}, []);
-
 	return (
 		<>
 			<SnackBar
-				msg={sb.msg}
+				msg={sb?.msg}
 				handleCloseSnackBar={handleCloseSnackBar}
 				openSnackBar={openSnackBar}
-				severity={sb.severity}
+				severity={sb?.severity}
 			/>
 			<div className="problem-page-container">
 				<div className="problem-tabs-container">
@@ -361,14 +361,14 @@ function ProblemPage(props) {
 						<ConsoleButton
 							onClick={onRun}
 							title={"Run"}
-							loading={isRunning}
+							loading={isRunning ? isRunning : undefined}
 							disabled={isSubmitting}
 							sx={{ marginLeft: "auto", mr: 1 }}
 						/>
 						<ConsoleButton
 							onClick={onSubmit}
 							title={"Submit"}
-							loading={isSubmitting}
+							loading={isSubmitting ? isSubmitting : undefined}
 							disabled={isRunning}
 							sx={{ backgroundColor: "green" }}
 						/>
