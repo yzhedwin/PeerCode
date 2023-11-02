@@ -14,9 +14,7 @@ import ConsoleTabs from "../components/common/question/ConsoleTabs";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import "../css/problemPage.scss";
-import { EDITOR_SUPPORTED_LANGUAGES, EDITOR_SUPPORTED_THEMES } from "../utils/constants";
 import { defineTheme } from "../utils/helper";
-import CustomSelect from "../components/common/question/CustomSelect";
 import EditorOptions from "../components/common/question/EditorOptions";
 var interval_id = null;
 var timeout_id = null;
@@ -205,7 +203,7 @@ function ProblemPage(props) {
 				titleSlug: question["titleSlug"],
 				language_id: language.id,
 				source_code: btoa(code),
-				stdin: btoa(JSON.stringify(stdin)),
+				stdin: btoa(stdin ? JSON.stringify(stdin) : JSON.stringify(defaultTestCases[0])),
 			});
 			setIsRunning(true);
 			timeout_id = setTimeout(() => {
@@ -218,7 +216,7 @@ function ProblemPage(props) {
 		} catch (e) {
 			console.log(e.message);
 		}
-	}, [code, match, question, language.id, type, stdin]);
+	}, [code, match, question, language.id, type, stdin, defaultTestCases]);
 
 	const handleLanguageChange = useCallback(
 		(event) => {

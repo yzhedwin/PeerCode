@@ -60,11 +60,9 @@ function SolutionCode(props) {
 				snippetsIndex[index + 1]
 			);
 			if (snippet.includes("class")) {
-				console.log(count);
 				if (count === 1) {
 					solutionIndex += 1;
 					count = codeLanguages.length;
-					console.log(solutions[solutionIndex]);
 					if (solutions[solutionIndex]) {
 						return (
 							<>
