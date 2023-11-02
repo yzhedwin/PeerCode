@@ -40,7 +40,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    command: sh -c "npm run build && npm run sockket-server"
+    command: sh -c "npm run build && npm run socket-server"
     restart: always
     ports:
       - 3001:3001
