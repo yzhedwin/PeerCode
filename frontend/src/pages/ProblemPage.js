@@ -87,15 +87,19 @@ function ProblemPage(props) {
 	const onSubmitChat = useCallback(
 		(e) => {
 			if (e.keyCode === 13) {
+				let date = new Date();
+				const time = `${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")}`;
 				let currentMessage = [...message];
 				currentMessage.push({
 					user: "me",
 					data: e.target.value,
+					time: time,
 				});
 				setMessage(currentMessage);
 				socket.emit("room-message", match, {
 					user: "edwin", //change to username
 					data: e.target.value,
+					time: time,
 				});
 				setTextInput("");
 			}

@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 const socketUrl = "http://localhost:5002";
 export const socket = io(socketUrl, {
-  autoConnect: false,
+	autoConnect: false,
 });
 
 const style = {
@@ -91,15 +91,19 @@ export default function WebSocket() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 	const onMatchQuitDeny = useCallback(() => {
+		let date = new Date();
+		const time = `${date.getHours()}:${date.getMinutes()}`;
 		let currentMessage = [...message];
 		currentMessage.push({
 			user: "me",
 			data: "refused to leave",
+			time: time,
 		});
 		setMessage(currentMessage);
 		socket.emit("room-message", match, {
 			user: "edwin",
 			data: "refused to leave",
+			time: time,
 		});
 		handleClose();
 		// eslint-disable-next-line react-hooks/exhaustive-deps

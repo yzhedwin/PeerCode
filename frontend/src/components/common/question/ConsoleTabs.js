@@ -6,6 +6,7 @@ import ChatInput from "./ChatInput";
 import Console from "./Console";
 import Testcase from "./Testcase";
 import { TabPanel, a11yProps } from "../../../utils/helper";
+import "../../../css/chatbox.scss";
 
 function ConsoleTabs(props) {
 	const { onSubmitChat, textInput, setTextInput, chatDisabled, defaultTestCases, setStdin } =
@@ -67,7 +68,7 @@ function ConsoleTabs(props) {
 				<Console />
 			</TabPanel>
 			<TabPanel value={value} index={2} dir={theme.direction}>
-				<div className="chat-message-container">
+				<Box className="chat-message-container" sx={{ backgroundColor: "chat.main" }}>
 					<ChatBox />
 					<ChatInput
 						onSubmitChat={onSubmitChat}
@@ -75,7 +76,7 @@ function ConsoleTabs(props) {
 						setTextInput={setTextInput}
 						disabled={chatDisabled}
 					/>
-				</div>
+				</Box>
 			</TabPanel>
 		</Box>
 	);

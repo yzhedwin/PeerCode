@@ -63,6 +63,19 @@ function App() {
 							contrastText: grey[900],
 					  }),
 			},
+			chat: {
+				...(mode === "dark"
+					? {
+							main: "#282828",
+							input: "#333333",
+							contrastText: grey[900],
+					  }
+					: {
+							main: "#ffff",
+							input: "#333333",
+							contrastText: "#ffff",
+					  }),
+			},
 			editor: {
 				...(mode === "dark"
 					? {
