@@ -307,7 +307,16 @@ function ProblemPage(props) {
 						editorTheme={editorTheme}
 						handleLanguageChange={handleLanguageChange}
 						handleThemeChange={handleThemeChange}
-					/>
+					>
+						{type === "coop" && (
+							<ConsoleButton
+								title={"Leave"}
+								onClick={handleLeaveRoom}
+								sx={{ ml: "auto", backgroundColor: "red", mb: 1 }}
+							/>
+						)}
+					</EditorOptions>
+
 					<div className="editor-component" style={{ height: `${100 - chatHeight}%` }}>
 						<Editor
 							height="100%"
@@ -355,19 +364,12 @@ function ProblemPage(props) {
 								title={"Console"}
 							/>
 						)}
-						{type === "coop" && (
-							<ConsoleButton
-								title={"Leave"}
-								onClick={handleLeaveRoom}
-								sx={{ marginLeft: "auto", mr: 1 }}
-							/>
-						)}
 						<ConsoleButton
 							onClick={onRun}
 							title={"Run"}
 							loading={isRunning ? isRunning : undefined}
 							disabled={isSubmitting}
-							sx={{ marginLeft: "auto", mr: 1 }}
+							sx={{ ml: "auto", mr: 1 }}
 						/>
 						<ConsoleButton
 							onClick={onSubmit}
