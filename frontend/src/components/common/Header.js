@@ -14,6 +14,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { SnackBarContext } from "../../contexts/SnackBarContext";
 import { ModeContext } from "../../contexts/ModeContext";
+import { FirebaseContext } from "../../contexts/FirebaseContext";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { useTheme } from "@mui/material";
@@ -29,6 +30,7 @@ function Header() {
 	const [anchorElUser, setAnchorElUser] = useState(null);
 	const { setOpenSnackBar, setSB } = useContext(SnackBarContext);
 	const { mode, setMode } = useContext(ModeContext);
+	const { currentUser, log_out } = useContext(FirebaseContext);
 	const navigate = useNavigate();
 	const theme = useTheme();
 	const { userInfo } = useSelector((state) => state.auth);
@@ -205,7 +207,7 @@ function Header() {
             ))} */}
 					</Box>
 
-					{userInfo ? (
+					{currentUser ? (
 						<Box sx={{ flexGrow: 0 }}>
 							<Tooltip title="Open settings">
 								<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -231,9 +233,12 @@ function Header() {
 								{settings.map((setting) => (
 									<MenuItem
 										key={setting}
-										onClick={() =>
+										onClick={async () =>
 											setting.toLowerCase() === "logout"
-												? dispatch(logout()) && handleCloseUserMenu(setting)
+												? dispatch(logout()) &&
+												  (await log_out().then(
+														handleCloseUserMenu(setting)
+												  ))
 												: handleCloseUserMenu(setting)
 										}
 									>

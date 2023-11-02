@@ -18,9 +18,13 @@ import Login from "./pages/Login";
 import { Provider } from "react-redux";
 import store from "./store";
 import ProtectedRoute from "./components/routing/ProtectedRoutes";
+import RedirectedRoute from "./components/routing/RedirectedRoute";
 import SignUp from "./pages/SignUp";
 import { ProblemProvider } from "./contexts/ProblemContext";
 import { useBeforeRender } from "./utils/helper";
+import { FirebaseProvider } from "./contexts/FirebaseContext";
+import CreateQuestion from "./pages/CreateQuestion";
+import EditQuestion from "./pages/EditQuestion";
 
 function App() {
 	const { mode } = useContext(ModeContext);

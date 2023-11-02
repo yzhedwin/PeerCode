@@ -1,70 +1,52 @@
-# Getting Started with Create React App
+# CS3219 Assignment 4
+
+Containerises assignment 3 to prepare for easy deployment.
+
+The following objectives are achieved:
+- Fully containerise assignment 3 with Docker Compose Up
+- Allow web application to run locally using a single line 'docker compose up'
+- Allow easy teardown of web application (running of containers) with 'docker compose down'
+- Enables easy deployment of the web application
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Set-up
+
+### Navigate to the current project directory 
+
+After cloning the project in your personal device, navigate the directory to ay2324s1-course-assessment-g33/assignments/assignment_4 using `cd` commands in the terminal.
+
+Within the project directory, create an environment file (.env.local). You can request the environment file containing our API secrets from our group over email, at woobt123@gmail.com.
+This allows you to access MongoDB, Firebase, and AWS RDS servers.
+
+Before running the program, ensure that Docker (CLI and Docker Desktop) and docker compose is installed on your system.
 
 In the project directory, you can run:
 
-### `npm start`
+### `docker compose up`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+This command builds all the images of the frontend and backend services, installs the necessary dependencies required to run the program, and runs the container thereafter.
+Thereafter, you can access the web application via localhost:3000.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### `docker compose down`
+This command ends the running of containers and teardown of containers gracefully, without removing the images created. You can remove the images manually after running the assignment manually via Docker Desktop or the Visual Studio Code's docker extension.
 
-### `npm test`
+## User Guide
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Getting the Web Application up via running of Containers
 
-### `npm run build`
+![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/f0d55c94-b838-4304-b684-8feee00e92c1)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- You can view the images created and containers running on the Visual Studio Code 'Docker Extension'
+![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/9d00ecc9-2347-4d2c-bd30-1a2ec8883f69)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Or via Docker Desktop's UI
+![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/76781851-7ff2-46f3-ad62-cd4c39af5e57)
+![image](https://github.com/Bobowoo2468/ay2324s1-course-assessment-g33/assets/62021897/ea3217dc-9ab0-444a-8beb-d695c952dc7d)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

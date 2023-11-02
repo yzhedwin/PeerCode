@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 const socketUrl = "http://localhost:5002";
 export const socket = io(socketUrl, {
-	autoConnect: false,
+  autoConnect: false,
 });
 
 const style = {

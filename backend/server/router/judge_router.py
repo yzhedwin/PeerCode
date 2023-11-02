@@ -12,6 +12,7 @@ router = APIRouter(
 )
 config = get_config()
 
+
 @router.post("/submission")
 async def add_submission(data: JudgeInput):
     try:
@@ -24,7 +25,7 @@ async def add_submission(data: JudgeInput):
 
 
 @router.get("/submission")
-async def get_submission(token:str):
+async def get_submission(token: str):
     try:
         response = requests.get(config.judge_service_url + f"/submissions/{token}?base64_encoded=true&fields=stdout,time,memory,stderr,token,compile_output,message,status,finished_at")
         print(response.json())
@@ -33,10 +34,12 @@ async def get_submission(token:str):
     except Exception as e:
         return e.response
 
+
 @router.get("/submissions")
 async def get_submissions():
     try:
-        response = requests.get(config.judge_service_url + "/submissions/?base64_encoded=true")
+        response = requests.get(
+            config.judge_service_url + "/submissions/?base64_encoded=true")
         response.raise_for_status()
         return response.json()
     except Exception as e:
@@ -47,6 +50,7 @@ async def get_submissions():
 async def get_all_languages():
     response = requests.get(config.judge_service_url + "/languages")
     return response.json()
+
 
 @router.post("authorize")
 async def authorize():
