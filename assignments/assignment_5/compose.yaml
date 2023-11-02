@@ -28,6 +28,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     command: sh -c "npm run build && npm run match-server"
+    restart: always
     environment:
       NODE_ENV: production
       RABBITMQ_URL: ${RABBITMQ_URL}
@@ -40,6 +41,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     command: sh -c "npm run build && npm run sockket-server"
+    restart: always
     ports:
       - 3001:3001
     expose:
