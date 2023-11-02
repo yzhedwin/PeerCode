@@ -11,15 +11,11 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export default function SolutionItem(props) {
-	const { item, handleOpen } = props;
+	const { item, handleOpen, key } = props;
 	return (
 		<Item onClick={() => handleOpen && handleOpen(item)}>
-			<div className="solution-item-container-1">
-				<img
-					alt="user-avatar"
-					src={item.userAvatar}
-					className="solution-item-avatar"
-				/>
+			<div key={key} className="solution-item-container-1">
+				<img alt="user-avatar" src={item.userAvatar} className="solution-item-avatar" />
 				<div className="solution-item-container-2">
 					<div>{item.username}</div>
 					<div className="solution-item-title">{item.title}</div>

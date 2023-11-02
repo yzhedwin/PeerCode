@@ -119,7 +119,7 @@ export default function WebSocket() {
 	}, [newMessage]);
 
 	useEffect(() => {
-		// socket.connect();
+		socket.connect();
 		socket.on("connect", onConnect);
 		socket.on("disconnect", onDisconnect);
 		socket.on("match-success", onMatchSuccess);

@@ -3,6 +3,8 @@ from typing import Union
 from config import get_config
 import requests
 from model.judge import JudgeInput, JudgeOutput, Submission
+import base64
+
 router = APIRouter(
     prefix="/api/v1/judge",
     tags=["judge"],
@@ -13,9 +15,10 @@ config = get_config()
 @router.post("/submission")
 async def add_submission(data: JudgeInput):
     try:
-        print(data)
-        response = requests.post(config.judge_service_url + "/submissions?base64_encoded=true&wait=false&fields=stdout,time,memory,stderr,token,compile_output,message,status,finished_at", data=data.dict())
-        return response.json()
+        print(data.stdin)
+        print(base64.b64decode(data.stdin).decode('utf-8'))
+        # response = requests.post(config.judge_service_url + "/submissions?base64_encoded=true&wait=false&fields=stdout,time,memory,stderr,token,compile_output,message,status,finished_at", data=data.dict())
+        # return response.json()
     except Exception as e:
         print(e)
 

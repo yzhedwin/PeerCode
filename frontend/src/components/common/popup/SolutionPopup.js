@@ -33,7 +33,6 @@ function SolutionPopup(props) {
 					transform: "translate(-50%, -50%)",
 					width: "70%",
 					height: "70%",
-					border: "2px solid #000",
 					boxShadow: 24,
 					p: 4,
 				}}
@@ -64,14 +63,17 @@ function SolutionPopup(props) {
 						display: "flex",
 						flexDirection: "column",
 						backgroundColor: "primary.main",
+						color: "primary.contrastText",
 						height: "100%",
 						borderRadius: 5,
+						padding: 1,
 					}}
 				>
 					<Box
 						sx={{
 							flex: 3,
 							overflow: "scroll",
+							borderRadius: 5,
 						}}
 					>
 						<SolutionItem item={solution} />

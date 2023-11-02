@@ -48,8 +48,8 @@ function Solutions(props) {
 		<Box sx={{ width: "100%", overflow: "scroll", height: "95%" }}>
 			<SolutionPopup open={open} handleClose={handleClose} solution={solution} />
 			<Stack spacing={0} divider={<Divider orientation="horizontal" flexItem />}>
-				{list.map((l) => {
-					return <SolutionItem item={l} handleOpen={handleOpen} />;
+				{list.map((l, index) => {
+					return <SolutionItem key={index} item={l} handleOpen={handleOpen} />;
 				})}
 			</Stack>
 		</Box>

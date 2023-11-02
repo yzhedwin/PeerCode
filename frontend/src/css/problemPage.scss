@@ -35,20 +35,23 @@
 	transition-timing-function: linear;
 	display: flex;
 	flex-direction: column;
+	overflow: hidden;
 }
 .chat-message-container {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
 	background-color: $text-white;
+	overflow: hidden;
 }
 .chat-message {
-	flex: 1;
 	background-color: $text-white;
 	overflow-y: scroll;
+	height: 90%;
 }
 .chat-input {
 	//style chat input
+	flex: 1;
 }
 .console-options {
 	display: flex;

@@ -34,7 +34,12 @@ export default function Testcase(props) {
 	const testCaseInput = () => {
 		return testCase?.map((tc, caseIndex) => {
 			return (
-				<TabPanel value={value} index={caseIndex} dir={theme.direction}>
+				<TabPanel
+					key={`tabs-panel-${caseIndex}`}
+					value={value}
+					index={caseIndex}
+					dir={theme.direction}
+				>
 					<div className="testcase-item">
 						{Object.keys(tc).map((param, idx) => {
 							return (

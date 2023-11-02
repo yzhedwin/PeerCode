@@ -105,12 +105,6 @@ function ProblemPage(props) {
 		[message, match]
 	);
 	const getSubmission = useCallback((token) => {
-		timeout_id = setTimeout(() => {
-			clearInterval(interval_id);
-			setSB({ msg: "Submission timedout", severity: "error" });
-			setOpenSnackBar(true);
-			setIsRunning(false);
-		}, 10000);
 		interval_id = setInterval(async () => {
 			const { data } = await axios.get(
 				`http://localhost:5000/api/v1/judge/submission?token=${token}`
@@ -193,6 +187,12 @@ function ProblemPage(props) {
 				stdin: btoa(JSON.stringify(stdin)),
 			});
 			setIsSubmitting(true);
+			timeout_id = setTimeout(() => {
+				clearInterval(interval_id);
+				setSB({ msg: "Submission timedout", severity: "error" });
+				setOpenSnackBar(true);
+				setIsSubmitting(false);
+			}, 10000);
 			getSubmissionAndSubmit(data.token);
 		} catch (e) {
 			console.log(e.message);
@@ -208,6 +208,12 @@ function ProblemPage(props) {
 				stdin: btoa(JSON.stringify(stdin)),
 			});
 			setIsRunning(true);
+			timeout_id = setTimeout(() => {
+				clearInterval(interval_id);
+				setSB({ msg: "Submission timedout", severity: "error" });
+				setOpenSnackBar(true);
+				setIsRunning(false);
+			}, 10000);
 			getSubmission(data.token);
 		} catch (e) {
 			console.log(e.message);
