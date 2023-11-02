@@ -1,5 +1,5 @@
 import { AppBar, Box, Tab, Tabs } from "@mui/material";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import ChatBox from "./ChatBox";
 import ChatInput from "./ChatInput";
@@ -11,10 +11,17 @@ function ConsoleTabs(props) {
 	const { onSubmitChat, textInput, setTextInput, chatDisabled, defaultTestCases, setStdin } =
 		props;
 	const [value, setValue] = useState(0);
+	const [testCase, setTestCase] = useState();
 	const handleChange = useCallback(async (event, newValue) => {
 		setValue(newValue);
 	}, []);
 	const theme = useTheme();
+
+	useEffect(() => {
+		console.log(defaultTestCases);
+		setTestCase(defaultTestCases);
+	}, [defaultTestCases]);
+
 	return (
 		<Box
 			sx={{
@@ -49,7 +56,12 @@ function ConsoleTabs(props) {
 				</Tabs>
 			</AppBar>
 			<TabPanel value={value} index={0} dir={theme.direction}>
-				<Testcase defaultTestCases={defaultTestCases} setStdin={setStdin} />
+				<Testcase
+					defaultTestCases={defaultTestCases}
+					setStdin={setStdin}
+					testCase={testCase}
+					setTestCase={setTestCase}
+				/>
 			</TabPanel>
 			<TabPanel value={value} index={1} dir={theme.direction}>
 				<Console />
