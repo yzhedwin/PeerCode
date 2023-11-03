@@ -45,7 +45,7 @@ function Solutions(props) {
 	const handleClose = useCallback(() => setOpen(false), []);
 
 	return (
-		<Box sx={{ width: "100%", overflow: "scroll", height: "95%" }}>
+		<Box sx={{ width: "100%", overflow: "auto", height: "95%" }}>
 			<SolutionPopup open={open} handleClose={handleClose} solution={solution} />
 			<Stack spacing={0} divider={<Divider orientation="horizontal" flexItem />}>
 				{list.map((l, index) => {

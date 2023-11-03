@@ -1,86 +1,68 @@
 @import "./_colors.scss";
-
+@import "./console.scss";
 .problem-page-container {
-	display: flex;
-	margin-top: 2vh;
-	margin-inline: 1vw;
-	height: 90vh;
-	overflow: hidden;
+    display: flex;
+    padding: 5px;
+    height: 90vh;
+    overflow-y: hidden;
 }
-
+.problem-description {
+    height: 90%;
+    overflow-y: auto;
+    padding: 10;
+}
 .problem-tabs-container {
-	flex: 1;
+    flex: 1;
 }
 
 .editor-container {
-	display: flex;
-	flex: 1;
-	overflow: hidden;
-	flex-direction: column;
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    flex-direction: column;
 }
 .editor-component {
-	display: flex;
-	flex: 1;
+    display: flex;
+    flex: 1;
 }
 .editor-options {
-	display: flex;
+    display: flex;
 }
 .editor-options > div {
-	margin-bottom: 5px;
-	padding-right: 5px;
-}
-.console-tabs-container {
-	transition-property: height;
-	transition-duration: 0.2s;
-	transition-timing-function: linear;
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
+    margin-bottom: 5px;
+    padding-right: 5px;
 }
 
-.console-options {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
-	margin-top: 5px;
-	margin-bottom: 5px;
-}
-.console-message {
-	height: 100%;
-	border: black solid 1px;
-	overflow-y: scroll;
-}
 .submissions-container {
-	height: 100%;
+    height: 100%;
 }
 .ag-theme-alpine-submission {
-	--ag-foreground-color: white;
-	--ag-secondary-foreground-color: white;
-	--ag-background-color: #282828;
-	--ag-data-color: white;
-	--ag-row-hover-color: rgba(255, 255, 255, 0.229);
-	--ag-header-foreground-color: white;
-	--ag-header-background-color: #282828;
-	--ag-row-border-color: #282828;
-	--ag-font-size: 12px;
-	--ag-font-family: monospace;
-	--ag-borders: none;
-	--ag-selected-row-background-color: none;
-	--ag-range-selection-border-color: none;
-	--ag-range-selection-border-style: none;
-	--ag-odd-row-background-color: #282828;
-	--ag-control-panel-background-color: #282828;
+    --ag-foreground-color: white;
+    --ag-secondary-foreground-color: white;
+    --ag-background-color: #282828;
+    --ag-data-color: white;
+    --ag-row-hover-color: rgba(255, 255, 255, 0.229);
+    --ag-header-foreground-color: white;
+    --ag-header-background-color: #282828;
+    --ag-row-border-color: #282828;
+    --ag-font-size: 12px;
+    --ag-font-family: monospace;
+    --ag-borders: none;
+    --ag-selected-row-background-color: none;
+    --ag-range-selection-border-color: none;
+    --ag-range-selection-border-style: none;
+    --ag-odd-row-background-color: #282828;
+    --ag-control-panel-background-color: #282828;
 }
 
 ​.MuiTabs-root {
-	min-height: 0 !important;
-	align-items: center;
+    min-height: 0 !important;
+    align-items: center;
 }
 .MuiButtonBase-root {
-	min-height: 0 !important;
+    min-height: 0 !important;
 }
 .MuiTabs-flexContainer {
-	min-height: 0 !important;
-	height: 30px;
+    min-height: 0 !important;
+    height: 30px;
 }

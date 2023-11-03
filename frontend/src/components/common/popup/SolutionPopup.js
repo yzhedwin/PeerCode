@@ -72,7 +72,7 @@ function SolutionPopup(props) {
 					<Box
 						sx={{
 							flex: 3,
-							overflow: "scroll",
+							overflow: "auto",
 							borderRadius: 5,
 						}}
 					>

@@ -19,7 +19,6 @@ function ConsoleTabs(props) {
 	const theme = useTheme();
 
 	useEffect(() => {
-		console.log(defaultTestCases);
 		setTestCase(defaultTestCases);
 	}, [defaultTestCases]);
 
