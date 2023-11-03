@@ -14,9 +14,7 @@ import ConsoleTabs from "../components/common/question/ConsoleTabs";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import "../css/problemPage.scss";
-import { EDITOR_SUPPORTED_LANGUAGES, EDITOR_SUPPORTED_THEMES } from "../utils/constants";
 import { defineTheme } from "../utils/helper";
-import CustomSelect from "../components/common/question/CustomSelect";
 import EditorOptions from "../components/common/question/EditorOptions";
 var interval_id = null;
 var timeout_id = null;
@@ -89,15 +87,19 @@ function ProblemPage(props) {
 	const onSubmitChat = useCallback(
 		(e) => {
 			if (e.keyCode === 13) {
+				let date = new Date();
+				const time = `${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")}`;
 				let currentMessage = [...message];
 				currentMessage.push({
 					user: "me",
 					data: e.target.value,
+					time: time,
 				});
 				setMessage(currentMessage);
 				socket.emit("room-message", match, {
 					user: "edwin", //change to username
 					data: e.target.value,
+					time: time,
 				});
 				setTextInput("");
 			}
@@ -205,7 +207,7 @@ function ProblemPage(props) {
 				titleSlug: question["titleSlug"],
 				language_id: language.id,
 				source_code: btoa(code),
-				stdin: btoa(JSON.stringify(stdin)),
+				stdin: btoa(stdin ? JSON.stringify(stdin) : JSON.stringify(defaultTestCases[0])),
 			});
 			setIsRunning(true);
 			timeout_id = setTimeout(() => {
@@ -218,7 +220,7 @@ function ProblemPage(props) {
 		} catch (e) {
 			console.log(e.message);
 		}
-	}, [code, match, question, language.id, type, stdin]);
+	}, [code, match, question, language.id, type, stdin, defaultTestCases]);
 
 	const handleLanguageChange = useCallback(
 		(event) => {
@@ -309,7 +311,16 @@ function ProblemPage(props) {
 						editorTheme={editorTheme}
 						handleLanguageChange={handleLanguageChange}
 						handleThemeChange={handleThemeChange}
-					/>
+					>
+						{type === "coop" && (
+							<ConsoleButton
+								title={"Leave"}
+								onClick={handleLeaveRoom}
+								sx={{ ml: "auto", backgroundColor: "red", mb: 1 }}
+							/>
+						)}
+					</EditorOptions>
+
 					<div className="editor-component" style={{ height: `${100 - chatHeight}%` }}>
 						<Editor
 							height="100%"
@@ -357,19 +368,12 @@ function ProblemPage(props) {
 								title={"Console"}
 							/>
 						)}
-						{type === "coop" && (
-							<ConsoleButton
-								title={"Leave"}
-								onClick={handleLeaveRoom}
-								sx={{ marginLeft: "auto", mr: 1 }}
-							/>
-						)}
 						<ConsoleButton
 							onClick={onRun}
 							title={"Run"}
 							loading={isRunning ? isRunning : undefined}
 							disabled={isSubmitting}
-							sx={{ marginLeft: "auto", mr: 1 }}
+							sx={{ ml: "auto", mr: 1 }}
 						/>
 						<ConsoleButton
 							onClick={onSubmit}
