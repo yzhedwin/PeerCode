@@ -35,10 +35,10 @@ export default function CreateQuestion() {
     const handleFormCheck = async () => {
         var newErrors = [];
 
-        if (currQuestion.title == "") {
+        if (currQuestion.title === "") {
             newErrors.push("Please enter a title");
         }
-        if (currQuestion.description == "") {
+        if (currQuestion.description === "") {
             newErrors.push("Please enter a description");
         }
         const categoriesArr = currQuestion.categories.split(",");
@@ -50,7 +50,7 @@ export default function CreateQuestion() {
         }
         console.log(newErrors);
         setErrors(newErrors);
-        if (newErrors.length == 0) {
+        if (newErrors.length === 0) {
             console.log("Question may be created");
             for (var i = 0; i < trimmedArr.length; i++) {
                 var entry = { name: trimmedArr[i] };

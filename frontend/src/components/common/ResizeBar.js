@@ -35,6 +35,7 @@ export default function ResizeBar({ setHeight, containerRef }) {
             document.removeEventListener("mousemove", handleMove);
             document.removeEventListener("mouseup", handleMouseUp);
         };
+        //eslint-disable-next-line
     }, [drag]);
 
     return (

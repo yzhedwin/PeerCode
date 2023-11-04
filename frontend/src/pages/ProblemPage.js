@@ -75,6 +75,7 @@ function ProblemPage(props) {
                 console.log(e);
             }
         },
+        //eslint-disable-next-line
         [snippets, language.raw]
     );
 
@@ -83,6 +84,7 @@ function ProblemPage(props) {
             return;
         }
         setOpenSnackBar(false);
+        //eslint-disable-next-line
     }, []);
 
     // function getCursorPos() {
@@ -96,6 +98,11 @@ function ProblemPage(props) {
         setHide(false);
         setChatHeight(60);
     }, []);
+    useEffect(() => {
+        if (chatHeight >= 100) {
+            setHide(true);
+        }
+    }, [chatHeight]);
 
     const onSubmitChat = useCallback(
         (e) => {
@@ -119,85 +126,87 @@ function ProblemPage(props) {
                 setTextInput("");
             }
         },
+        //eslint-disable-next-line
         [message, match]
     );
-    const getSubmission = useCallback((token) => {
-        interval_id = setInterval(async () => {
-            const { data } = await axios.get(
-                `http://localhost:5000/api/v1/judge/submission?token=${token}`
-            );
-            if (data.status.id !== 1 && data.status.id !== 2) {
-                clearInterval(interval_id);
-                clearTimeout(timeout_id);
-                const feedback = {
-                    stdout: data.stdout ? atob(data.stdout) : "None",
-                    time: data.time,
-                    memory: data.memory,
-                    stderr: data.stderr ? atob(data.stderr) : "None",
-                    compile_output: data.compile_output
-                        ? atob(data.compile_output)
-                        : "None",
-                    message: data.message ? atob(data.message) : "None",
-                    status: data.status,
-                };
-                if (type === "coop") {
-                    socket.emit("code-submission", match, feedback);
-                }
-                setConsoleResult(feedback);
-                setIsRunning(false);
-                setSB({ msg: "Code Submitted", severity: "success" });
-                setOpenSnackBar(true);
-            }
-        }, 2000);
-    }, []);
-
-    const getSubmissionAndSubmit = useCallback((token) => {
-        timeout_id = setTimeout(() => {
-            clearInterval(interval_id);
-            setSB({ msg: "Submission timedout", severity: "error" });
-            setOpenSnackBar(true);
-            setIsSubmitting(false);
-        }, 10000);
-        interval_id = setInterval(async () => {
-            const { data } = await axios.get(
-                `http://localhost:5000/api/v1/judge/submission?token=${token}`
-            );
-            if (data.status.id !== 1 && data.status.id !== 2) {
-                clearInterval(interval_id);
-                clearTimeout(timeout_id);
-                const feedback = {
-                    stdout: data.stdout ? atob(data.stdout) : "None",
-                    time: data.time,
-                    memory: data.memory,
-                    stderr: data.stderr ? atob(data.stderr) : "None",
-                    compile_output: data.compile_output
-                        ? atob(data.compile_output)
-                        : "None",
-                    message: data.message ? atob(data.message) : "None",
-                    status: data.status,
-                };
-                if (type === "coop") {
-                    socket.emit("code-submission", match, feedback);
-                }
-                setConsoleResult(feedback);
-                setIsSubmitting(false);
-                setSB({ msg: "Code Submitted", severity: "success" });
-                setOpenSnackBar(true);
-                await axios.post(
-                    `http://localhost:5000/api/v1/question/history`,
-                    {
-                        submission: {
-                            userID: "1234",
-                            titleSlug: question["titleSlug"],
-                            language_id: language.id,
-                            source_code: code,
-                        },
-                        feedback: data,
-                    }
+    const getSubmission = useCallback(
+        (token) => {
+            interval_id = setInterval(async () => {
+                const { data } = await axios.get(
+                    `http://localhost:5000/api/v1/judge/submission?token=${token}`
                 );
-            }
-        }, 2000);
-    }, []);
+                if (data.status.id !== 1 && data.status.id !== 2) {
+                    clearInterval(interval_id);
+                    clearTimeout(timeout_id);
+                    const feedback = {
+                        stdout: data.stdout ? atob(data.stdout) : "None",
+                        time: data.time,
+                        memory: data.memory,
+                        stderr: data.stderr ? atob(data.stderr) : "None",
+                        compile_output: data.compile_output
+                            ? atob(data.compile_output)
+                            : "None",
+                        message: data.message ? atob(data.message) : "None",
+                        status: data.status,
+                    };
+                    if (type === "coop") {
+                        socket.emit("code-submission", match, feedback);
+                    }
+                    setConsoleResult(feedback);
+                    setIsRunning(false);
+                    setSB({ msg: "Code Submitted", severity: "success" });
+                    setOpenSnackBar(true);
+                }
+            }, 2000);
+        },
+        //eslint-disable-next-line
+        [match, type]
+    );
+
+    const getSubmissionAndSubmit = useCallback(
+        (token) => {
+            interval_id = setInterval(async () => {
+                const { data } = await axios.get(
+                    `http://localhost:5000/api/v1/judge/submission?token=${token}`
+                );
+                if (data.status.id !== 1 && data.status.id !== 2) {
+                    clearInterval(interval_id);
+                    clearTimeout(timeout_id);
+                    const feedback = {
+                        stdout: data.stdout ? atob(data.stdout) : "None",
+                        time: data.time,
+                        memory: data.memory,
+                        stderr: data.stderr ? atob(data.stderr) : "None",
+                        compile_output: data.compile_output
+                            ? atob(data.compile_output)
+                            : "None",
+                        message: data.message ? atob(data.message) : "None",
+                        status: data.status,
+                    };
+                    if (type === "coop") {
+                        socket.emit("code-submission", match, feedback);
+                    }
+                    setConsoleResult(feedback);
+                    setIsSubmitting(false);
+                    setSB({ msg: "Code Submitted", severity: "success" });
+                    setOpenSnackBar(true);
+                    await axios.post(
+                        `http://localhost:5000/api/v1/question/history`,
+                        {
+                            submission: {
+                                userID: "1234",
+                                titleSlug: question["titleSlug"],
+                                language_id: language.id,
+                                source_code: code,
+                            },
+                            feedback: data,
+                        }
+                    );
+                }
+            }, 2000);
+        }, //eslint-disable-next-line
+        [code, language.id, match, question]
+    );
 
     const onSubmit = async () => {
         //save to db
@@ -255,6 +264,7 @@ function ProblemPage(props) {
         } catch (e) {
             console.log(e.message);
         }
+        //eslint-disable-next-line
     }, [code, match, question, language.id, type, stdin, defaultTestCases]);
 
     const handleLanguageChange = useCallback(
@@ -271,6 +281,7 @@ function ProblemPage(props) {
                 })?.code
             );
         },
+        //eslint-disable-next-line
         [type, match, snippets]
     );
     const handleThemeChange = useCallback((event) => {
@@ -289,6 +300,7 @@ function ProblemPage(props) {
                 socket.emit("code-changes", match, code);
             }
         },
+        //eslint-disable-next-line
         [match, type]
     );
 
@@ -298,6 +310,7 @@ function ProblemPage(props) {
             setSB({ msg: "Requested to quit session...", severity: "success" });
             setOpenSnackBar(true);
         }
+        //eslint-disable-next-line
     }, [match, type]);
 
     const getDefaultTestCases = async () => {
@@ -324,10 +337,8 @@ function ProblemPage(props) {
             clearInterval(interval_id);
             clearTimeout(timeout_id);
         };
+        //eslint-disable-next-line
     }, []);
-    useEffect(() => {
-        console.log("height", chatHeight);
-    }, [chatHeight]);
 
     return (
         <>

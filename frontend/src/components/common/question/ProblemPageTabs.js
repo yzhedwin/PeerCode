@@ -139,39 +139,43 @@ function ProblemPageTabs(props) {
         } catch (e) {
             console.log(e);
         }
-    }, []);
+    }, [question?.titleSlug]);
 
     useEffect(() => {
         getSolutions();
+        //eslint-disable-next-line
     }, []);
 
     const handleChange = useCallback(async (event, newValue) => {
         setValue(newValue);
     }, []);
 
-    const onSubmissionReady = useCallback(async (params) => {
-        try {
-            const { data } = await axios.get(
-                `${API_GATEWAY}/api/v1/question/history?userID=${userID}&titleSlug=${question?.titleSlug}`
-            );
-            const tableData = data?.map((d) => {
-                const { feedback, submission } = d;
-                return {
-                    status: feedback.status.description,
-                    memory: feedback.memory,
-                    runtime: feedback.time,
-                    code: submission.source_code,
-                    finished_at: feedback.finished_at,
-                    language: EDITOR_SUPPORTED_LANGUAGES.find(
-                        (e) => e.id === submission.language_id
-                    ).name,
-                };
-            });
-            setRowData(tableData);
-        } catch (e) {
-            console.log(e);
-        }
-    }, []);
+    const onSubmissionReady = useCallback(
+        async (params) => {
+            try {
+                const { data } = await axios.get(
+                    `${API_GATEWAY}/api/v1/question/history?userID=${userID}&titleSlug=${question?.titleSlug}`
+                );
+                const tableData = data?.map((d) => {
+                    const { feedback, submission } = d;
+                    return {
+                        status: feedback.status.description,
+                        memory: feedback.memory,
+                        runtime: feedback.time,
+                        code: submission.source_code,
+                        finished_at: feedback.finished_at,
+                        language: EDITOR_SUPPORTED_LANGUAGES.find(
+                            (e) => e.id === submission.language_id
+                        ).name,
+                    };
+                });
+                setRowData(tableData);
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        [question?.titleSlug, userID]
+    );
 
     const handleOpenSubmission = useCallback(({ data }) => {
         setSubmission(data);

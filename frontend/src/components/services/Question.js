@@ -110,6 +110,7 @@ function Question() {
                 },
             },
         ],
+        //eslint-disable-next-line
         [rowData, isAdmin]
     );
 
@@ -118,6 +119,7 @@ function Question() {
         () => ({
             flex: 1,
         }),
+        //eslint-disable-next-line
         []
     );
     const rowClass = "question-not-completed";
@@ -157,6 +159,7 @@ function Question() {
             setSB({ msg: `Question Service: ${e.message}`, severity: "error" });
             setOpenSnackBar(true);
         }
+        //eslint-disable-next-line
     }, []);
 
     const onGridReady = useCallback(async (params) => {
@@ -175,6 +178,7 @@ function Question() {
             setSB({ msg: `Question Service: ${e.message}`, severity: "error" });
             setOpenSnackBar(true);
         }
+        //eslint-disable-next-line
     }, []);
 
     return (
