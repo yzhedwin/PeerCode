@@ -10,6 +10,7 @@ import { TitleCellRenderer } from "./TitleCellRenderer";
 import { BtnCellRenderer } from "./BtnCellRenderer";
 import { Modal, Button } from "react-bootstrap";
 import "../../css/question.scss";
+import { QUESTION_STATUS } from "../../utils/constants";
 
 function Question() {
     const navigate = useNavigate();
@@ -123,9 +124,9 @@ function Question() {
 
     // all even rows assigned 'my-shaded-effect'
     const getRowClass = (params) => {
-        if (params.node.data.status === "Completed") {
+        if (params.node.data.status === QUESTION_STATUS.COMPLETED) {
             return "question-completed";
-        } else if (params.node.data.status === "Attempted") {
+        } else if (params.node.data.status === QUESTION_STATUS.ATTEMPTED) {
             return "question-inprogress";
         }
     };

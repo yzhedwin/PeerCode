@@ -8,6 +8,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
     API_GATEWAY,
     EDITOR_SUPPORTED_LANGUAGES,
+    QUESTION_STATUS,
 } from "../../../utils/constants";
 import axios from "axios";
 import { AgGridReact } from "ag-grid-react"; // the AG Grid React Component
@@ -221,8 +222,7 @@ function ProblemPageTabs(props) {
                             >
                                 {question?.difficulty}
                             </Box>
-                            {question?.status?.toLowerCase() ===
-                                "completed" && (
+                            {question?.status === QUESTION_STATUS.COMPLETED && (
                                 <div title="Solved">
                                     <TaskAltIcon
                                         sx={{
