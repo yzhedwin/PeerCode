@@ -4,7 +4,7 @@ import { SnackBarContext } from "../../contexts/SnackBarContext";
 import { MatchContext } from "../../contexts/MatchContext";
 import { ProblemContext } from "../../contexts/ProblemContext";
 import { Box, Modal, Typography } from "@mui/material";
-import ConsoleButton from "./ConsoleButton";
+import ConsoleButton from "../common/question/ConsoleButton";
 import { useNavigate } from "react-router-dom";
 
 const socketUrl = "http://localhost:5002";

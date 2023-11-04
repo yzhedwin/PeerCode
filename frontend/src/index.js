@@ -4,14 +4,17 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { ModeProvider } from "./contexts/ModeContext";
+import { FirebaseProvider } from "./contexts/FirebaseContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <ModeProvider>
-      <App />
-    </ModeProvider>
-  </React.StrictMode>
+	<React.StrictMode>
+		<FirebaseProvider>
+			<ModeProvider>
+				<App />
+			</ModeProvider>
+		</FirebaseProvider>
+	</React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

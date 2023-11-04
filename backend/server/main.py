@@ -13,6 +13,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 app.include_router(question_router.router)
 app.include_router(judge_router.router)
 app.include_router(user_router.router)
