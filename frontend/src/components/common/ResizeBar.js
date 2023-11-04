@@ -4,13 +4,23 @@ import { useEffect, useState } from "react";
 export default function ResizeBar({ setHeight, containerRef }) {
     const [drag, setDrag] = useState(false);
     const [color, setColor] = useState("#e5e1e1");
-    const handleDrag = (event) => {
-        console.log("dragging");
+
+    const handleMove = (event) => {
+        if (!drag) {
+            return;
+        }
         const height =
             event.clientY - containerRef.current.getBoundingClientRect().top;
         const blockHeight = containerRef.current.offsetHeight;
         const newHeight = (height / blockHeight) * 100;
         setHeight(newHeight.toFixed(0));
+    };
+
+    const handleMouseUp = (e) => {
+        setDrag(false);
+    };
+    const handleMouseDown = () => {
+        setDrag(true);
     };
     const handleMouseEnter = () => {
         setColor("#0a84ff");
@@ -18,6 +28,14 @@ export default function ResizeBar({ setHeight, containerRef }) {
     const handleMouseLeave = () => {
         setColor("#e5e1e1");
     };
+    useEffect(() => {
+        document.addEventListener("mousemove", handleMove);
+        document.addEventListener("mouseup", handleMouseUp);
+        return () => {
+            document.removeEventListener("mousemove", handleMove);
+            document.removeEventListener("mouseup", handleMouseUp);
+        };
+    }, [drag]);
 
     return (
         <div
@@ -29,18 +47,7 @@ export default function ResizeBar({ setHeight, containerRef }) {
                 justifyContent: "center",
                 alignItems: "center",
             }}
-            onMouseDown={() => {
-                setDrag(true);
-                console.log("clicked");
-            }}
-            onMouseUp={() => {
-                setDrag(false);
-                console.log("released");
-            }}
-            onDragStart={() => {
-                console.log("start drag");
-            }}
-            onDrag={handleDrag}
+            onMouseDown={handleMouseDown}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
