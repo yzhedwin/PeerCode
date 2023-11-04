@@ -22,6 +22,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import "../css/problemPage.scss";
 import { defineTheme } from "../utils/helper";
 import EditorOptions from "../components/common/question/EditorOptions";
+import ResizeBar from "../components/common/ResizeBar";
 var interval_id = null;
 var timeout_id = null;
 function ProblemPage(props) {
@@ -42,7 +43,7 @@ function ProblemPage(props) {
         useContext(SnackBarContext);
     const [hide, setHide] = useState(true);
     const [textInput, setTextInput] = useState("");
-    const [chatHeight, setChatHeight] = useState(5);
+    const [chatHeight, setChatHeight] = useState(100);
     const [editorTheme, setEditorTheme] = useState({
         name: "vs-dark",
         value: "vs-dark",
@@ -54,6 +55,8 @@ function ProblemPage(props) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const editorRef = useRef(null);
     const monacoRef = useRef(null);
+    const containerRef = useRef(null);
+
     const handleEditorDidMount = useCallback(
         (editor, monaco) => {
             editorRef.current = editor;
@@ -84,11 +87,11 @@ function ProblemPage(props) {
     // }
     const onHide = useCallback(() => {
         setHide(true);
-        setChatHeight(5);
+        setChatHeight(100);
     }, []);
     const onShow = useCallback(() => {
         setHide(false);
-        setChatHeight(40);
+        setChatHeight(60);
     }, []);
 
     const onSubmitChat = useCallback(
@@ -316,6 +319,10 @@ function ProblemPage(props) {
             clearTimeout(timeout_id);
         };
     }, []);
+    useEffect(() => {
+        console.log("height", chatHeight);
+    }, [chatHeight]);
+
     return (
         <>
             <SnackBar
@@ -328,7 +335,7 @@ function ProblemPage(props) {
                 <div className="problem-tabs-container">
                     <ProblemPageTabs userID={"1234"} question={question} />
                 </div>
-                <div className="editor-container">
+                <div className="editor-container" ref={containerRef}>
                     <EditorOptions
                         language={language}
                         editorTheme={editorTheme}
@@ -350,7 +357,7 @@ function ProblemPage(props) {
 
                     <div
                         className="editor-component"
-                        style={{ height: `${100 - chatHeight}%` }}
+                        style={{ height: `${chatHeight}%` }}
                     >
                         <Editor
                             height="100%"
@@ -368,22 +375,27 @@ function ProblemPage(props) {
                             }}
                         />
                     </div>
-
-                    {!hide && (
-                        <div
-                            className="console-tabs-container"
-                            style={{ height: `${chatHeight}%` }}
-                        >
-                            <ConsoleTabs
-                                onSubmitChat={onSubmitChat}
-                                setTextInput={setTextInput}
-                                textInput={textInput}
-                                chatDisabled={type !== "coop"}
-                                defaultTestCases={defaultTestCases}
-                                setStdin={setStdin}
-                            />
-                        </div>
-                    )}
+                    <ResizeBar
+                        setHeight={setChatHeight}
+                        containerRef={containerRef}
+                    />
+                    <div
+                        className="console-tabs-container"
+                        style={{
+                            flex: 1,
+                            display: hide ? "none" : "flex",
+                            height: `${100 - chatHeight}%`,
+                        }}
+                    >
+                        <ConsoleTabs
+                            onSubmitChat={onSubmitChat}
+                            setTextInput={setTextInput}
+                            textInput={textInput}
+                            chatDisabled={type !== "coop"}
+                            defaultTestCases={defaultTestCases}
+                            setStdin={setStdin}
+                        />
+                    </div>
                     <div className="console-options">
                         {hide ? (
                             <ConsoleButton
