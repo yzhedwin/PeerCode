@@ -3,7 +3,6 @@ import { useTheme } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -16,6 +15,9 @@ import SubmissionPopup from "../popup/SubmissionPopup";
 import "../../../css/problemPage.scss";
 import Solutions from "../../solution/Solutions";
 import { outputStatus } from "../../../utils/helper";
+import parse from "html-react-parser";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
+import { green } from "@mui/material/colors";
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -47,7 +49,12 @@ function a11yProps(index) {
 }
 
 function ProblemPageTabs(props) {
-    const { description, userID, titleSlug } = props;
+    const { userID, question } = props;
+    const description = parse(
+        typeof question?.problem === "string"
+            ? question.problem
+            : "Failed to load"
+    );
     const theme = useTheme();
     const [value, setValue] = useState(0);
     const [submission, setSubmission] = useState({});
@@ -96,7 +103,7 @@ function ProblemPageTabs(props) {
         try {
             const { data } = await axios.get(
                 `${API_GATEWAY}/api/v1/question/solution/community/list`,
-                { params: { titleSlug: titleSlug } }
+                { params: { titleSlug: question?.titleSlug } }
             );
             const list = data?.map((d) => {
                 const {
@@ -144,7 +151,7 @@ function ProblemPageTabs(props) {
     const onSubmissionReady = useCallback(async (params) => {
         try {
             const { data } = await axios.get(
-                `${API_GATEWAY}/api/v1/question/history?userID=${userID}&titleSlug=${titleSlug}`
+                `${API_GATEWAY}/api/v1/question/history?userID=${userID}&titleSlug=${question?.titleSlug}`
             );
             const tableData = data?.map((d) => {
                 const { feedback, submission } = d;
@@ -197,7 +204,39 @@ function ProblemPageTabs(props) {
                     </Tabs>
                 </AppBar>
                 <TabPanel value={value} index={0} dir={theme.direction}>
-                    <div className="problem-description">{description}</div>
+                    <div className="problem-description-page">
+                        <div style={{ fontWeight: "1000" }}>
+                            {question?.id}. {question?.title}
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                            <Box
+                                sx={{
+                                    color: `question_${question?.difficulty?.toLowerCase()}.main`,
+                                    fontWeight: 1000,
+                                    fontSize: "14px",
+                                    mt: 1,
+                                    mb: 1,
+                                    mr: 2,
+                                }}
+                            >
+                                {question?.difficulty}
+                            </Box>
+                            {question?.status?.toLowerCase() ===
+                                "completed" && (
+                                <div title="Solved">
+                                    <TaskAltIcon
+                                        sx={{
+                                            color: green[600],
+                                            fontSize: "18px",
+                                            strokeWidth: 0.7,
+                                            stroke: green[600],
+                                        }}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                        <div style={{ fontSize: "16px" }}>{description}</div>
+                    </div>
                 </TabPanel>
                 <TabPanel value={value} index={1} dir={theme.direction}>
                     <Solutions list={solutions} />
