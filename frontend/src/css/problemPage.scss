@@ -43,6 +43,8 @@
 	height: 100%;
 	background-color: $text-white;
 	overflow: hidden;
+
+	white-space: pre-wrap;
 }
 .chat-message {
 	background-color: $text-white;
@@ -98,4 +100,8 @@
 .MuiTabs-flexContainer {
 	min-height: 0 !important;
 	height: 30px;
+}
+
+.AI {
+	color: purple
 }

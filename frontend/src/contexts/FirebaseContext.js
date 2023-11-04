@@ -8,6 +8,7 @@ import {
   onAuthStateChanged,
   signOut,
   sendPasswordResetEmail,
+  updateProfile,
 } from "firebase/auth";
 
 export const FirebaseContext = createContext();
@@ -15,18 +16,18 @@ const storage = getStorage();
 
 export function FirebaseProvider({ children }) {
   const [currentUser, setCurrentUser] = useState();
-  const [currentName, setCurrentName] = useState();
   const [isAdmin, setIsAdmin] = useState(false);
   const [image, setImage] = useState();
   const [loading, setLoading] = useState(true);
 
-  const signup = async (email, password) => {
+  const signup = async (username, email, password) => {
     await createUserWithEmailAndPassword(auth, email, password).then(
       (userCredential) => {
         const user = userCredential.user;
         setDoc(doc(fs, "users", user.uid), { isAdmin: false });
       }
     );
+    await updateProfile(auth.currentUser, { displayName: username });
   };
 
   const login = async (email, password) => {
@@ -44,7 +45,6 @@ export function FirebaseProvider({ children }) {
       const docRef = doc(fs, "users", user.uid);
       const docSnap = await getDoc(docRef);
       setIsAdmin(docSnap.data().isAdmin);
-      setCurrentName(docSnap.data().name);
       getImage(user);
     }
   };
@@ -53,10 +53,9 @@ export function FirebaseProvider({ children }) {
     if (user) {
       setCurrentUser(user);
       const dbRef = collection(fs, "users");
-      await setDoc(doc(dbRef, user.uid), {
-        isAdmin: isAdmin,
-        name: newName,
-      });
+      await updateProfile(auth.currentUser, { displayName: newName }).catch(
+        (err) => console.log(err)
+      );
     }
   };
 
@@ -97,7 +96,6 @@ export function FirebaseProvider({ children }) {
     auth,
     async (user) => {
       setCurrentUser(user);
-      //setCurrentName("test");
       setLoading(false);
     },
     []
@@ -105,7 +103,6 @@ export function FirebaseProvider({ children }) {
 
   const value = {
     currentUser,
-    currentName,
     image,
     isAdmin,
     signup,

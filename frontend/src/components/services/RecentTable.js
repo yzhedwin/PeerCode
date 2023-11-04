@@ -1,10 +1,11 @@
 import React from "react";
 import "../../css/profile.scss";
 
-function RecentTable() {
+function RecentTable({ submissions }) {
+  console.log(submissions);
   return (
     <div className="right-content">
-      <div className="recent-text">Recent Preps</div>
+      <div className="recent-text">Recent Submissions</div>
       <table className="recent-table">
         <thead>
           <tr>
@@ -14,7 +15,16 @@ function RecentTable() {
           </tr>
         </thead>
         <tbody>
-          <tr>
+          {submissions.map((item) => {
+            return (
+              <tr>
+                <td>{item.submission.titleSlug}</td>
+                <td>Easy</td>
+                <td>{item.submission.language_id}</td>
+              </tr>
+            );
+          })}
+          {/* <tr>
             <td>Find One Two Three in Four</td>
             <td>Easy</td>
             <td>Python</td>
@@ -48,7 +58,7 @@ function RecentTable() {
             <td>World's Hardest Problem</td>
             <td>Hard</td>
             <td>Assembly</td>
-          </tr>
+          </tr> */}
         </tbody>
       </table>
     </div>

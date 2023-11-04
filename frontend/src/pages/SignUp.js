@@ -39,7 +39,7 @@ function SignUp() {
     data.email = data.email.toLowerCase();
     try {
       dispatch(registerUser(data));
-      await signup(data.email, data.password);
+      await signup(data.username, data.email, data.password);
       setSB({ msg: "Successfully registered", severity: "success" });
       setOpenSnackBar(true);
       navigate("/login");
@@ -79,59 +79,59 @@ function SignUp() {
           <img src={bgimage} alt="" />
         </div>
 
-				<div className="col-1">
-					<h2>Sign Up</h2>
-					<span>Get yourself prepared for Tech Interview</span>
+        <div className="col-1">
+          <h2>Sign Up</h2>
+          <span>Get yourself prepared for Tech Interview</span>
 
-					<form
-						id="form"
-						className="flex flex-col"
-						onSubmit={handleSubmit(submitForm)}
-					>
-						{error && <div>{error}</div>}
-						<input
-							type="text"
-							placeholder="Username"
-							className="form-input"
-							{...register("username")}
-							required
-						/>
-						<input
-							type="email"
-							placeholder="Email Address"
-							className="form-input"
-							{...register("email")}
-							required
-						/>
-						<input
-							type="password"
-							placeholder="Password"
-							className="form-input"
-							{...register("password")}
-							required
-						/>
-						<input
-							type="password"
-							placeholder="Confirm Password"
-							className="form-input"
-							{...register("confirmPassword")}
-							required
-						/>
+          <form
+            id="form"
+            className="flex flex-col"
+            onSubmit={handleSubmit(submitForm)}
+          >
+            {error && <div>{error}</div>}
+            <input
+              type="text"
+              placeholder="Username"
+              className="form-input"
+              {...register("username")}
+              required
+            />
+            <input
+              type="email"
+              placeholder="Email Address"
+              className="form-input"
+              {...register("email")}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              className="form-input"
+              {...register("password")}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              className="form-input"
+              {...register("confirmPassword")}
+              required
+            />
 
-						<button type="submit" className="button" disabled={loading}>
-							{loading ? <LoadingIcon /> : "Sign Up"}
-						</button>
-						<div className="forgot-password">
-							<div>
-								Already have an account? Click{" "}
-								<span onClick={() => navigate("login")}>here!</span>
-							</div>
-							Lost Password? Click <span>here!</span>
-						</div>
-					</form>
-				</div>
-			</div>
-		</section>
-	);
+            <button type="submit" className="button" disabled={loading}>
+              {loading ? <LoadingIcon /> : "Sign Up"}
+            </button>
+            <div className="forgot-password">
+              <div>
+                Already have an account? Click{" "}
+                <span onClick={() => navigate("login")}>here!</span>
+              </div>
+              Lost Password? Click <span>here!</span>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  );
 }
 export default SignUp;

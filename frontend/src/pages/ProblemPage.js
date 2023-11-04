@@ -12,6 +12,7 @@ import Editor from "@monaco-editor/react";
 import { socket } from "../components/services/WebSocket";
 import { MatchContext } from "../contexts/MatchContext";
 import { ProblemContext } from "../contexts/ProblemContext";
+import { FirebaseContext } from "../contexts/FirebaseContext";
 import axios from "axios";
 import ConsoleButton from "../components/common/question/ConsoleButton";
 import ProblemPageTabs from "../components/common/question/ProblemPageTabs";
@@ -36,18 +37,23 @@ function ProblemPage(props) {
   const { match } = useContext(MatchContext);
   const {
     message,
+    aiMessage,
     code,
     language,
     snippets,
     setLanguage,
     setCode,
     setMessage,
+    setAIMessage,
     setConsoleResult,
   } = useContext(ProblemContext);
   const { openSnackBar, setOpenSnackBar, sb, setSB } =
     useContext(SnackBarContext);
+  const { currentUser } = useContext(FirebaseContext);
   const [hide, setHide] = useState(true);
   const [textInput, setTextInput] = useState("");
+  const [aiTextInput, setAITextInput] = useState("");
+  const [aiLoading, setAILoading] = useState(false);
   const [chatHeight, setChatHeight] = useState(5);
   const [editorTheme, setEditorTheme] = useState({
     name: "vs-dark",
@@ -97,24 +103,6 @@ function ProblemPage(props) {
     setChatHeight(40);
   }, []);
 
-  function onConsoleChange() {
-    setShowConsole(true);
-    setShowAIChat(false);
-    setShowChat(false);
-  }
-
-  function onChatChange() {
-    setShowChat(true);
-    setShowConsole(false);
-    setShowAIChat(false);
-  }
-
-  function onAIChatChange() {
-    setShowAIChat(true);
-    setShowConsole(false);
-    setShowChat(false);
-  } //lmao
-
   const onSubmitChat = useCallback(
     (e) => {
       if (e.keyCode === 13) {
@@ -123,9 +111,10 @@ function ProblemPage(props) {
           user: "me",
           data: e.target.value,
         });
+        console.log(currentUser);
         setMessage(currentMessage);
         socket.emit("room-message", match, {
-          user: "edwin", //change to username
+          user: "bot", //change to username
           data: e.target.value,
         });
         setTextInput("");
@@ -133,6 +122,41 @@ function ProblemPage(props) {
     },
     [message, match]
   );
+
+  const onSubmitAIChat = useCallback(
+    async (e) => {
+      if (e.keyCode === 13) {
+        setAILoading(true);
+        let currentMessage = [...aiMessage];
+        const prompt = e.target.value;
+        currentMessage.push({
+          user: "me",
+          data: prompt,
+        });
+        setAIMessage(currentMessage);
+        setAITextInput("AI is replying...");
+        await axios
+          .post("http://localhost:8020/chat", { prompt })
+          .then((res) => {
+            console.log(res.data);
+            let result = res.data;
+            for (var i = 0; i < 2; i++) {
+              result = result.replace("\n", "");
+            }
+            currentMessage.push({
+              user: "AI",
+              data: result,
+            });
+          })
+          .catch((error) => console.log(error));
+        setAIMessage(currentMessage);
+        setAITextInput("");
+        setAILoading(false);
+      }
+    },
+    [aiMessage]
+  );
+
   const getSubmission = useCallback((token) => {
     interval_id = setInterval(async () => {
       const { data } = await axios.get(
@@ -319,6 +343,8 @@ function ProblemPage(props) {
   };
   useEffect(() => {
     //get Test case here once
+    setMessage([]);
+    setAIMessage([]);
     getDefaultTestCases();
     return () => {
       clearInterval(interval_id);
@@ -380,8 +406,11 @@ function ProblemPage(props) {
             >
               <ConsoleTabs
                 onSubmitChat={onSubmitChat}
+                onSubmitAIChat={onSubmitAIChat}
                 setTextInput={setTextInput}
+                setAITextInput={!aiLoading && setAITextInput}
                 textInput={textInput}
+                aiTextInput={aiTextInput}
                 chatDisabled={type !== "coop"}
                 defaultTestCases={defaultTestCases}
                 setStdin={setStdin}

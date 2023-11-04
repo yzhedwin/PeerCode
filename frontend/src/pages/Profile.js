@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useCallback, useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import "../css/profile.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -10,8 +10,11 @@ import UpdateProfile from "./UpdateProfile";
 import { SnackBarContext } from "../contexts/SnackBarContext";
 import { FirebaseContext } from "../contexts/FirebaseContext";
 
+import axios from "axios";
+
 const Profile = () => {
   const [loading, setLoading] = useState(false);
+  const [submissions, setSubmissions] = useState([]);
   const { userInfo } = useSelector((state) => state.auth);
   const { sb, setSB, openSnackBar, setOpenSnackBar } =
     useContext(SnackBarContext);
@@ -20,7 +23,11 @@ const Profile = () => {
 
   useEffect(() => {
     checkDetails(currentUser); //.then(setLoading(false));
-  });
+    axios
+      .get("http://localhost:5000/api/v1/question/history/?user=1234")
+      .then((res) => setSubmissions(res.data))
+      .catch((e) => console.log("Submissions not found"));
+  }, []);
 
   const handleCloseSnackBar = (event, reason) => {
     if (reason === "clickaway") {
@@ -38,12 +45,12 @@ const Profile = () => {
     //   </span>
     // </div>
     <div className="profile">
-      {/* <SnackBar
+      <SnackBar
         msg={sb.msg}
         handleCloseSnackBar={handleCloseSnackBar}
         openSnackBar={openSnackBar}
         severity={sb.severity}
-      /> */}
+      />
       {!loading ? (
         <div id="top-container">
           <div id="left-container" className="subcontainer">
@@ -52,11 +59,11 @@ const Profile = () => {
                 <UpdateProfile></UpdateProfile>
               </div>
               <img className="display-pic" src={image}></img>
-              <div className="username">{currentName}</div>
+              <div className="username">{currentUser.displayName}</div>
             </div>
           </div>
           <div id="right-container" className="subcontainer">
-            <RecentTable></RecentTable>
+            <RecentTable submissions={submissions}></RecentTable>
           </div>
         </div>
       ) : (

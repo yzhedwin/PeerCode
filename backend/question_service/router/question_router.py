@@ -263,9 +263,17 @@ async def get_code_snippets(titleSlug: str) -> list:
     return result.get("question").get("codeSnippets")
 
 
-@router.delete("/title/{title}")
-async def delete_question(title, db: AsyncIOMotorClient = Depends(get_database)):
-    question = await fetch_one_question(db, title)
+@router.post("/update/{titleSlug}")
+async def update_question(question: Question, titleSlug, db: AsyncIOMotorClient = Depends(get_database)):
+    response = await update_one_question(db, question.dict(), titleSlug)
+    if response:
+        print("yay")
+        return "Successfully updated question"
+
+
+@router.delete("/title/{titleSlug}")
+async def delete_question(titleSlug, db: AsyncIOMotorClient = Depends(get_database)):
+    question = await fetch_one_question(db, titleSlug)
     if not question:
         raise HTTPException(400, f"Question {titleSlug} does not exist")
     response = await delete_one_question(db, titleSlug)
@@ -290,7 +298,7 @@ async def add_questions_from_leetcode():
     return "Successfully added questions from Leetcode"
 
 
-@router.post("")
+@router.post("/create")
 async def add_one_question(question: Question, db: AsyncIOMotorClient = Depends(get_database)):
     try:
         result = await create_question(db, question.dict())
@@ -350,7 +358,7 @@ async def get_submissions_from_question(userID: str, titleSlug: str, db: AsyncIO
 
 
 @router.get("/history/user")
-async def get_submissions_from_question(userID: str, db: AsyncIOMotorClient = Depends(get_database)):
+async def get_submissions_from_user(userID: str, db: AsyncIOMotorClient = Depends(get_database)):
     response = await get_all_submission_from_user(db, userID)
     return response
 
