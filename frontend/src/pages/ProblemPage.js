@@ -36,6 +36,7 @@ function ProblemPage(props) {
   const [showConsole, setShowConsole] = useState(true);
   const [showChat, setShowChat] = useState(false);
   const [showAIChat, setShowAIChat] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [chatHeight, setChatHeight] = useState(5);
   const [textInput, setTextInput] = useState("");
   const editorRef = useRef(null);
@@ -100,7 +101,9 @@ function ProblemPage(props) {
   }
 
   async function onSubmitAIChat(e) {
-    if (e.keyCode === 13) {
+    if (e.keyCode === 13 && !loading) {
+      setLoading(true);
+      setTextInput("Loading...");
       let currentAIMessage = [...aiMessage];
       const prompt = e.target.value;
       currentAIMessage.push({
@@ -108,17 +111,20 @@ function ProblemPage(props) {
         data: prompt,
       });
       setAIMessage(currentAIMessage);
+      setTextInput("AI is replying...");
       await axios
         .post("http://localhost:8020/chat", { prompt })
         .then((res) => {
           console.log(res.data);
+          let result = res.data;
           currentAIMessage.push({
             user: "AI",
-            data: res.data,
+            data: result,
           });
         })
         .catch((error) => console.log(error));
       setAIMessage(currentAIMessage);
+      setLoading(false);
       setTextInput("");
     }
   }
@@ -185,6 +191,7 @@ function ProblemPage(props) {
     <>
       <SnackBar
         msg={sb.msg}
+        fontSize
         handleCloseSnackBar={handleCloseSnackBar}
         openSnackBar={openSnackBar}
         severity={sb.severity}
@@ -289,7 +296,9 @@ function ProblemPage(props) {
                         size="small"
                         onKeyDown={onSubmitAIChat}
                         onChange={(e) => {
-                          setTextInput(e.target.value);
+                          if (!loading) {
+                            setTextInput(e.target.value);
+                          }
                         }}
                         value={textInput}
                       />

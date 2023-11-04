@@ -1,12 +1,11 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-
 const { OpenAI } = require("openai");
-
 const openai = new OpenAI({
-  apiKey: "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",
+  apiKey: "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",
 });
+
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());

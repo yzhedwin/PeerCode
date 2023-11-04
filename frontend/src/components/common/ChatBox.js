@@ -17,11 +17,17 @@ function ChatBox({ isAI }) {
       });
     } else {
       return aiMessage.map((msg, index) => {
+        let data = msg.data;
+        if (msg.user == "AI") {
+          for (var i = 0; i < 2; i++) {
+            data = data.replace("\n", "");
+          }
+        }
         return (
           <div key={`${msg.user}${index}`}>
             {msg.user}
             {msg.data ? ": " : ""}
-            {msg.data}
+            {data}
           </div>
         );
       });

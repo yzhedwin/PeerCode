@@ -24,7 +24,7 @@ async def add_submission(data: JudgeInput):
         response.raise_for_status()
         return jo
     except Exception as e:
-        return e
+        print(e)
 
 
 @router.get("/submission")

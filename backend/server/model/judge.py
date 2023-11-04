@@ -17,9 +17,9 @@ class SubmissionStatus(BaseModel):
 
 
 class JudgeOutput(BaseModel):
-    stdout: str
-    time: float
-    memory: int
+    stdout: Union[str, None]
+    time: Union[float, None]
+    memory: Union[int, None]
     stderr: Union[str, None]
     token: str
     compile_output: Union[str, None]
