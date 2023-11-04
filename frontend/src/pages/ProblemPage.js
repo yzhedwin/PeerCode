@@ -62,7 +62,10 @@ function ProblemPage(props) {
             editorRef.current = editor;
             monacoRef.current = monaco;
             try {
-                editorRef.current.getModel().updateOptions({ tabSize: 8 });
+                editorRef.current.getModel().updateOptions({
+                    tabSize: 8,
+                });
+
                 setCode(
                     snippets?.find((snippet) => {
                         return snippet?.langSlug === language.raw;
@@ -198,7 +201,6 @@ function ProblemPage(props) {
 
     const onSubmit = async () => {
         //save to db
-        console.log("submit, run against all test cases");
         try {
             const { data } = await axios.post(
                 "http://localhost:5000/api/v1/judge/submission",
@@ -207,7 +209,11 @@ function ProblemPage(props) {
                     titleSlug: question["titleSlug"],
                     language_id: language.id,
                     source_code: btoa(code),
-                    stdin: btoa(JSON.stringify(stdin)),
+                    stdin: btoa(
+                        stdin
+                            ? JSON.stringify(stdin)
+                            : JSON.stringify(defaultTestCases[0])
+                    ),
                 }
             );
             setIsSubmitting(true);
@@ -367,6 +373,7 @@ function ProblemPage(props) {
                             onChange={handleCodeChanges}
                             onMount={handleEditorDidMount}
                             options={{
+                                dragAndDrop: false,
                                 inlineSuggest: true,
                                 fontSize: "16px",
                                 formatOnType: true,
