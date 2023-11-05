@@ -47,6 +47,7 @@ function Question() {
         cellRenderer: TitleCellRenderer,
         cellRendererParams: {
           clicked: function (field) {
+            console.log(field);
             cellClickedListener(field);
           },
         },
@@ -126,18 +127,13 @@ function Question() {
 
   const cellClickedListener = useCallback(async (event) => {
     try {
-      if (event.data) {
-        const [question, snippets] = await Promise.all([
-          await axios.get(
-            `http://localhost:5000/api/v1/question/problem?titleSlug=${event.data["titleSlug"]}`
-          ),
-          await axios.get(
-            `http://localhost:5000/api/v1/question/codesnippets?titleSlug=${event.data["titleSlug"]}`
-          ),
-        ]);
+      if (event) {
+        const snippets = await axios.get(
+          `http://localhost:5000/api/v1/question/codesnippets?titleSlug=${event.titleSlug}`
+        );
         setQuestion({
-          titleSlug: event.data?.titleSlug,
-          problem: question?.data,
+          titleSlug: event.titleSlug,
+          problem: event.problem,
         });
         setSnippets(snippets["data"]);
         navigate("/problem");
@@ -152,7 +148,10 @@ function Question() {
     try {
       const { data } = await axios.get("http://localhost:5000/api/v1/question");
       for (var i = 0; i < data.length; i++) {
-        data[i].slugPair = { title: data[i].title, slug: data[i].titleSlug };
+        data[i].slugPair = {
+          title: data[i].title,
+          slug: data[i].titleSlug,
+        };
       }
       console.log(data);
       setRowData(data);

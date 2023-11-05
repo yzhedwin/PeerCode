@@ -1,8 +1,8 @@
 import React from "react";
 import "../../css/profile.scss";
+import { EDITOR_SUPPORTED_LANGUAGES } from "../../utils/constants";
 
-function RecentTable({ submissions }) {
-  console.log(submissions);
+function RecentTable({ submissions, data }) {
   return (
     <div className="right-content">
       <div className="recent-text">Recent Submissions</div>
@@ -16,49 +16,22 @@ function RecentTable({ submissions }) {
         </thead>
         <tbody>
           {submissions.map((item) => {
+            const question = data.find(
+              (qn) => qn.titleSlug === item.submission.titleSlug
+            );
+            var language = EDITOR_SUPPORTED_LANGUAGES.find((obj) => {
+              return obj.id === item.submission.language_id;
+            });
+            language = language.name.split(" ")[0];
+            console.log(question);
             return (
               <tr>
-                <td>{item.submission.titleSlug}</td>
-                <td>Easy</td>
-                <td>{item.submission.language_id}</td>
+                <td>{question ? question.title : "Not found"}</td>
+                <td>{question ? question.difficulty : "Not found"}</td>
+                <td>{language ? language : "Not found"}</td>
               </tr>
             );
           })}
-          {/* <tr>
-            <td>Find One Two Three in Four</td>
-            <td>Easy</td>
-            <td>Python</td>
-          </tr>
-
-          <tr>
-            <td>Add 2 Numbers</td>
-            <td>Medium</td>
-            <td>C++</td>
-          </tr>
-
-          <tr>
-            <td>World's Hardest Problem</td>
-            <td>Hard</td>
-            <td>Assembly</td>
-          </tr>
-
-          <tr>
-            <td>Find One Two Three in Four</td>
-            <td>Easy</td>
-            <td>Python</td>
-          </tr>
-
-          <tr>
-            <td>Add 2 Numbers</td>
-            <td>Medium</td>
-            <td>C++</td>
-          </tr>
-
-          <tr>
-            <td>World's Hardest Problem</td>
-            <td>Hard</td>
-            <td>Assembly</td>
-          </tr> */}
         </tbody>
       </table>
     </div>

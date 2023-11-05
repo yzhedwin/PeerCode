@@ -14,6 +14,7 @@ import axios from "axios";
 
 const Profile = () => {
   const [loading, setLoading] = useState(false);
+  const [rowData, setRowData] = useState([]);
   const [submissions, setSubmissions] = useState([]);
   const { userInfo } = useSelector((state) => state.auth);
   const { sb, setSB, openSnackBar, setOpenSnackBar } =
@@ -27,6 +28,10 @@ const Profile = () => {
       .get("http://localhost:5000/api/v1/question/history/?user=1234")
       .then((res) => setSubmissions(res.data))
       .catch((e) => console.log("Submissions not found"));
+
+    axios
+      .get("http://localhost:5000/api/v1/question")
+      .then((res) => setRowData(res.data));
   }, []);
 
   const handleCloseSnackBar = (event, reason) => {
@@ -63,7 +68,7 @@ const Profile = () => {
             </div>
           </div>
           <div id="right-container" className="subcontainer">
-            <RecentTable submissions={submissions}></RecentTable>
+            <RecentTable submissions={submissions} data={rowData}></RecentTable>
           </div>
         </div>
       ) : (
