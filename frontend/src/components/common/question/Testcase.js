@@ -8,8 +8,8 @@ import { useCallback, useEffect, useState } from "react";
 
 export default function Testcase(props) {
 	const [value, setValue] = useState(0);
-	const { defaultTestCases, setStdin } = props;
-	const [testCase, setTestCase] = useState(defaultTestCases); //get loaded testcase
+	const { setStdin, testCase, setTestCase } = props;
+
 	const theme = useTheme();
 
 	const handleChangeInput = useCallback(
@@ -23,9 +23,6 @@ export default function Testcase(props) {
 		//eslint-disable-next-line
 		[testCase, value]
 	);
-	useEffect(() => {
-		setTestCase(defaultTestCases);
-	}, [defaultTestCases]);
 
 	const handleChange = (event, newValue) => {
 		setValue(newValue);
