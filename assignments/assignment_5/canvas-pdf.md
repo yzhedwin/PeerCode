@@ -10,4 +10,4 @@
     - ![Screenshot 2023-11-06 at 11 21 53 PM](https://github.com/CS3219-AY2324S1/ay2324s1-course-assessment-g33/assets/24467184/b5341629-e402-4ee5-b2f5-e461868fa491)
     - ![Screenshot 2023-11-06 at 11 17 11 PM](https://github.com/CS3219-AY2324S1/ay2324s1-course-assessment-g33/assets/24467184/554c1dba-b836-4fe8-8df8-97732b78d4c2)
 
-- Name the file G55_Assignment-5.pdf (e.g., G04_Assignment-5.pdf)
+- Name the file G33_Assignment-5.pdf (e.g., G04_Assignment-5.pdf)
