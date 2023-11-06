@@ -10,6 +10,7 @@ import { TitleCellRenderer } from "./TitleCellRenderer";
 import { BtnCellRenderer } from "./BtnCellRenderer";
 import { Modal, Button } from "react-bootstrap";
 import "../../css/question.scss";
+import { QUESTION_STATUS } from "../../utils/constants";
 
 function Question() {
   const navigate = useNavigate();
@@ -47,7 +48,6 @@ function Question() {
         cellRenderer: TitleCellRenderer,
         cellRendererParams: {
           clicked: function (field) {
-            console.log(field);
             cellClickedListener(field);
           },
         },
@@ -104,6 +104,7 @@ function Question() {
         },
       },
     ],
+    //eslint-disable-next-line
     [rowData, isAdmin]
   );
 
@@ -112,15 +113,16 @@ function Question() {
     () => ({
       flex: 1,
     }),
+    //eslint-disable-next-line
     []
   );
   const rowClass = "question-not-completed";
 
   // all even rows assigned 'my-shaded-effect'
   const getRowClass = (params) => {
-    if (params.node.data.status === "Completed") {
+    if (params.node.data.status === QUESTION_STATUS.COMPLETED) {
       return "question-completed";
-    } else if (params.node.data.status === "Attempted") {
+    } else if (params.node.data.status === QUESTION_STATUS.ATTEMPTED) {
       return "question-inprogress";
     }
   };
@@ -132,8 +134,12 @@ function Question() {
           `http://localhost:5000/api/v1/question/codesnippets?titleSlug=${event.titleSlug}`
         );
         setQuestion({
-          titleSlug: event.titleSlug,
-          problem: event.problem,
+          id: event.rowIndex,
+          title: event.data?.title,
+          titleSlug: event.data?.titleSlug,
+          difficulty: event.data?.difficulty,
+          status: event.data?.status,
+          problem: question?.data,
         });
         setSnippets(snippets["data"]);
         navigate("/problem");
@@ -148,12 +154,8 @@ function Question() {
     try {
       const { data } = await axios.get("http://localhost:5000/api/v1/question");
       for (var i = 0; i < data.length; i++) {
-        data[i].slugPair = {
-          title: data[i].title,
-          slug: data[i].titleSlug,
-        };
+        data[i].slugPair = { title: data[i].title, slug: data[i].titleSlug };
       }
-      console.log(data);
       setRowData(data);
     } catch (e) {
       setSB({ msg: `Question Service: ${e.message}`, severity: "error" });

@@ -63,6 +63,19 @@ function App() {
               contrastText: grey[900],
             }),
       },
+      chat: {
+        ...(mode === "dark"
+          ? {
+              main: "#282828",
+              input: "#333333",
+              contrastText: grey[900],
+            }
+          : {
+              main: "#ffff",
+              input: "#333333",
+              contrastText: "#ffff",
+            }),
+      },
       editor: {
         ...(mode === "dark"
           ? {
@@ -80,13 +93,13 @@ function App() {
               light: green[300],
               dark: green[800],
               contrastText: "#fff",
-              main: "#20900D",
+              main: "#00b8a3",
             }
           : {
               light: green[300],
               dark: green[800],
               contrastText: "#000",
-              main: "#20900D",
+              main: "#00b8a3",
             }),
       },
       question_medium: {

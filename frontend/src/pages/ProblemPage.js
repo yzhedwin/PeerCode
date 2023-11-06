@@ -7,7 +7,6 @@ import {
   useState,
 } from "react";
 import { QuestionContext } from "../contexts/QuestionContext";
-import parse from "html-react-parser";
 import Editor from "@monaco-editor/react";
 import { socket } from "../components/services/WebSocket";
 import { MatchContext } from "../contexts/MatchContext";
@@ -22,13 +21,9 @@ import ConsoleTabs from "../components/common/question/ConsoleTabs";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import "../css/problemPage.scss";
-import {
-  EDITOR_SUPPORTED_LANGUAGES,
-  EDITOR_SUPPORTED_THEMES,
-} from "../utils/constants";
 import { defineTheme } from "../utils/helper";
-import CustomSelect from "../components/common/question/CustomSelect";
 import EditorOptions from "../components/common/question/EditorOptions";
+import ResizeBar from "../components/common/ResizeBar";
 var interval_id = null;
 var timeout_id = null;
 function ProblemPage(props) {
@@ -89,6 +84,7 @@ function ProblemPage(props) {
       return;
     }
     setOpenSnackBar(false);
+    //eslint-disable-next-line
   }, []);
 
   // function getCursorPos() {
@@ -96,30 +92,42 @@ function ProblemPage(props) {
   // }
   const onHide = useCallback(() => {
     setHide(true);
-    setChatHeight(5);
+    setChatHeight(100);
   }, []);
   const onShow = useCallback(() => {
     setHide(false);
-    setChatHeight(40);
+    setChatHeight(60);
   }, []);
+  useEffect(() => {
+    if (chatHeight >= 100) {
+      setHide(true);
+    }
+  }, [chatHeight]);
 
   const onSubmitChat = useCallback(
     (e) => {
       if (e.keyCode === 13) {
+        let date = new Date();
+        const time = `${date.getHours()}:${String(date.getMinutes()).padStart(
+          2,
+          "0"
+        )}`;
         let currentMessage = [...message];
         currentMessage.push({
           user: "me",
           data: e.target.value,
+          time: time,
         });
-        console.log(currentUser);
         setMessage(currentMessage);
         socket.emit("room-message", match, {
-          user: "bot", //change to username
+          user: "edwin", //change to username
           data: e.target.value,
+          time: time,
         });
         setTextInput("");
       }
     },
+    //eslint-disable-next-line
     [message, match]
   );
 
@@ -174,84 +182,84 @@ function ProblemPage(props) {
     [aiMessage]
   );
 
-  const getSubmission = useCallback((token) => {
-    interval_id = setInterval(async () => {
-      const { data } = await axios.get(
-        `http://localhost:5000/api/v1/judge/submission?token=${token}`
-      );
-      if (data.status.id !== 1 && data.status.id !== 2) {
-        clearInterval(interval_id);
-        clearTimeout(timeout_id);
-        const feedback = {
-          stdout: data.stdout ? atob(data.stdout) : "None",
-          time: data.time,
-          memory: data.memory,
-          stderr: data.stderr ? atob(data.stderr) : "None",
-          compile_output: data.compile_output
-            ? atob(data.compile_output)
-            : "None",
-          message: data.message ? atob(data.message) : "None",
-          status: data.status,
-        };
-        if (type === "coop") {
-          socket.emit("code-submission", match, feedback);
+  const getSubmission = useCallback(
+    (token) => {
+      interval_id = setInterval(async () => {
+        const { data } = await axios.get(
+          `http://localhost:5000/api/v1/judge/submission?token=${token}`
+        );
+        if (data.status.id !== 1 && data.status.id !== 2) {
+          clearInterval(interval_id);
+          clearTimeout(timeout_id);
+          const feedback = {
+            stdout: data.stdout ? atob(data.stdout) : "None",
+            time: data.time,
+            memory: data.memory,
+            stderr: data.stderr ? atob(data.stderr) : "None",
+            compile_output: data.compile_output
+              ? atob(data.compile_output)
+              : "None",
+            message: data.message ? atob(data.message) : "None",
+            status: data.status,
+          };
+          if (type === "coop") {
+            socket.emit("code-submission", match, feedback);
+          }
+          setConsoleResult(feedback);
+          setIsRunning(false);
+          setSB({ msg: "Code Submitted", severity: "success" });
+          setOpenSnackBar(true);
         }
-        setConsoleResult(feedback);
-        setIsRunning(false);
-        setSB({ msg: "Code Submitted", severity: "success" });
-        setOpenSnackBar(true);
-      }
-    }, 2000);
-  }, []);
+      }, 2000);
+    },
+    //eslint-disable-next-line
+    [match, type]
+  );
 
-  const getSubmissionAndSubmit = useCallback((token) => {
-    timeout_id = setTimeout(() => {
-      clearInterval(interval_id);
-      setSB({ msg: "Submission timedout", severity: "error" });
-      setOpenSnackBar(true);
-      setIsSubmitting(false);
-    }, 10000);
-    interval_id = setInterval(async () => {
-      const { data } = await axios.get(
-        `http://localhost:5000/api/v1/judge/submission?token=${token}`
-      );
-      if (data.status.id !== 1 && data.status.id !== 2) {
-        clearInterval(interval_id);
-        clearTimeout(timeout_id);
-        const feedback = {
-          stdout: data.stdout ? atob(data.stdout) : "None",
-          time: data.time,
-          memory: data.memory,
-          stderr: data.stderr ? atob(data.stderr) : "None",
-          compile_output: data.compile_output
-            ? atob(data.compile_output)
-            : "None",
-          message: data.message ? atob(data.message) : "None",
-          status: data.status,
-        };
-        if (type === "coop") {
-          socket.emit("code-submission", match, feedback);
+  const getSubmissionAndSubmit = useCallback(
+    (token) => {
+      interval_id = setInterval(async () => {
+        const { data } = await axios.get(
+          `http://localhost:5000/api/v1/judge/submission?token=${token}`
+        );
+        if (data.status.id !== 1 && data.status.id !== 2) {
+          clearInterval(interval_id);
+          clearTimeout(timeout_id);
+          const feedback = {
+            stdout: data.stdout ? atob(data.stdout) : "None",
+            time: data.time,
+            memory: data.memory,
+            stderr: data.stderr ? atob(data.stderr) : "None",
+            compile_output: data.compile_output
+              ? atob(data.compile_output)
+              : "None",
+            message: data.message ? atob(data.message) : "None",
+            status: data.status,
+          };
+          if (type === "coop") {
+            socket.emit("code-submission", match, feedback);
+          }
+          setConsoleResult(feedback);
+          setIsSubmitting(false);
+          setSB({ msg: "Code Submitted", severity: "success" });
+          setOpenSnackBar(true);
+          await axios.post(`http://localhost:5000/api/v1/question/history`, {
+            submission: {
+              userID: "1234",
+              titleSlug: question["titleSlug"],
+              language_id: language.id,
+              source_code: code,
+            },
+            feedback: data,
+          });
         }
-        setConsoleResult(feedback);
-        setIsSubmitting(false);
-        setSB({ msg: "Code Submitted", severity: "success" });
-        setOpenSnackBar(true);
-        await axios.post(`http://localhost:5000/api/v1/question/history`, {
-          submission: {
-            userID: "1234",
-            titleSlug: question["titleSlug"],
-            language_id: language.id,
-            source_code: code,
-          },
-          feedback: data,
-        });
-      }
-    }, 2000);
-  }, []);
+      }, 2000);
+    }, //eslint-disable-next-line
+    [code, language.id, match, question]
+  );
 
   const onSubmit = async () => {
     //save to db
-    console.log("submit, run against all test cases");
     try {
       const { data } = await axios.post(
         "http://localhost:5000/api/v1/judge/submission",
@@ -260,7 +268,9 @@ function ProblemPage(props) {
           titleSlug: question["titleSlug"],
           language_id: language.id,
           source_code: btoa(code),
-          stdin: btoa(JSON.stringify(stdin)),
+          stdin: btoa(
+            stdin ? JSON.stringify(stdin) : JSON.stringify(defaultTestCases[0])
+          ),
         }
       );
       setIsSubmitting(true);
@@ -284,7 +294,9 @@ function ProblemPage(props) {
           titleSlug: question["titleSlug"],
           language_id: language.id,
           source_code: btoa(code),
-          stdin: btoa(JSON.stringify(stdin)),
+          stdin: btoa(
+            stdin ? JSON.stringify(stdin) : JSON.stringify(defaultTestCases[0])
+          ),
         }
       );
       setIsRunning(true);
@@ -298,7 +310,8 @@ function ProblemPage(props) {
     } catch (e) {
       console.log(e.message);
     }
-  }, [code, match, question, language.id, type, stdin]);
+    //eslint-disable-next-line
+  }, [code, match, question, language.id, type, stdin, defaultTestCases]);
 
   const handleLanguageChange = useCallback(
     (event) => {
@@ -312,6 +325,7 @@ function ProblemPage(props) {
         })?.code
       );
     },
+    //eslint-disable-next-line
     [type, match, snippets]
   );
   const handleThemeChange = useCallback((event) => {
@@ -330,6 +344,7 @@ function ProblemPage(props) {
         socket.emit("code-changes", match, code);
       }
     },
+    //eslint-disable-next-line
     [match, type]
   );
 
@@ -339,6 +354,7 @@ function ProblemPage(props) {
       setSB({ msg: "Requested to quit session...", severity: "success" });
       setOpenSnackBar(true);
     }
+    //eslint-disable-next-line
   }, [match, type]);
 
   const getDefaultTestCases = async () => {
@@ -360,14 +376,14 @@ function ProblemPage(props) {
   };
   useEffect(() => {
     //get Test case here once
-    setMessage([]);
-    setAIMessage([]);
     getDefaultTestCases();
     return () => {
       clearInterval(interval_id);
       clearTimeout(timeout_id);
     };
+    //eslint-disable-next-line
   }, []);
+
   return (
     <>
       <SnackBar
@@ -378,26 +394,31 @@ function ProblemPage(props) {
       />
       <div className="problem-page-container">
         <div className="problem-tabs-container">
-          <ProblemPageTabs
-            userID={"1234"}
-            titleSlug={question?.titleSlug}
-            description={parse(
-              typeof question?.problem === "string"
-                ? question.problem
-                : "Failed to load"
-            )}
-          />
+          <ProblemPageTabs userID={"1234"} question={question} />
         </div>
-        <div className="editor-container">
+        <div className="editor-container" ref={containerRef}>
           <EditorOptions
             language={language}
             editorTheme={editorTheme}
             handleLanguageChange={handleLanguageChange}
             handleThemeChange={handleThemeChange}
-          />
+          >
+            {type === "coop" && (
+              <ConsoleButton
+                title={"Leave"}
+                onClick={handleLeaveRoom}
+                sx={{
+                  ml: "auto",
+                  backgroundColor: "red",
+                  mb: 1,
+                }}
+              />
+            )}
+          </EditorOptions>
+
           <div
             className="editor-component"
-            style={{ height: `${100 - chatHeight}%` }}
+            style={{ height: `${chatHeight}%` }}
           >
             <Editor
               height="100%"
@@ -407,6 +428,7 @@ function ProblemPage(props) {
               onChange={handleCodeChanges}
               onMount={handleEditorDidMount}
               options={{
+                dragAndDrop: false,
                 inlineSuggest: true,
                 fontSize: "16px",
                 formatOnType: true,
@@ -415,25 +437,24 @@ function ProblemPage(props) {
               }}
             />
           </div>
-
-          {!hide && (
-            <div
-              className="console-tabs-container"
-              style={{ height: `${chatHeight}%` }}
-            >
-              <ConsoleTabs
-                onSubmitChat={onSubmitChat}
-                onSubmitAIChat={onSubmitAIChat}
-                setTextInput={setTextInput}
-                setAITextInput={!aiLoading && setAITextInput}
-                textInput={textInput}
-                aiTextInput={aiTextInput}
-                chatDisabled={type !== "coop"}
-                defaultTestCases={defaultTestCases}
-                setStdin={setStdin}
-              />
-            </div>
-          )}
+          <ResizeBar setHeight={setChatHeight} containerRef={containerRef} />
+          <div
+            className="console-tabs-container"
+            style={{
+              flex: 1,
+              display: hide ? "none" : "flex",
+              height: `${100 - chatHeight}%`,
+            }}
+          >
+            <ConsoleTabs
+              onSubmitChat={onSubmitChat}
+              setTextInput={setTextInput}
+              textInput={textInput}
+              chatDisabled={type !== "coop"}
+              defaultTestCases={defaultTestCases}
+              setStdin={setStdin}
+            />
+          </div>
           <div className="console-options">
             {hide ? (
               <ConsoleButton
@@ -448,19 +469,12 @@ function ProblemPage(props) {
                 title={"Console"}
               />
             )}
-            {type === "coop" && (
-              <ConsoleButton
-                title={"Leave"}
-                onClick={handleLeaveRoom}
-                sx={{ marginLeft: "auto", mr: 1 }}
-              />
-            )}
             <ConsoleButton
               onClick={onRun}
               title={"Run"}
               loading={isRunning ? isRunning : undefined}
               disabled={isSubmitting}
-              sx={{ marginLeft: "auto", mr: 1 }}
+              sx={{ ml: "auto", mr: 1 }}
             />
             <ConsoleButton
               onClick={onSubmit}

@@ -1,7 +1,13 @@
 import { EDITOR_SUPPORTED_LANGUAGES, EDITOR_SUPPORTED_THEMES } from "../../../utils/constants";
 import CustomSelect from "./CustomSelect";
 
-function EditorOptions({ language, handleLanguageChange, handleThemeChange, editorTheme }) {
+function EditorOptions({
+	language,
+	handleLanguageChange,
+	handleThemeChange,
+	editorTheme,
+	children,
+}) {
 	return (
 		<div className="editor-options">
 			<div>
@@ -24,6 +30,7 @@ function EditorOptions({ language, handleLanguageChange, handleThemeChange, edit
 					handleChange={handleThemeChange}
 				/>
 			</div>
+			{children}
 		</div>
 	);
 }
