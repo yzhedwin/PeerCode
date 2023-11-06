@@ -130,25 +130,42 @@ function ProblemPage(props) {
         let currentMessage = [...aiMessage];
         const prompt = e.target.value;
         currentMessage.push({
-          user: "me",
-          data: prompt,
+          role: "user",
+          content: prompt,
         });
         setAIMessage(currentMessage);
         setAITextInput("AI is replying...");
         await axios
-          .post("http://localhost:8020/chat", { prompt })
+          .post("http://localhost:8020/ask", { prompt })
           .then((res) => {
-            console.log(res.data);
             let result = res.data;
             for (var i = 0; i < 2; i++) {
               result = result.replace("\n", "");
             }
             currentMessage.push({
-              user: "AI",
-              data: result,
+              role: "system",
+              content: result,
             });
           })
           .catch((error) => console.log(error));
+
+        // Below is the "correct" implementation with chat persistence. However, it is very slow,
+        // even when using the Turbo model. Hence, the initial implementation without chat persistence
+        // might be more practical.
+
+        // await axios
+        //   .post("http://localhost:8020/chat", { currentMessage })
+        //   .then((res) => {
+        //     let result = res.data.content;
+        //     for (var i = 0; i < 2; i++) {
+        //       result = result.replace("\n", "");
+        //     }
+        //     currentMessage.push({
+        //       role: "system",
+        //       content: result,
+        //     });
+        //   })
+        //   .catch((error) => console.log(error));
         setAIMessage(currentMessage);
         setAITextInput("");
         setAILoading(false);

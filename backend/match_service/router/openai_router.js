@@ -11,7 +11,19 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.post("/chat", async (req, res) => {
+  const prompt = req.body.currentMessage;
+  console.log(prompt);
+  const completion = await openai.chat.completions.create({
+    model: "gpt-3.5-turbo",
+    messages: prompt,
+  });
+  console.log(completion.choices[0].message);
+  res.send(completion.choices[0].message);
+});
+
+app.post("/ask", async (req, res) => {
   const { prompt } = req.body;
+  console.log(prompt);
   const completion = await openai.completions.create({
     model: "text-davinci-003",
     max_tokens: 512,

@@ -18,10 +18,10 @@ function ChatBox({ isAI }) {
     } else {
       return aiMessage.map((msg, index) => {
         return (
-          <div className={`${msg.user}`} key={`${msg.user}${index}`}>
-            {msg.user}
-            {msg.data ? ": " : ""}
-            {msg.data}
+          <div className={`${msg.role}`} key={`${msg.role}${index}`}>
+            {msg.role == "user" ? "me" : "AI"}
+            {msg.content ? ": " : ""}
+            {msg.content}
           </div>
         );
       });
