@@ -6,9 +6,9 @@ function ChatBox({ isAI }) {
   const { message, aiMessage } = useContext(ProblemContext);
 
   const getMessages = useCallback(() => {
-    return message.map((msg, index) => {
-      if (msg.data) {
-        if (!isAI) {
+    if (!isAI) {
+      return message.map((msg, index) => {
+        if (msg.data) {
           return msg?.user !== "me" ? (
             <div class="message droplet" key={`${msg?.user}${index}`}>
               <div class="message__text">
@@ -35,18 +35,28 @@ function ChatBox({ isAI }) {
             </div>
           );
         }
-      } else {
-        return aiMessage.map((msg, index) => {
-          return (
-            <div className={`${msg.role}`} key={`${msg.role}${index}`}>
-              {msg.role == "user" ? "me" : "AI"}
-              {msg.content ? ": " : ""}
-              {msg.content}
-            </div>
-          );
-        });
-      }
-    });
+        // return aiMessage.map((msg, index) => {
+        //   return (
+        //     <div className={`${msg.role}`} key={`${msg.role}${index}`}>
+        //       {msg.role == "user" ? "me" : "AI"}
+        //       {msg.content ? ": " : ""}
+        //       {msg.content}
+        //     </div>
+        //   );
+        // });
+        // }
+      });
+    } else {
+      return aiMessage.map((msg, index) => {
+        return (
+          <div className={`${msg.role}`} key={`${msg.role}${index}`}>
+            {msg.role == "user" ? "me" : "AI"}
+            {msg.content ? ": " : ""}
+            {msg.content}
+          </div>
+        );
+      });
+    }
   }, [message, aiMessage]);
 
   //keep scrollbar to bottom on new message

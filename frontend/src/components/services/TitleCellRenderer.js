@@ -6,7 +6,7 @@ export class TitleCellRenderer extends React.Component {
     this.btnClickedHandler = this.btnClickedHandler.bind(this);
   }
   btnClickedHandler() {
-    this.props.clicked(this.props.data);
+    this.props.clicked(this.props);
   }
   render() {
     return (

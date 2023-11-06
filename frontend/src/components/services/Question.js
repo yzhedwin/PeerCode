@@ -130,6 +130,7 @@ function Question() {
   const cellClickedListener = useCallback(async (event) => {
     try {
       if (event) {
+        console.log(event);
         const snippets = await axios.get(
           `http://localhost:5000/api/v1/question/codesnippets?titleSlug=${event.titleSlug}`
         );
@@ -139,7 +140,7 @@ function Question() {
           titleSlug: event.data?.titleSlug,
           difficulty: event.data?.difficulty,
           status: event.data?.status,
-          problem: question?.data,
+          problem: event.data?.problem,
         });
         setSnippets(snippets["data"]);
         navigate("/problem");

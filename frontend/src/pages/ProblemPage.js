@@ -49,7 +49,7 @@ function ProblemPage(props) {
   const [textInput, setTextInput] = useState("");
   const [aiTextInput, setAITextInput] = useState("");
   const [aiLoading, setAILoading] = useState(false);
-  const [chatHeight, setChatHeight] = useState(5);
+  const [chatHeight, setChatHeight] = useState(90);
   const [editorTheme, setEditorTheme] = useState({
     name: "vs-dark",
     value: "vs-dark",
@@ -61,6 +61,7 @@ function ProblemPage(props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
+  const containerRef = useRef(null);
   const handleEditorDidMount = useCallback(
     (editor, monaco) => {
       editorRef.current = editor;
@@ -448,8 +449,11 @@ function ProblemPage(props) {
           >
             <ConsoleTabs
               onSubmitChat={onSubmitChat}
+              onSubmitAIChat={onSubmitAIChat}
               setTextInput={setTextInput}
               textInput={textInput}
+              aiTextInput={aiTextInput}
+              setAITextInput={setAITextInput}
               chatDisabled={type !== "coop"}
               defaultTestCases={defaultTestCases}
               setStdin={setStdin}

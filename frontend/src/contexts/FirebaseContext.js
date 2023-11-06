@@ -86,6 +86,7 @@ export function FirebaseProvider({ children }) {
     await signOut(auth);
     setCurrentUser(null);
     setIsAdmin(false);
+    setImage(null);
   };
 
   const resetPassword = async (email) => {
