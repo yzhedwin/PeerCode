@@ -221,7 +221,7 @@ function ProblemPage(props) {
                     language_id: language.id,
                     source_code: btoa(code),
                     stdin: btoa(JSON.stringify(stdin)),
-                    expected_output: btoa(JSON.stringify(testCase.output)),
+                    expected_output: btoa(testCase?.output.toString()),
                 }
             );
             setIsSubmitting(true);
