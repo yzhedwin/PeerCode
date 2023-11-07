@@ -165,6 +165,14 @@ function ProblemPage(props) {
         [match, type]
     );
 
+	const updateQuestionStatus = useCallback(async (description) => {
+		const data = {userID: '1234', titleSlug: question["titleSlug"], status: description}
+
+		await axios.put(
+						`http://localhost:5000/api/v1/qestion/history`, data 
+					)
+				},
+	)
     const getSubmissionAndSubmit = useCallback(
         (token) => {
             interval_id = setInterval(async () => {
@@ -184,7 +192,10 @@ function ProblemPage(props) {
                             : "None",
                         message: data.message ? atob(data.message) : "None",
                         status: data.status,
-                    };
+					};
+            		
+					updateQuestionStatus(feedback.status.description)
+
                     if (type === "coop") {
                         socket.emit("code-submission", match, feedback);
                     }
