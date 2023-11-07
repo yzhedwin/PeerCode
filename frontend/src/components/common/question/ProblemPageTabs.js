@@ -141,11 +141,6 @@ function ProblemPageTabs(props) {
         }
     }, [question?.titleSlug]);
 
-    useEffect(() => {
-        getSolutions();
-        //eslint-disable-next-line
-    }, []);
-
     const handleChange = useCallback(async (event, newValue) => {
         setValue(newValue);
     }, []);
@@ -183,6 +178,11 @@ function ProblemPageTabs(props) {
     }, []);
     const handleCloseSubmission = useCallback(() => {
         setOpenSubmission(false);
+    }, []);
+
+    useEffect(() => {
+        getSolutions();
+        //eslint-disable-next-line
     }, []);
 
     return (
