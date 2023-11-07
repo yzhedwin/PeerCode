@@ -100,6 +100,10 @@ function ProblemPageTabs(props) {
         }),
         []
     );
+    useEffect(() => {
+        console.log(question.titleSlug);
+    }, [question.titleSlug]);
+
     const getSolutions = useCallback(async () => {
         try {
             const { data } = await axios.get(

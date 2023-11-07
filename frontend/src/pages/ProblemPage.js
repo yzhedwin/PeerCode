@@ -23,10 +23,15 @@ import "../css/problemPage.scss";
 import { defineTheme } from "../utils/helper";
 import EditorOptions from "../components/common/question/EditorOptions";
 import ResizeBar from "../components/common/ResizeBar";
+import { FirebaseContext } from "../contexts/FirebaseContext";
 var interval_id = null;
 var timeout_id = null;
 function ProblemPage(props) {
     const { type } = props;
+    const {
+        currentUser: { uid },
+        currentName,
+    } = useContext(FirebaseContext);
     const { question } = useContext(QuestionContext);
     const { match } = useContext(MatchContext);
     const {
@@ -66,7 +71,6 @@ function ProblemPage(props) {
                 editorRef.current.getModel().updateOptions({
                     tabSize: 8,
                 });
-
                 setCode(
                     snippets?.find((snippet) => {
                         return snippet?.langSlug === language.raw;
@@ -99,11 +103,6 @@ function ProblemPage(props) {
         setHide(false);
         setChatHeight(60);
     }, []);
-    useEffect(() => {
-        if (chatHeight >= 100) {
-            setHide(true);
-        }
-    }, [chatHeight]);
 
     const onSubmitChat = useCallback(
         (e) => {
@@ -120,7 +119,7 @@ function ProblemPage(props) {
                 });
                 setMessage(currentMessage);
                 socket.emit("room-message", match, {
-                    user: "edwin", //change to username
+                    user: currentName, //change to username
                     data: e.target.value,
                     time: time,
                 });
@@ -150,14 +149,13 @@ function ProblemPage(props) {
                         message: data.message ? atob(data.message) : "None",
                         status: data.status,
                     };
-                    console.log(feedback);
                     if (type === "coop") {
                         socket.emit("code-submission", match, feedback);
                     }
                     setConsoleResult(feedback);
-                    setIsRunning(false);
                     setSB({ msg: "Code Submitted", severity: "success" });
                     setOpenSnackBar(true);
+                    setIsRunning(false);
                 }
             }, 2000);
         },
@@ -189,14 +187,14 @@ function ProblemPage(props) {
                         socket.emit("code-submission", match, feedback);
                     }
                     setConsoleResult(feedback);
-                    setIsSubmitting(false);
                     setSB({ msg: "Code Submitted", severity: "success" });
                     setOpenSnackBar(true);
+                    setIsSubmitting(false);
                     await axios.post(
                         `http://localhost:5000/api/v1/question/history`,
                         {
                             submission: {
-                                userID: "1234",
+                                userID: uid,
                                 titleSlug: question["titleSlug"],
                                 language_id: language.id,
                                 source_code: code,
@@ -210,20 +208,23 @@ function ProblemPage(props) {
         [code, language.id, match, question]
     );
 
+    const postSubmission = useCallback(async () => {
+        return await axios.post(
+            "http://localhost:5000/api/v1/judge/submission",
+            {
+                userID: uid,
+                titleSlug: question["titleSlug"],
+                language_id: language.id,
+                source_code: btoa(code),
+                stdin: btoa(JSON.stringify(stdin)),
+                expected_output: btoa(testCase?.output.toString()),
+            }
+        );
+    }, [stdin, testCase, code, language.id, question.titleSlug, uid]);
+
     const onSubmit = async () => {
-        //save to db
         try {
-            const { data } = await axios.post(
-                "http://localhost:5000/api/v1/judge/submission",
-                {
-                    userID: "1234",
-                    titleSlug: question["titleSlug"],
-                    language_id: language.id,
-                    source_code: btoa(code),
-                    stdin: btoa(JSON.stringify(stdin)),
-                    expected_output: btoa(testCase?.output.toString()),
-                }
-            );
+            const { data } = await postSubmission();
             setIsSubmitting(true);
             timeout_id = setTimeout(() => {
                 clearInterval(interval_id);
@@ -236,19 +237,10 @@ function ProblemPage(props) {
             console.log(e.message);
         }
     };
+
     const onRun = useCallback(async () => {
         try {
-            const { data } = await axios.post(
-                "http://localhost:5000/api/v1/judge/submission",
-                {
-                    userID: "1234",
-                    titleSlug: question["titleSlug"],
-                    language_id: language.id,
-                    source_code: btoa(code),
-                    stdin: btoa(JSON.stringify(stdin)),
-                    expected_output: btoa(testCase?.output.toString()),
-                }
-            );
+            const { data } = await postSubmission();
             setIsRunning(true);
             timeout_id = setTimeout(() => {
                 clearInterval(interval_id);
@@ -261,16 +253,7 @@ function ProblemPage(props) {
             console.log(e.message);
         }
         //eslint-disable-next-line
-    }, [
-        code,
-        match,
-        question,
-        language.id,
-        type,
-        testCase,
-        stdin,
-        defaultTestCases,
-    ]);
+    }, [stdin, testCase, code, language.id, question.titleSlug, uid]);
 
     const handleLanguageChange = useCallback(
         (event) => {
@@ -338,6 +321,7 @@ function ProblemPage(props) {
             return (tc["output"] = expected[index]);
         });
         setDefaultTestCases(testcases);
+        setTestCase(testcases?.at(0) || {});
     };
 
     const getExpectedOutput = useCallback(() => {
@@ -365,23 +349,28 @@ function ProblemPage(props) {
         //eslint-disable-next-line
     }, []);
     useEffect(() => {
-        if (testCase) {
-            try {
-                setStdin(
-                    Object.assign(
-                        ...Object.keys(testCase)
-                            .filter((key) => key !== "output")
-                            .map((key) => {
-                                return { [key]: testCase[key] };
-                            })
-                    )
-                );
-            } catch (e) {
-                console.log(e);
+        try {
+            if (testCase) {
+                const arr = Object.keys(testCase)
+                    ?.filter((key) => key !== "output")
+                    ?.map((key) => {
+                        return { [key]: testCase[key] };
+                    });
+                if (arr.length > 0) {
+                    const obj = Object.assign(...arr);
+                    setStdin(obj);
+                }
             }
+        } catch (e) {
+            console.log(e);
         }
     }, [testCase]);
 
+    useEffect(() => {
+        if (chatHeight >= 100) {
+            setHide(true);
+        }
+    }, [chatHeight]);
     return (
         <>
             <SnackBar
@@ -392,7 +381,7 @@ function ProblemPage(props) {
             />
             <div className="problem-page-container">
                 <div className="problem-tabs-container">
-                    <ProblemPageTabs userID={"1234"} question={question} />
+                    <ProblemPageTabs userID={uid} question={question} />
                 </div>
                 <div className="editor-container" ref={containerRef}>
                     <EditorOptions
@@ -454,6 +443,7 @@ function ProblemPage(props) {
                             chatDisabled={type !== "coop"}
                             defaultTestCases={defaultTestCases}
                             setTestCase={setTestCase}
+                            testCase={testCase}
                         />
                     </div>
                     <div className="console-options">

@@ -20,8 +20,8 @@ function Question() {
     const { isAdmin } = useContext(FirebaseContext);
     const [show, setShow] = useState(false);
     const [titleSlug, setTitleSlug] = useState("");
+    const [rowData, setRowData] = useState();
     const gridRef = useRef(); // Optional - for accessing Grid's API
-    const [rowData, setRowData] = useState(); // Set rowData to Array of Objects, one Object per Row
     // Each Column Definition results in one Column.
     const handleClose = () => {
         setShow(false);

@@ -16,6 +16,7 @@ function ConsoleTabs(props) {
         chatDisabled,
         defaultTestCases,
         setTestCase,
+        testCase,
     } = props;
     const [value, setValue] = useState(0);
     const [customTestCase, setCustomTestCase] = useState();
@@ -69,7 +70,7 @@ function ConsoleTabs(props) {
                 />
             </TabPanel>
             <TabPanel value={value} index={1} dir={theme.direction}>
-                <Console />
+                <Console expectedOutput={testCase?.output} />
             </TabPanel>
             <TabPanel value={value} index={2} dir={theme.direction}>
                 <Box
