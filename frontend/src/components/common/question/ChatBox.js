@@ -2,32 +2,40 @@ import { useCallback, useContext, useEffect } from "react";
 import { ProblemContext } from "../../../contexts/ProblemContext";
 import { Box } from "@mui/material";
 import "../../../css/chatbox.scss";
+import { FirebaseContext } from "../../../contexts/FirebaseContext";
 function ChatBox() {
     const { message } = useContext(ProblemContext);
+    const { currentName } = useContext(FirebaseContext);
+    console.log(message);
     const getMessages = useCallback(() => {
         return message.map((msg, index) => {
             if (msg.data) {
                 return msg?.user !== "me" ? (
-                    <div class="message droplet" key={`${msg?.user}${index}`}>
-                        <div class="message__text">
+                    <div
+                        className="message droplet"
+                        key={`${msg?.user}${index}`}
+                    >
+                        <div className="message-username"> {msg?.user}</div>
+                        <div className="message__text">
                             <Box
-                                class="message__text__content"
+                                className="message__text__content"
                                 sx={{ color: "chat.contrastText" }}
                             >
                                 {msg?.data}
-                                <div class="message__time">{msg?.time}</div>
+                                <div className="message__time">{msg?.time}</div>
                             </Box>
                         </div>
                     </div>
                 ) : (
                     <div
-                        class="message my-message droplet"
+                        className="message my-message droplet"
                         key={`${msg?.user}${index}`}
                     >
-                        <div class="message__text">
-                            <div class="message__text__content">
+                        <div className="message__text">
+                            <div className="message-username"> {msg?.user}</div>
+                            <div className="message__text__content">
                                 {msg?.data}
-                                <div class="message__time">{msg?.time}</div>
+                                <div className="message__time">{msg?.time}</div>
                             </div>
                         </div>
                     </div>

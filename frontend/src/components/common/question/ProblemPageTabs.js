@@ -100,9 +100,6 @@ function ProblemPageTabs(props) {
         }),
         []
     );
-    useEffect(() => {
-        console.log(question.titleSlug);
-    }, [question.titleSlug]);
 
     const getSolutions = useCallback(async () => {
         try {
@@ -215,7 +212,7 @@ function ProblemPageTabs(props) {
                 <TabPanel value={value} index={0} dir={theme.direction}>
                     <div className="problem-description-page">
                         <div style={{ fontWeight: "1000" }}>
-                            {question?.id}. {question?.title}
+                            {question?.id} {question?.title}
                         </div>
                         <div style={{ display: "flex", alignItems: "center" }}>
                             <Box
