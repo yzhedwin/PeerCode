@@ -7,6 +7,7 @@ import Console from "./Console";
 import Testcase from "./Testcase";
 import { TabPanel, a11yProps } from "../../../utils/helper";
 import "../../../css/chatbox.scss";
+import BatchSubmissionTabs from "./BatchSubmissionTabs";
 
 function ConsoleTabs(props) {
     const {
@@ -17,6 +18,8 @@ function ConsoleTabs(props) {
         defaultTestCases,
         setTestCase,
         testCase,
+        isBatch,
+        batchSubmission,
     } = props;
     const [value, setValue] = useState(0);
     const [customTestCase, setCustomTestCase] = useState();
@@ -70,7 +73,11 @@ function ConsoleTabs(props) {
                 />
             </TabPanel>
             <TabPanel value={value} index={1} dir={theme.direction}>
-                <Console expectedOutput={testCase?.output} />
+                {isBatch ? (
+                   <BatchSubmissionTabs batchSubmission={batchSubmission}/>
+                ) : (
+                    <Console expectedOutput={testCase?.output} />
+                )}
             </TabPanel>
             <TabPanel value={value} index={2} dir={theme.direction}>
                 <Box

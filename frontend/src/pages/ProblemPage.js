@@ -59,9 +59,13 @@ function ProblemPage(props) {
     const [stdin, setStdin] = useState();
     const [isRunning, setIsRunning] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isBatch, setIsBatch] = useState(false);
+    const [batchSubmission, setBatchSubmission] = useState([]);
     const editorRef = useRef(null);
     const monacoRef = useRef(null);
     const containerRef = useRef(null);
+    const interval_ids = useRef({});
+    const timeout_ids = useRef({});
 
     const handleEditorDidMount = useCallback(
         (editor, monaco) => {
@@ -163,76 +167,85 @@ function ProblemPage(props) {
         [match, type]
     );
 
-    const getSubmissionAndSubmit = useCallback(
-        (token) => {
-            interval_id = setInterval(async () => {
-                const { data } = await axios.get(
-                    `http://localhost:5000/api/v1/judge/submission?token=${token}`
-                );
-                if (data.status.id !== 1 && data.status.id !== 2) {
-                    clearInterval(interval_id);
-                    clearTimeout(timeout_id);
-                    const feedback = {
-                        stdout: data.stdout ? atob(data.stdout) : "None",
-                        time: data.time,
-                        memory: data.memory,
-                        stderr: data.stderr ? atob(data.stderr) : "None",
-                        compile_output: data.compile_output
-                            ? atob(data.compile_output)
-                            : "None",
-                        message: data.message ? atob(data.message) : "None",
-                        status: data.status,
-                    };
-                    if (type === "coop") {
-                        socket.emit("code-submission", match, feedback);
-                    }
-                    setConsoleResult(feedback);
-                    setSB({ msg: "Code Submitted", severity: "success" });
-                    setOpenSnackBar(true);
-                    setIsSubmitting(false);
-                    await axios.post(
-                        `http://localhost:5000/api/v1/question/history`,
-                        {
-                            submission: {
-                                userID: uid,
-                                titleSlug: question["titleSlug"],
-                                language_id: language.id,
-                                source_code: code,
-                            },
-                            feedback: data,
-                        }
-                    );
+    const postSubmission = useCallback(
+        async (stdin, output) => {
+            return await axios.post(
+                "http://localhost:5000/api/v1/judge/submission",
+                {
+                    userID: uid,
+                    titleSlug: question["titleSlug"],
+                    language_id: language.id,
+                    source_code: btoa(code),
+                    stdin: btoa(JSON.stringify(stdin)),
+                    expected_output: btoa(output.toString()),
                 }
-            }, 2000);
-        }, //eslint-disable-next-line
-        [code, language.id, match, question]
+            );
+        },
+        [code, language.id, question.titleSlug, uid]
+    );
+    const postHistory = useCallback(
+        async (feedback) => {
+            try {
+                const data = {
+                    submission: {
+                        userID: uid,
+                        titleSlug: question["titleSlug"],
+                        language_id: language.id,
+                        source_code: code,
+                    },
+                    feedback,
+                };
+                console.log(data);
+                await axios.post(
+                    `http://localhost:5000/api/v1/question/history`,
+                    data
+                );
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        [code, language.id, question.titleSlug, uid]
     );
 
-    const postSubmission = useCallback(async () => {
-        return await axios.post(
-            "http://localhost:5000/api/v1/judge/submission",
-            {
-                userID: uid,
-                titleSlug: question["titleSlug"],
-                language_id: language.id,
-                source_code: btoa(code),
-                stdin: btoa(JSON.stringify(stdin)),
-                expected_output: btoa(testCase?.output.toString()),
-            }
-        );
-    }, [stdin, testCase, code, language.id, question.titleSlug, uid]);
-
-    const onSubmit = async () => {
+    const onSubmit = () => {
         try {
-            const { data } = await postSubmission();
+            setBatchSubmission([]);
+            setConsoleResult("");
+            const outputs = getExpectedOutput();
+            defaultTestCases.forEach(async (tc, index) => {
+                const response = await postSubmission(tc, outputs[index]);
+                timeout_ids.current[index] = setTimeout(() => {
+                    clearInterval(interval_ids.current[index]);
+                }, 10000);
+                interval_ids.current[index] = setInterval(async () => {
+                    const { data } = await axios.get(
+                        `http://localhost:5000/api/v1/judge/submission?token=${response.data.token}`
+                    );
+                    if (data.status.id !== 1 && data.status.id !== 2) {
+                        const feedback = {
+                            token: response.data.token,
+                            stdout: data.stdout ? atob(data.stdout) : "None",
+                            time: data.time,
+                            memory: data.memory,
+                            stderr: data.stderr ? atob(data.stderr) : "None",
+                            compile_output: data.compile_output
+                                ? atob(data.compile_output)
+                                : "None",
+                            message: data.message ? atob(data.message) : "None",
+                            status: data.status,
+                            expected_output: outputs[index],
+                        };
+                        setBatchSubmission((prevState) => [
+                            ...prevState,
+                            feedback,
+                        ]);
+                        clearInterval(interval_ids.current[index]);
+                        clearTimeout(timeout_ids.current[index]);
+                    }
+                }, 2000);
+            });
+            setIsBatch(true);
             setIsSubmitting(true);
-            timeout_id = setTimeout(() => {
-                clearInterval(interval_id);
-                setSB({ msg: "Submission timedout", severity: "error" });
-                setOpenSnackBar(true);
-                setIsSubmitting(false);
-            }, 10000);
-            getSubmissionAndSubmit(data.token);
         } catch (e) {
             console.log(e.message);
         }
@@ -240,7 +253,7 @@ function ProblemPage(props) {
 
     const onRun = useCallback(async () => {
         try {
-            const { data } = await postSubmission();
+            const { data } = await postSubmission(stdin, testCase?.output);
             setIsRunning(true);
             timeout_id = setTimeout(() => {
                 clearInterval(interval_id);
@@ -248,6 +261,7 @@ function ProblemPage(props) {
                 setOpenSnackBar(true);
                 setIsRunning(false);
             }, 10000);
+            setIsBatch(false);
             getSubmission(data.token);
         } catch (e) {
             console.log(e.message);
@@ -371,6 +385,39 @@ function ProblemPage(props) {
             setHide(true);
         }
     }, [chatHeight]);
+
+    useEffect(() => {
+        // Priority Error > WA > TLE > AC
+        if (
+            batchSubmission.length === defaultTestCases.length &&
+            batchSubmission.length > 0
+        ) {
+            const errorIndex = batchSubmission.findIndex(
+                (feedback) =>
+                    feedback.status.description
+                        .toLowerCase()
+                        .indexOf("error") !== -1
+            );
+            const WrongIndex = batchSubmission.findIndex(
+                (feedback) => feedback.status.id === 4
+            );
+            const TLEIndex = batchSubmission.findIndex(
+                (feedback) => feedback.status.id === 5
+            );
+
+            if (errorIndex !== -1) {
+                postHistory(batchSubmission[errorIndex]);
+            } else if (WrongIndex !== -1) {
+                postHistory(batchSubmission[WrongIndex]);
+            } else if (TLEIndex !== -1) {
+                postHistory(batchSubmission[TLEIndex]);
+            } else {
+                postHistory(batchSubmission[0]);
+            }
+            setIsSubmitting(false);
+        }
+    }, [batchSubmission]);
+
     return (
         <>
             <SnackBar
@@ -444,6 +491,8 @@ function ProblemPage(props) {
                             defaultTestCases={defaultTestCases}
                             setTestCase={setTestCase}
                             testCase={testCase}
+                            batchSubmission={batchSubmission}
+                            isBatch={isBatch}
                         />
                     </div>
                     <div className="console-options">

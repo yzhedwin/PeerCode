@@ -150,7 +150,7 @@ function ProblemPageTabs(props) {
         async (params) => {
             try {
                 const { data } = await axios.get(
-                    `${API_GATEWAY}/api/v1/question/history?userID=${userID}&titleSlug=${question?.titleSlug}`
+                    `${API_GATEWAY}/api/v1/question/history/user/question?userID=${userID}&titleSlug=${question?.titleSlug}`
                 );
                 const tableData = data?.map((d) => {
                     const { feedback, submission } = d;
@@ -160,9 +160,9 @@ function ProblemPageTabs(props) {
                         runtime: feedback.time,
                         code: submission.source_code,
                         finished_at: feedback.finished_at,
-                        language: EDITOR_SUPPORTED_LANGUAGES.find(
-                            (e) => e.id === submission.language_id
-                        ).name,
+                        language: EDITOR_SUPPORTED_LANGUAGES?.find(
+                            (e) => e.id === submission?.language_id
+                        )?.name,
                     };
                 });
                 setRowData(tableData);
