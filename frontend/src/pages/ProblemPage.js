@@ -50,6 +50,7 @@ function ProblemPage(props) {
         key: "vs-dark",
     });
     const [defaultTestCases, setDefaultTestCases] = useState([]);
+    const [testCase, setTestCase] = useState({});
     const [stdin, setStdin] = useState();
     const [isRunning, setIsRunning] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -149,6 +150,7 @@ function ProblemPage(props) {
                         message: data.message ? atob(data.message) : "None",
                         status: data.status,
                     };
+                    console.log(feedback);
                     if (type === "coop") {
                         socket.emit("code-submission", match, feedback);
                     }
@@ -218,11 +220,8 @@ function ProblemPage(props) {
                     titleSlug: question["titleSlug"],
                     language_id: language.id,
                     source_code: btoa(code),
-                    stdin: btoa(
-                        stdin
-                            ? JSON.stringify(stdin)
-                            : JSON.stringify(defaultTestCases[0])
-                    ),
+                    stdin: btoa(JSON.stringify(stdin)),
+                    expected_output: btoa(JSON.stringify(testCase.output)),
                 }
             );
             setIsSubmitting(true);
@@ -246,11 +245,8 @@ function ProblemPage(props) {
                     titleSlug: question["titleSlug"],
                     language_id: language.id,
                     source_code: btoa(code),
-                    stdin: btoa(
-                        stdin
-                            ? JSON.stringify(stdin)
-                            : JSON.stringify(defaultTestCases[0])
-                    ),
+                    stdin: btoa(JSON.stringify(stdin)),
+                    expected_output: btoa(testCase?.output.toString()),
                 }
             );
             setIsRunning(true);
@@ -265,7 +261,16 @@ function ProblemPage(props) {
             console.log(e.message);
         }
         //eslint-disable-next-line
-    }, [code, match, question, language.id, type, stdin, defaultTestCases]);
+    }, [
+        code,
+        match,
+        question,
+        language.id,
+        type,
+        testCase,
+        stdin,
+        defaultTestCases,
+    ]);
 
     const handleLanguageChange = useCallback(
         (event) => {
@@ -328,8 +333,28 @@ function ProblemPage(props) {
             });
             return Object.assign(...arr);
         });
+        const expected = getExpectedOutput();
+        testcases?.map((tc, index) => {
+            return (tc["output"] = expected[index]);
+        });
         setDefaultTestCases(testcases);
     };
+
+    const getExpectedOutput = useCallback(() => {
+        return question?.problem
+            .split("\n")
+            .map((line) => {
+                if (line?.toString().toLowerCase().indexOf("output") !== -1) {
+                    return line
+                        ?.substring(line.indexOf("</strong>") + 9)
+                        .trim();
+                }
+            })
+            .filter((element) => {
+                return element !== undefined;
+            });
+    }, [question.problem]);
+
     useEffect(() => {
         //get Test case here once
         getDefaultTestCases();
@@ -339,6 +364,23 @@ function ProblemPage(props) {
         };
         //eslint-disable-next-line
     }, []);
+    useEffect(() => {
+        if (testCase) {
+            try {
+                setStdin(
+                    Object.assign(
+                        ...Object.keys(testCase)
+                            .filter((key) => key !== "output")
+                            .map((key) => {
+                                return { [key]: testCase[key] };
+                            })
+                    )
+                );
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    }, [testCase]);
 
     return (
         <>
@@ -411,7 +453,7 @@ function ProblemPage(props) {
                             textInput={textInput}
                             chatDisabled={type !== "coop"}
                             defaultTestCases={defaultTestCases}
-                            setStdin={setStdin}
+                            setTestCase={setTestCase}
                         />
                     </div>
                     <div className="console-options">
