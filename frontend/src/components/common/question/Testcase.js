@@ -36,7 +36,10 @@ export default function Testcase(props) {
                     index={caseIndex}
                     dir={theme.direction}
                 >
-                    <div className="testcase-item">
+                    <div
+                        key={`tabs-panel-div-${caseIndex}`}
+                        className="testcase-item"
+                    >
                         {Object.keys(tc).map((param, idx) => {
                             return (
                                 <>

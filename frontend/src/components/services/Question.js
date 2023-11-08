@@ -87,11 +87,11 @@ function Question() {
                         const action = event[0];
                         const ts = event[1];
                         if (action === "e") {
-                            const question = rowData.find(
+                            const question = rowData?.find(
                                 (qn) => qn.titleSlug === ts
                             );
-                            const categories = question.topicTags
-                                .map((a) => a.name)
+                            const categories = question?.topicTags
+                                ?.map((a) => a.name)
                                 .join();
                             navigate("/edit", {
                                 state: {

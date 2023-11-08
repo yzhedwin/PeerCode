@@ -222,6 +222,7 @@ function ProblemPage(props) {
                         `http://localhost:5000/api/v1/judge/submission?token=${response.data.token}`
                     );
                     if (data.status.id !== 1 && data.status.id !== 2) {
+                        console.log(data);
                         //if submission is ready stop polling
                         const feedback = {
                             token: response.data.token,
@@ -234,6 +235,7 @@ function ProblemPage(props) {
                                 : "None",
                             message: data.message ? atob(data.message) : "None",
                             status: data.status,
+                            finished_at: data?.finished_at,
                             expected_output: outputs[index],
                         };
                         setBatchSubmission((prevState) => [
@@ -391,7 +393,8 @@ function ProblemPage(props) {
         // Priority Error > WA > TLE > AC
         if (
             batchSubmission.length === defaultTestCases.length &&
-            batchSubmission.length > 0
+            batchSubmission.length > 0 &&
+            isSubmitting
         ) {
             const errorIndex = batchSubmission.findIndex(
                 (feedback) =>
