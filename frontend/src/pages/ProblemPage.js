@@ -206,14 +206,14 @@ function ProblemPage(props) {
         },
         [code, language.id, question.titleSlug, uid]
     );
-
+    //Submit Button to run against all default test cases
     const onSubmit = () => {
         try {
             setBatchSubmission([]);
             setConsoleResult("");
             const outputs = getExpectedOutput();
             defaultTestCases.forEach(async (tc, index) => {
-                const response = await postSubmission(tc, outputs[index]);
+                const response = await postSubmission(tc, outputs[index]); //post submission to judge0 and poll 10s for feedback
                 timeout_ids.current[index] = setTimeout(() => {
                     clearInterval(interval_ids.current[index]);
                 }, 10000);
@@ -222,6 +222,7 @@ function ProblemPage(props) {
                         `http://localhost:5000/api/v1/judge/submission?token=${response.data.token}`
                     );
                     if (data.status.id !== 1 && data.status.id !== 2) {
+                        //if submission is ready stop polling
                         const feedback = {
                             token: response.data.token,
                             stdout: data.stdout ? atob(data.stdout) : "None",
@@ -244,13 +245,13 @@ function ProblemPage(props) {
                     }
                 }, 2000);
             });
-            setIsBatch(true);
+            setIsBatch(true); //change Result tab content to 'Batch' instead of 'Single'
             setIsSubmitting(true);
         } catch (e) {
             console.log(e.message);
         }
     };
-
+    //Run button to run against user selected testcase
     const onRun = useCallback(async () => {
         try {
             const { data } = await postSubmission(stdin, testCase?.output);
