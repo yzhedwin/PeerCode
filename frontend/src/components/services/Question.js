@@ -20,8 +20,8 @@ function Question() {
     const { isAdmin } = useContext(FirebaseContext);
     const [show, setShow] = useState(false);
     const [titleSlug, setTitleSlug] = useState("");
+    const [rowData, setRowData] = useState();
     const gridRef = useRef(); // Optional - for accessing Grid's API
-    const [rowData, setRowData] = useState(); // Set rowData to Array of Objects, one Object per Row
     // Each Column Definition results in one Column.
     const handleClose = () => {
         setShow(false);
@@ -87,11 +87,11 @@ function Question() {
                         const action = event[0];
                         const ts = event[1];
                         if (action === "e") {
-                            const question = rowData.find(
+                            const question = rowData?.find(
                                 (qn) => qn.titleSlug === ts
                             );
-                            const categories = question.topicTags
-                                .map((a) => a.name)
+                            const categories = question?.topicTags
+                                ?.map((a) => a.name)
                                 .join();
                             navigate("/edit", {
                                 state: {

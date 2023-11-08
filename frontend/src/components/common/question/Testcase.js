@@ -4,7 +4,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { TabPanel } from "../../../utils/helper";
 import { useTheme } from "@emotion/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 export default function Testcase(props) {
     const [value, setValue] = useState(0);
@@ -36,7 +36,10 @@ export default function Testcase(props) {
                     index={caseIndex}
                     dir={theme.direction}
                 >
-                    <div className="testcase-item">
+                    <div
+                        key={`tabs-panel-div-${caseIndex}`}
+                        className="testcase-item"
+                    >
                         {Object.keys(tc).map((param, idx) => {
                             return (
                                 <>

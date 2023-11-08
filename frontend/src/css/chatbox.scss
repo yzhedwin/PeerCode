@@ -44,7 +44,16 @@
     background-color: #effdde;
     box-shadow: 0 2px 1px 0 rgba(93, 196, 82, 0.5);
 }
-
+.message-username {
+    display: flex;
+    font-size: 12px;
+    justify-items: left;
+    width: 100%;
+}
+.message.message.droplet {
+    display: flex;
+    flex-direction: column;
+}
 .message.droplet:before {
     position: absolute;
     content: "";
@@ -82,7 +91,6 @@
 
 .message__text,
 .message__image__text .message__text__content {
-    padding-top: 10px;
     padding-left: 10px;
     padding-right: 10px;
     z-index: 2;
