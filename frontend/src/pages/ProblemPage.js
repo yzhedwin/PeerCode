@@ -195,7 +195,6 @@ function ProblemPage(props) {
                     },
                     feedback,
                 };
-                console.log(data);
                 await axios.post(
                     `http://localhost:5000/api/v1/question/history`,
                     data
@@ -222,7 +221,6 @@ function ProblemPage(props) {
                         `http://localhost:5000/api/v1/judge/submission?token=${response.data.token}`
                     );
                     if (data.status.id !== 1 && data.status.id !== 2) {
-                        console.log(data);
                         //if submission is ready stop polling
                         const feedback = {
                             token: response.data.token,
