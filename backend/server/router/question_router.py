@@ -4,6 +4,7 @@ import requests
 from model.question import Question
 from model.judge import Submission
 from typing import Union
+from constant import QUESTION_STATUS
 
 router = APIRouter(
     prefix="/api/v1/question",
@@ -182,6 +183,21 @@ async def add_submission_to_db(submission: Submission):
 async def delete_all_submissions_from_db():
     try:
         response = requests.delete(config.question_service_url + "/history")
+        return response.json()
+    except Exception as e:
+        return e
+
+@router.put("/history")
+async def update_question_status_to_db(userID: str, titleSlug: str, status: str):
+    try:
+        status_list = ["In Queue", "Processing", "Wrong Answer", "Time Limit Exceeded", "Compilation Error", "Runtime Error (SIGSEGV)", "Runtime Error (SIGXFSZ)", 
+                       "Runtime Error (SIGFPE)", "Runtime Error (SIGABRT)", "Runtime Error (NZEC)", "Runtime Error (Other)", "Internal Error", "Exec Format Error"]
+        if status == "Accepted":
+            status = QUESTION_STATUS.ACCEPTED
+        elif status in status_list:
+            status = QUESTION_STATUS.ATTEMPTED
+            
+        response = requests.put(config.question_service_url + f"/history?userID={userID}&titleSlug={titleSlug}&status={status}")
         return response.json()
     except Exception as e:
         return e
