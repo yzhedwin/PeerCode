@@ -387,6 +387,24 @@ function ProblemPage(props) {
         }
     }, [chatHeight]);
 
+    const updateQuestionStatustoAccepted = useCallback(async () => {
+        const data = {userID: '1234', titleSlug: question["titleSlug"]}
+
+        await axios.put(
+            `http://localhost:5000/api/v1/question/history/accepted`, data)
+
+        }, 
+    )
+
+    const updateQuestionStatustoAttempted = useCallback(async () => {
+        const data = {userID: '1234', titleSlug: question["titleSlug"]}
+
+        await axios.put(
+            `http://localhost:5000/api/v1/question/history/attempted`, data)
+        },
+    )
+
+
     useEffect(() => {
         // Priority Error > WA > TLE > AC
         if (
@@ -409,12 +427,16 @@ function ProblemPage(props) {
 
             if (errorIndex !== -1) {
                 postHistory(batchSubmission[errorIndex]);
+                updateQuestionStatustoAttempted()
             } else if (WrongIndex !== -1) {
                 postHistory(batchSubmission[WrongIndex]);
+                updateQuestionStatustoAttempted()
             } else if (TLEIndex !== -1) {
                 postHistory(batchSubmission[TLEIndex]);
+                updateQuestionStatustoAttempted()
             } else {
                 postHistory(batchSubmission[0]);
+                updateQuestionStatustoAccepted()
             }
             setIsSubmitting(false);
         }

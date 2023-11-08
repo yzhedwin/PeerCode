@@ -186,17 +186,20 @@ async def delete_all_submissions_from_db():
         return response.json()
     except Exception as e:
         return e
-
-@router.put("/history")
-async def update_question_status_to_db(userID: str, titleSlug: str, status: str):
+    
+@router.put("/history/accepted")
+async def update_question_status_to_accepted(userID: str, titleSlug: str):
     try:
-        status_list = ["In Queue", "Processing", "Wrong Answer", "Time Limit Exceeded", "Compilation Error", "Runtime Error (SIGSEGV)", "Runtime Error (SIGXFSZ)", 
-                       "Runtime Error (SIGFPE)", "Runtime Error (SIGABRT)", "Runtime Error (NZEC)", "Runtime Error (Other)", "Internal Error", "Exec Format Error"]
-        if status == "Accepted":
-            status = QUESTION_STATUS.ACCEPTED
-        elif status in status_list:
-            status = QUESTION_STATUS.ATTEMPTED
-            
+        status = QUESTION_STATUS.ACCEPTED
+        response = requests.put(config.question_service_url + f"/history?userID={userID}&titleSlug={titleSlug}&status={status}")
+        return response.json()
+    except Exception as e:
+        return e
+    
+@router.put("/history/attempted")
+async def update_question_status_to_attempted(userID: str, titleSlug: str):
+    try:
+        status = QUESTION_STATUS.ATTEMPTED
         response = requests.put(config.question_service_url + f"/history?userID={userID}&titleSlug={titleSlug}&status={status}")
         return response.json()
     except Exception as e:
