@@ -24,6 +24,7 @@ import { defineTheme } from "../utils/helper";
 import EditorOptions from "../components/common/question/EditorOptions";
 import ResizeBar from "../components/common/ResizeBar";
 import { FirebaseContext } from "../contexts/FirebaseContext";
+import VideoCall from "../components/services/VideoCall";
 var interval_id = null;
 var timeout_id = null;
 function ProblemPage(props) {
@@ -317,26 +318,31 @@ function ProblemPage(props) {
     }, [match, type]);
 
     const getDefaultTestCases = async () => {
-        const { data } = await axios.get(
-            `http://localhost:5000/api/v1/question/exampletestcase`,
-            {
-                params: { titleSlug: question?.titleSlug },
-            }
-        );
-        const testcases = data?.testCases?.map((tc) => {
-            const arr = tc.split("\n").map((param, index) => {
-                return {
-                    [JSON.parse(data.metaData).params[index].name]: param,
-                };
+        try {
+            const { data } = await axios.get(
+                `http://localhost:5000/api/v1/question/exampletestcase`,
+                {
+                    params: { titleSlug: question?.titleSlug },
+                }
+            );
+            const testcases = data?.testCases?.map((tc) => {
+                const arr = tc?.split("\n")?.map((param, index) => {
+                    return {
+                        [JSON.parse(data?.metaData)?.params[index]?.name]:
+                            param,
+                    };
+                });
+                return Object.assign(...arr);
             });
-            return Object.assign(...arr);
-        });
-        const expected = getExpectedOutput();
-        testcases?.map((tc, index) => {
-            return (tc["output"] = expected[index]);
-        });
-        setDefaultTestCases(testcases);
-        setTestCase(testcases?.at(0) || {});
+            const expected = getExpectedOutput();
+            testcases?.map((tc, index) => {
+                return (tc["output"] = expected[index]);
+            });
+            setDefaultTestCases(testcases);
+            setTestCase(testcases?.at(0) || {});
+        } catch (e) {
+            console.log(e);
+        }
     };
 
     const getExpectedOutput = useCallback(() => {
@@ -440,15 +446,18 @@ function ProblemPage(props) {
                         handleThemeChange={handleThemeChange}
                     >
                         {type === "coop" && (
-                            <ConsoleButton
-                                title={"Leave"}
-                                onClick={handleLeaveRoom}
-                                sx={{
-                                    ml: "auto",
-                                    backgroundColor: "red",
-                                    mb: 1,
-                                }}
-                            />
+                            <>
+                                <VideoCall />
+                                <ConsoleButton
+                                    title={"Leave"}
+                                    sx={{
+                                        ml: 1,
+                                        backgroundColor: "red",
+                                        mb: 1,
+                                    }}
+                                    onClick={handleLeaveRoom}
+                                />
+                            </>
                         )}
                     </EditorOptions>
 
