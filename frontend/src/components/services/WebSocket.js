@@ -30,7 +30,8 @@ const style = {
 export default function WebSocket() {
     // eslint-disable-next-line no-unused-vars
     const [isConnected, setIsConnected] = useState(socket.connected);
-    const { match, setMatch, setHasInit } = useContext(MatchContext);
+    const { match, setMatch, setQuitMatch, setHasInit } =
+        useContext(MatchContext);
     const { currentName } = useContext(FirebaseContext);
     const {
         message,
@@ -117,9 +118,9 @@ export default function WebSocket() {
         setSB({ msg: "Left the match!", severity: "error" });
         setOpenSnackBar(true);
         setMatch(null);
+        setQuitMatch(true);
         handleClose();
         socket.emit("connection-lost", match, "User has left");
-        navigate("/dashboard");
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     const onMatchQuitDeny = useCallback(() => {

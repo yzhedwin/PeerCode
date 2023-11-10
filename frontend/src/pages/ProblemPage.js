@@ -25,6 +25,7 @@ import EditorOptions from "../components/common/question/EditorOptions";
 import ResizeBar from "../components/common/ResizeBar";
 import { FirebaseContext } from "../contexts/FirebaseContext";
 import VideoCall from "../components/services/VideoCall";
+import { unstable_useBlocker, useNavigate } from "react-router-dom";
 var interval_id = null;
 var timeout_id = null;
 function ProblemPage(props) {
@@ -34,7 +35,7 @@ function ProblemPage(props) {
         currentName,
     } = useContext(FirebaseContext);
     const { question } = useContext(QuestionContext);
-    const { match } = useContext(MatchContext);
+    const { match, quitMatch, setQuitMatch } = useContext(MatchContext);
     const {
         message,
         code,
@@ -67,6 +68,7 @@ function ProblemPage(props) {
     const containerRef = useRef(null);
     const interval_ids = useRef({});
     const timeout_ids = useRef({});
+    const navigate = useNavigate();
 
     const handleEditorDidMount = useCallback(
         (editor, monaco) => {
@@ -425,6 +427,27 @@ function ProblemPage(props) {
             setIsSubmitting(false);
         }
     }, [batchSubmission]);
+    const onBlockNav = () => {
+        if (match) {
+            setSB({
+                msg: "Please request to leave the session",
+                severity: "error",
+            });
+
+            setOpenSnackBar(true);
+        }
+        return match;
+    };
+
+    if (type === "coop") {
+        unstable_useBlocker(onBlockNav);
+    }
+    useEffect(() => {
+        if (quitMatch) {
+            navigate("/dashboard");
+            setQuitMatch(false);
+        }
+    }, [quitMatch]);
 
     return (
         <>
