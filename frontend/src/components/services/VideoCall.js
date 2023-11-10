@@ -121,9 +121,6 @@ function VideoCall() {
             setOpenSnackBar(true);
         }
     }, [receivingCall]);
-    useEffect(() => {
-        console.log(callAccepted, callEnded);
-    }, [callAccepted]);
 
     return (
         <>
