@@ -8,6 +8,7 @@ import { SnackBarContext } from "../../contexts/SnackBarContext";
 import "../../css/videocall.scss";
 import { useDrag } from "../common/useDrag";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
+import MinimizeIcon from "@mui/icons-material/Minimize";
 function VideoCall() {
     const [stream, setStream] = useState(null);
     const [receivingCall, setReceivingCall] = useState(false);
@@ -22,8 +23,8 @@ function VideoCall() {
     const myVideo = useRef(null);
     const { setOpenSnackBar, setSB } = useContext(SnackBarContext);
     const draggableRef = useRef(null);
-    const { isMute, setIsMute } = useState(false);
-
+    const [isMute, setIsMute] = useState(false);
+    const [minimize, setMinimize] = useState(false);
     const { position, handleMouseDown } = useDrag({
         ref: draggableRef,
     });
@@ -122,6 +123,10 @@ function VideoCall() {
         }
     }, [receivingCall]);
 
+    const handleMinimize = () => {
+        setMinimize((prevState) => (prevState ? false : true));
+        console.log(minimize);
+    };
     return (
         <>
             {stream && (
@@ -138,14 +143,25 @@ function VideoCall() {
                         onMouseDown={handleMouseDown}
                     >
                         <DragHandleIcon />
+                        <div id="minimize" onClick={handleMinimize}>
+                            <MinimizeIcon />
+                        </div>
                     </div>
-                    <div>
+                    <div className="video-container">
                         <video
                             className="rounded-full"
                             playsInline
                             ref={myVideo}
                             autoPlay
-                            style={{ width: "200px" }}
+                            style={
+                                minimize
+                                    ? { width: "200px", display: "none" }
+                                    : {
+                                          width: "200px",
+                                          display: "inherit",
+                                          margin: "5px",
+                                      }
+                            }
                         />
                         {callAccepted && !callEnded && (
                             <video
@@ -154,7 +170,15 @@ function VideoCall() {
                                 ref={userVideo}
                                 muted={isMute}
                                 autoPlay
-                                style={{ width: "200px" }}
+                                style={
+                                    minimize
+                                        ? { width: "200px", display: "none" }
+                                        : {
+                                              width: "200px",
+                                              display: "inherit",
+                                              margin: "5px",
+                                          }
+                                }
                             />
                         )}
                     </div>
