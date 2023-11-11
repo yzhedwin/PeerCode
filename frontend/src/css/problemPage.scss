@@ -15,6 +15,17 @@
     flex: 1;
 }
 
+.translator-container {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    height: 75%;
+  }
+  
+  .translator-component {
+    flex: 1;
+  }
+
 .editor-container {
     display: flex;
     flex: 1;

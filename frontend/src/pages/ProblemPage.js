@@ -24,6 +24,11 @@ import "../css/problemPage.scss";
 import { defineTheme } from "../utils/helper";
 import EditorOptions from "../components/common/question/EditorOptions";
 import ResizeBar from "../components/common/ResizeBar";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Box, Modal, TextField, Typography, Button } from "@mui/material";
+import CustomSelect from "../components/common/question/CustomSelect";
+import { EDITOR_SUPPORTED_LANGUAGES, EDITOR_SUPPORTED_THEMES } from "./../utils/constants";
+
 var interval_id = null;
 var timeout_id = null;
 function ProblemPage(props) {
@@ -79,6 +84,18 @@ function ProblemPage(props) {
     },
     [snippets, language.raw]
   );
+
+  const translatedEditorRef = useRef(null);
+  const translatedMonacoRef = useRef(null);
+
+  const [showCodeTranslate, setShowCodeTranslate] = useState(false);
+  const [translatedCode, setTranslatedCode] = useState("");
+  const [translateToLanguage, setTranslateToLanguage] = useState("");
+
+  function handleTranslatedEditorDidMount(editor, monaco) {
+    translatedEditorRef.current = editor;
+    translatedMonacoRef.current = monaco;
+  }
 
   const handleCloseSnackBar = useCallback((event, reason) => {
     if (reason === "clickaway") {
@@ -385,6 +402,94 @@ function ProblemPage(props) {
     //eslint-disable-next-line
   }, []);
 
+  function generateCodeTranslatePrompt(inputLanguage, outputLanguage) {
+    let prompt = `You are an expert programmer in all programming languages. Translate the "${inputLanguage}" code to "${outputLanguage}" code. Do not include \`\`\`.
+  
+    Example translating from JavaScript to Python:
+
+    JavaScript code:
+    for (let i = 0; i < 10; i++) {
+      console.log(i);
+    }
+
+    Python code:
+    for i in range(10):
+      print(i)
+    
+    ${inputLanguage} code:
+    ${code}
+
+    ${outputLanguage} code (no \`\`\`):`
+    return prompt;
+  }
+
+  const onCodeTranslationRequest =
+    async (e) => {
+      if (translateToLanguage === ""){
+        setSB({ msg: "Please input a coding language to translate to!", severity: "error" });
+        setOpenSnackBar(true);
+        return;
+      }
+      let prompt = generateCodeTranslatePrompt(language.raw, translateToLanguage.raw);
+      await axios
+        .post("http://localhost:8020/ask", { prompt })
+        .then((res) => {
+          if (res.status === 200) {
+            if (res.data.includes("maximum context length")) {
+              setSB({ msg: "You have exceeded the maximum prompt length, please shorten your prompt!", severity: "error" });
+              setOpenSnackBar(true);
+            } else {
+              setSB({ msg: "Translation of code successful!", severity: "success" });
+              setOpenSnackBar(true);
+              setTranslatedCode(res.data);
+            }
+          }
+        })
+        .catch((error) => console.log(error));
+    }
+
+
+  function onCodeTranslateQuery() {
+    setShowCodeTranslate(true);
+  }
+
+  function onCodeTranslateConfirmation() {
+    setLanguage(translateToLanguage)
+    setCode(translatedCode)
+    setTranslatedCode("")
+    handleClose()
+  }
+
+  function handleTranslateLanguageChange(event) {
+    setTranslateToLanguage(JSON.parse(event.target.value));
+  }
+
+  function handleTranslatedCodeChanges(translatedCode) {
+    setTranslatedCode(translatedCode)
+  }
+
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '70%',
+    height: '70%',
+    bgcolor: 'white',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  };
+
+  let theme = createTheme({
+    shape: {
+      pillRadius: 50
+    }
+  });
+
+
+  const handleClose = () => setShowCodeTranslate(false);
+
   return (
     <>
       <SnackBar
@@ -393,6 +498,81 @@ function ProblemPage(props) {
         openSnackBar={openSnackBar}
         severity={sb?.severity}
       />
+
+      {showCodeTranslate && <div style={{ margin: '50%' }}>
+        <Modal
+          open={showCodeTranslate}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <CustomSelect
+              title={"Language"}
+              list={EDITOR_SUPPORTED_LANGUAGES}
+              value={translateToLanguage}
+              handleChange={handleTranslateLanguageChange}
+            />
+            <Typography id="modal-modal-title" variant="h5" component="h2">
+              Translate your current code here from {language.name} to {translateToLanguage.name}
+            </Typography>
+
+            <ThemeProvider theme={theme}>
+              <Button variant="contained" pill onClick={onCodeTranslationRequest}>
+                TRANSLATE
+              </Button>
+            </ThemeProvider>
+
+            <div className="translator-container">
+              <div className="translator-component">
+                <h3>Original Code</h3>
+                <Editor
+                  height="80%"
+                  language={language?.raw}
+                  theme={editorTheme?.value}
+                  value={code}
+                  onChange={handleCodeChanges}
+                  onMount={handleEditorDidMount}
+                  options={{
+                    dragAndDrop: false,
+                    inlineSuggest: true,
+                    fontSize: "16px",
+                    formatOnType: true,
+                    autoClosingBrackets: true,
+                    minimap: { scale: 10 },
+                  }}
+                />
+              </div>
+
+              <div className="translator-component">
+                <h3>Translated Code</h3>
+                <Editor
+                  height="80%"
+                  language={translateToLanguage?.raw}
+                  theme={editorTheme?.value}
+                  value={translatedCode}
+                  onChange={handleTranslatedCodeChanges}
+                  onMount={handleTranslatedEditorDidMount}
+                  options={{
+                    dragAndDrop: false,
+                    inlineSuggest: true,
+                    fontSize: "16px",
+                    formatOnType: true,
+                    autoClosingBrackets: true,
+                    minimap: { scale: 10 },
+                  }}
+                />
+              </div>
+            </div>
+            <ThemeProvider theme={theme}>
+              <Button variant="contained" pill onClick={onCodeTranslateConfirmation}>
+                CONFIRM CHANGES
+              </Button>
+            </ThemeProvider>
+          </Box>
+        </Modal>
+      </div>}
+
       <div className="problem-page-container">
         <div className="problem-tabs-container">
           <ProblemPageTabs userID={"1234"} question={question} />
@@ -473,6 +653,12 @@ function ProblemPage(props) {
                 title={"Console"}
               />
             )}
+            <ConsoleButton
+              onClick={onCodeTranslateQuery}
+              title={"AI Code Translation Tool"}
+              sx={{ ml: "auto", mr: 1 }}
+            />
+
             <ConsoleButton
               onClick={onRun}
               title={"Run"}
