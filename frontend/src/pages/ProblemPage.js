@@ -387,21 +387,13 @@ function ProblemPage(props) {
         }
     }, [chatHeight]);
 
-    const updateQuestionStatustoAccepted = useCallback(async () => {
-        const data = {userID: '1234', titleSlug: question["titleSlug"]}
+    const updateQuestionStatus = useCallback(async (description) => {
+        const data = {userID: {uid}, titleSlug: question.titleSlug, status: description}
 
         await axios.put(
-            `http://localhost:5000/api/v1/question/history/accepted`, data)
+            `http://localhost:5000/api/v1/question/history`, data)
 
         }, 
-    )
-
-    const updateQuestionStatustoAttempted = useCallback(async () => {
-        const data = {userID: '1234', titleSlug: question["titleSlug"]}
-
-        await axios.put(
-            `http://localhost:5000/api/v1/question/history/attempted`, data)
-        },
     )
 
 
@@ -424,19 +416,19 @@ function ProblemPage(props) {
             const TLEIndex = batchSubmission.findIndex(
                 (feedback) => feedback.status.id === 5
             );
-
+            
             if (errorIndex !== -1) {
                 postHistory(batchSubmission[errorIndex]);
-                updateQuestionStatustoAttempted()
+                updateQuestionStatus("Error")
             } else if (WrongIndex !== -1) {
                 postHistory(batchSubmission[WrongIndex]);
-                updateQuestionStatustoAttempted()
+                updateQuestionStatus("Wrong Answer")
             } else if (TLEIndex !== -1) {
                 postHistory(batchSubmission[TLEIndex]);
-                updateQuestionStatustoAttempted()
+                updateQuestionStatus("Time Limit Exceeded")
             } else {
                 postHistory(batchSubmission[0]);
-                updateQuestionStatustoAccepted()
+                updateQuestionStatus("Accepted")
             }
             setIsSubmitting(false);
         }
