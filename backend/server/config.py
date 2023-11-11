@@ -8,6 +8,7 @@ class Config(BaseSettings):
     mongo_peercode_database_name: str
     mongo_peercode_database_user: str
     mongo_peercode_database_password: str
+    mongo_peercode_url: str
     server_port: str
     kafka_server_name: str
     kafka_topics: str
