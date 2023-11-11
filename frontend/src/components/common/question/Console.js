@@ -3,9 +3,8 @@ import { ProblemContext } from "../../../contexts/ProblemContext";
 import { Box } from "@mui/material";
 import { outputStatus } from "../../../utils/helper";
 
-function Console() {
+function Console({ expectedOutput }) {
     const { consoleResult } = useContext(ProblemContext);
-
     return (
         <Box
             className="console-container"
@@ -45,6 +44,17 @@ function Console() {
                             <div>
                                 <div className="console-stderr">
                                     {consoleResult?.stderr}
+                                </div>
+                            </div>
+                        ) : consoleResult.status?.id === 4 ? (
+                            <div>
+                                <div className="console-title">Output </div>
+                                <div className="console-stdout">
+                                    {consoleResult?.stdout}
+                                </div>
+                                <div className="console-title">Expected </div>
+                                <div className="console-stdout">
+                                    {expectedOutput}
                                 </div>
                             </div>
                         ) : (

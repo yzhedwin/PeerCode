@@ -9,6 +9,7 @@ class JudgeInput(BaseModel):
     source_code: str
     language_id: int
     stdin: Union[str, None]
+    expected_output: Union[str, None]
 
 
 class SubmissionStatus(BaseModel):

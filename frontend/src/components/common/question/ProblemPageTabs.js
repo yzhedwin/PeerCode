@@ -100,6 +100,7 @@ function ProblemPageTabs(props) {
         }),
         []
     );
+
     const getSolutions = useCallback(async () => {
         try {
             const { data } = await axios.get(
@@ -141,11 +142,6 @@ function ProblemPageTabs(props) {
         }
     }, [question?.titleSlug]);
 
-    useEffect(() => {
-        getSolutions();
-        //eslint-disable-next-line
-    }, []);
-
     const handleChange = useCallback(async (event, newValue) => {
         setValue(newValue);
     }, []);
@@ -154,7 +150,7 @@ function ProblemPageTabs(props) {
         async (params) => {
             try {
                 const { data } = await axios.get(
-                    `${API_GATEWAY}/api/v1/question/history?userID=${userID}&titleSlug=${question?.titleSlug}`
+                    `${API_GATEWAY}/api/v1/question/history/user/question?userID=${userID}&titleSlug=${question?.titleSlug}`
                 );
                 const tableData = data?.map((d) => {
                     const { feedback, submission } = d;
@@ -164,9 +160,9 @@ function ProblemPageTabs(props) {
                         runtime: feedback.time,
                         code: submission.source_code,
                         finished_at: feedback.finished_at,
-                        language: EDITOR_SUPPORTED_LANGUAGES.find(
-                            (e) => e.id === submission.language_id
-                        ).name,
+                        language: EDITOR_SUPPORTED_LANGUAGES?.find(
+                            (e) => e.id === submission?.language_id
+                        )?.name,
                     };
                 });
                 setRowData(tableData);
@@ -183,6 +179,11 @@ function ProblemPageTabs(props) {
     }, []);
     const handleCloseSubmission = useCallback(() => {
         setOpenSubmission(false);
+    }, []);
+
+    useEffect(() => {
+        getSolutions();
+        //eslint-disable-next-line
     }, []);
 
     return (
@@ -211,7 +212,7 @@ function ProblemPageTabs(props) {
                 <TabPanel value={value} index={0} dir={theme.direction}>
                     <div className="problem-description-page">
                         <div style={{ fontWeight: "1000" }}>
-                            {question?.id}. {question?.title}
+                            {question?.id} {question?.title}
                         </div>
                         <div style={{ display: "flex", alignItems: "center" }}>
                             <Box
