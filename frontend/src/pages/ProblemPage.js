@@ -350,7 +350,7 @@ function ProblemPage(props) {
     const getExpectedOutput = useCallback(() => {
         return question?.problem
             .split("\n")
-            .map((line) => {
+            ?.map((line) => {
                 if (line?.toString().toLowerCase().indexOf("output") !== -1) {
                     return line
                         ?.substring(line.indexOf("</strong>") + 9)
