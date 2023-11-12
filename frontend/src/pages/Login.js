@@ -104,7 +104,7 @@ function Login() {
                         <div className="forgot-password">
                             <div>
                                 New member? Click{" "}
-                                <span onClick={() => navigate("signup")}>
+                                <span onClick={() => navigate("/signup")}>
                                     here!
                                 </span>
                             </div>
