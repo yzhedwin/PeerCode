@@ -17,7 +17,7 @@ def test_signup_successful():
 
         # Fill in the registration form
         username.send_keys('testing')
-        email.send_keys('testing@testing.com')
+        email.send_keys('testing@test.com')
         password.send_keys('testing')
         confirm_password.send_keys('testing')  # Fill in the password confirmation
 
@@ -25,16 +25,22 @@ def test_signup_successful():
         sign_up_button.click()
 
         # Wait for the success message or redirect
-        WebDriverWait(driver, 10).until(EC.url_to_be('http://localhost:3000'))
+        WebDriverWait(driver, 10).until(EC.url_to_be('http://localhost:3000/login'))
 
-        # Get the UID of the newly created account
-        user = auth.get_user_by_email("testing@testing.com")
-        uid = user.uid
+        assert driver.current_url == 'http://localhost:3000/login', "Sign-up failed"
 
-        # Store the UID in a cache to be used in the finalizer
-        request.config.cache.set("uid", uid)
+        email = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@type='email']")))
+        password = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@type='password']")))
+        login_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@type='submit']")))
 
-        assert driver.current_url == 'http://localhost:3000', "Sign-up failed"
+        email.send_keys('testing@test.com')
+        password.send_keys('testing')
+        login_button.click()
+
+        # Wait for the next page to load after login (change the expected condition based on the next page)
+        WebDriverWait(driver, 10).until(EC.url_to_be('http://localhost:3000/'))
+        assert driver.current_url == 'http://localhost:3000/', "Login failed"
+
     finally:
         driver.quit()
 
