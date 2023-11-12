@@ -2,13 +2,12 @@ import React, { useContext, useCallback, useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import "../css/profile.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
-import dpimage from "../assets/test_dp.jpeg";
-import actimage from "../assets/test_activity.png";
 import SnackBar from "../components/common/SnackBar";
 import RecentTable from "../components/services/RecentTable";
 import UpdateProfile from "./UpdateProfile";
 import { SnackBarContext } from "../contexts/SnackBarContext";
 import { FirebaseContext } from "../contexts/FirebaseContext";
+import { PersonFill, EnvelopeFill } from "react-bootstrap-icons";
 
 import axios from "axios";
 
@@ -25,7 +24,9 @@ const Profile = () => {
   useEffect(() => {
     checkDetails(currentUser); //.then(setLoading(false));
     axios
-      .get("http://localhost:5000/api/v1/question/history/?user=1234")
+      .get(
+        `http://localhost:5000/api/v1/question/history/user?userID=${currentUser.uid}`
+      )
       .then((res) => setSubmissions(res.data))
       .catch((e) => console.log("Submissions not found"));
 
@@ -42,13 +43,6 @@ const Profile = () => {
   };
 
   return (
-    // <div>
-    //   <figure>{userInfo?.firstName?.charAt(0).toUpperCase()}</figure>
-    //   <span>
-    //     Welcome <strong>{userInfo?.firstName}!</strong> You can view this page
-    //     because you're logged in
-    //   </span>
-    // </div>
     <div className="profile">
       <SnackBar
         msg={sb.msg}
@@ -63,8 +57,20 @@ const Profile = () => {
               <div className="edit-icon">
                 <UpdateProfile></UpdateProfile>
               </div>
-              <img className="display-pic" src={image}></img>
-              <div className="username">{currentUser.displayName}</div>
+              <div className="recent-text">Profile</div>
+              <div className="left-box">
+                <img className="display-pic" src={image}></img>
+                <div className="user-info">
+                  <div className="user-element">
+                    <PersonFill size={25}></PersonFill>
+                    <div className="username">{currentName}</div>
+                  </div>
+                  <div className="user-element">
+                    <EnvelopeFill size={25}></EnvelopeFill>
+                    <div className="username">{currentUser.email}</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div id="right-container" className="subcontainer">
@@ -74,9 +80,6 @@ const Profile = () => {
       ) : (
         <div>Loading...</div>
       )}
-      <div id="bottom-container" className="subcontainer">
-        Activity page to be placed here
-      </div>
     </div>
   );
 };

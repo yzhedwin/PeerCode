@@ -21,7 +21,6 @@ import { useTheme } from "@mui/material";
 import SvgIcon from "@mui/material/SvgIcon";
 import { useDispatch, useSelector } from "react-redux";
 import { useGetUserDetailsQuery } from "../services/Auth";
-import { logout, setCredentials } from "../auth/authSlice";
 
 const settings = ["Profile", "Get Question", "Logout"];
 
@@ -41,9 +40,9 @@ function Header() {
     pollingInterval: 900000, // 15mins
   });
 
-  useEffect(() => {
-    if (data) dispatch(setCredentials(data));
-  }, [data, dispatch]);
+  // useEffect(() => {
+  //   if (data) dispatch(setCredentials(data));
+  // }, [data, dispatch]);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -242,8 +241,7 @@ function Header() {
                     key={setting}
                     onClick={async () =>
                       setting.toLowerCase() === "logout"
-                        ? dispatch(logout()) &&
-                          (await log_out().then(handleCloseUserMenu(setting)))
+                        ? await log_out().then(handleCloseUserMenu(setting))
                         : handleCloseUserMenu(setting)
                     }
                   >

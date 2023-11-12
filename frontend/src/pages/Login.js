@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import SnackBar from "../components/common/SnackBar";
 import LoadingIcon from "../components/common/LoadingIcon";
-import { userLogin } from "../components/auth/authActions";
 import "../css/login.scss";
 import bgimage from "../assets/PeerCode.png";
 import { SnackBarContext } from "../contexts/SnackBarContext";
@@ -38,7 +37,6 @@ function Login() {
 
   const submitForm = async (data) => {
     try {
-      dispatch(userLogin(data));
       await login(data.email, data.password);
       navigate("/dashboard");
     } catch (e) {

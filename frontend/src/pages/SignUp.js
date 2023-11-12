@@ -5,7 +5,6 @@ import bgimage from "../assets/PeerCode.png";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import LoadingIcon from "../components/common/LoadingIcon";
-import { registerUser } from "../components/auth/authActions";
 import { SnackBarContext } from "../contexts/SnackBarContext";
 import { FirebaseContext } from "../contexts/FirebaseContext";
 import { useNavigate } from "react-router";
@@ -14,7 +13,6 @@ function SignUp() {
   const { loading, userInfo, error, success } = useSelector(
     (state) => state.auth
   );
-  const dispatch = useDispatch();
   const { register, handleSubmit } = useForm();
   const { sb, setSB, openSnackBar, setOpenSnackBar } =
     useContext(SnackBarContext);
@@ -38,7 +36,6 @@ function SignUp() {
     // transform email string to lowercase to avoid case sensitivity issues in login
     data.email = data.email.toLowerCase();
     try {
-      dispatch(registerUser(data));
       await signup(data.username, data.email, data.password);
       setSB({ msg: "Successfully registered", severity: "success" });
       setOpenSnackBar(true);
