@@ -24,6 +24,8 @@ import { defineTheme } from "../utils/helper";
 import EditorOptions from "../components/common/question/EditorOptions";
 import ResizeBar from "../components/common/ResizeBar";
 import { FirebaseContext } from "../contexts/FirebaseContext";
+import VideoCall from "../components/services/VideoCall";
+import { unstable_useBlocker, useNavigate } from "react-router-dom";
 var interval_id = null;
 var timeout_id = null;
 function ProblemPage(props) {
@@ -33,7 +35,7 @@ function ProblemPage(props) {
         currentName,
     } = useContext(FirebaseContext);
     const { question } = useContext(QuestionContext);
-    const { match } = useContext(MatchContext);
+    const { match, quitMatch, setQuitMatch } = useContext(MatchContext);
     const {
         message,
         code,
@@ -66,6 +68,7 @@ function ProblemPage(props) {
     const containerRef = useRef(null);
     const interval_ids = useRef({});
     const timeout_ids = useRef({});
+    const navigate = useNavigate();
 
     const handleEditorDidMount = useCallback(
         (editor, monaco) => {
@@ -317,32 +320,37 @@ function ProblemPage(props) {
     }, [match, type]);
 
     const getDefaultTestCases = async () => {
-        const { data } = await axios.get(
-            `http://localhost:5000/api/v1/question/exampletestcase`,
-            {
-                params: { titleSlug: question?.titleSlug },
-            }
-        );
-        const testcases = data?.testCases?.map((tc) => {
-            const arr = tc.split("\n").map((param, index) => {
-                return {
-                    [JSON.parse(data.metaData).params[index].name]: param,
-                };
+        try {
+            const { data } = await axios.get(
+                `http://localhost:5000/api/v1/question/exampletestcase`,
+                {
+                    params: { titleSlug: question?.titleSlug },
+                }
+            );
+            const testcases = data?.testCases?.map((tc) => {
+                const arr = tc?.split("\n")?.map((param, index) => {
+                    return {
+                        [JSON.parse(data?.metaData)?.params[index]?.name]:
+                            param,
+                    };
+                });
+                return Object.assign(...arr);
             });
-            return Object.assign(...arr);
-        });
-        const expected = getExpectedOutput();
-        testcases?.map((tc, index) => {
-            return (tc["output"] = expected[index]);
-        });
-        setDefaultTestCases(testcases);
-        setTestCase(testcases?.at(0) || {});
+            const expected = getExpectedOutput();
+            testcases?.map((tc, index) => {
+                return (tc["output"] = expected[index]);
+            });
+            setDefaultTestCases(testcases);
+            setTestCase(testcases?.at(0) || {});
+        } catch (e) {
+            console.log(e);
+        }
     };
 
     const getExpectedOutput = useCallback(() => {
         return question?.problem
             .split("\n")
-            .map((line) => {
+            ?.map((line) => {
                 if (line?.toString().toLowerCase().indexOf("output") !== -1) {
                     return line
                         ?.substring(line.indexOf("</strong>") + 9)
@@ -419,6 +427,27 @@ function ProblemPage(props) {
             setIsSubmitting(false);
         }
     }, [batchSubmission]);
+    const onBlockNav = () => {
+        if (match) {
+            setSB({
+                msg: "Please request to leave the session",
+                severity: "error",
+            });
+
+            setOpenSnackBar(true);
+        }
+        return match;
+    };
+
+    if (type === "coop") {
+        unstable_useBlocker(onBlockNav);
+    }
+    useEffect(() => {
+        if (quitMatch) {
+            navigate("/dashboard");
+            setQuitMatch(false);
+        }
+    }, [quitMatch]);
 
     return (
         <>
@@ -440,15 +469,18 @@ function ProblemPage(props) {
                         handleThemeChange={handleThemeChange}
                     >
                         {type === "coop" && (
-                            <ConsoleButton
-                                title={"Leave"}
-                                onClick={handleLeaveRoom}
-                                sx={{
-                                    ml: "auto",
-                                    backgroundColor: "red",
-                                    mb: 1,
-                                }}
-                            />
+                            <>
+                                <VideoCall />
+                                <ConsoleButton
+                                    title={"Leave"}
+                                    sx={{
+                                        ml: 1,
+                                        backgroundColor: "red",
+                                        mb: 1,
+                                    }}
+                                    onClick={handleLeaveRoom}
+                                />
+                            </>
                         )}
                     </EditorOptions>
 

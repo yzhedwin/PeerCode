@@ -56,8 +56,8 @@ function Question() {
                 headerName: "Tags",
                 valueGetter: (params) => {
                     if (Array.isArray(params.data.topicTags)) {
-                        return params.data.topicTags
-                            .map((tag) => tag.name)
+                        return params?.data?.topicTags
+                            ?.map((tag) => tag.name)
                             .join(", ");
                     }
                     return "";
@@ -87,7 +87,7 @@ function Question() {
                         const action = event[0];
                         const ts = event[1];
                         if (action === "e") {
-                            const question = rowData?.find(
+                            const question = rowData.find(
                                 (qn) => qn.titleSlug === ts
                             );
                             const categories = question?.topicTags
@@ -173,7 +173,7 @@ function Question() {
                     slug: data[i].titleSlug,
                 };
             }
-            setRowData(data);
+            Array.isArray(data) ? setRowData(data) : setRowData([]);
         } catch (e) {
             setSB({ msg: `Question Service: ${e.message}`, severity: "error" });
             setOpenSnackBar(true);

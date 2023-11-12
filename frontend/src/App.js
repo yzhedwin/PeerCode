@@ -6,7 +6,12 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { green, grey, orange, red } from "@mui/material/colors";
 import { QuestionProvider } from "./contexts/QuestionContext";
 import ProblemPage from "./pages/ProblemPage";
-import { Navigate, BrowserRouter as Router } from "react-router-dom";
+import {
+    Navigate,
+    BrowserRouter as Router,
+    RouterProvider,
+    createBrowserRouter,
+} from "react-router-dom";
 import { Route, Routes } from "react-router-dom";
 import Profile from "./pages/Profile";
 import WebSocket from "./components/services/WebSocket";
@@ -18,13 +23,13 @@ import Login from "./pages/Login";
 import { Provider } from "react-redux";
 import store from "./store";
 import ProtectedRoute from "./components/routing/ProtectedRoutes";
-import RedirectedRoute from "./components/routing/RedirectedRoute";
 import SignUp from "./pages/SignUp";
 import { ProblemProvider } from "./contexts/ProblemContext";
 import { useBeforeRender } from "./utils/helper";
 import { FirebaseProvider } from "./contexts/FirebaseContext";
 import CreateQuestion from "./pages/CreateQuestion";
 import EditQuestion from "./pages/EditQuestion";
+import { router } from "./components/routing/router";
 
 function App() {
     const { mode } = useContext(ModeContext);
@@ -165,66 +170,14 @@ function App() {
             }
         });
     }, []);
+
     return (
         <Provider store={store}>
-            <Router>
-                <ThemeProvider theme={theme}>
-                    <SnackBarProvider>
-                        <QuestionProvider>
-                            <MatchProvider>
-                                <ProblemProvider>
-                                    <WebSocket />
-                                    <Header />
-                                    <Routes>
-                                        {/* <Route element={<ProtectedRoute />}> */}
-                                        <Route
-                                            exact
-                                            path="/dashboard"
-                                            element={<Dashboard />}
-                                        />
-                                        <Route
-                                            exact
-                                            path="/problem"
-                                            element={
-                                                <ProblemPage type={"solo"} />
-                                            }
-                                        />
-                                        <Route
-                                            exact
-                                            path="/match"
-                                            element={
-                                                <ProblemPage type={"coop"} />
-                                            }
-                                        />
-                                        <Route
-                                            exact
-                                            path="/profile"
-                                            element={<Profile />}
-                                        />
-                                        {/* </Route> */}
-                                        <Route
-                                            exact
-                                            path="/"
-                                            element={<Login />}
-                                        />
-                                        <Route
-                                            exact
-                                            path="/signup"
-                                            element={<SignUp />}
-                                        />
-                                        <Route
-                                            path="*"
-                                            element={
-                                                <Navigate to="/" replace />
-                                            }
-                                        />
-                                    </Routes>
-                                </ProblemProvider>
-                            </MatchProvider>
-                        </QuestionProvider>
-                    </SnackBarProvider>
-                </ThemeProvider>
-            </Router>
+            <ThemeProvider theme={theme}>
+                <SnackBarProvider>
+                    <RouterProvider router={router} />
+                </SnackBarProvider>
+            </ThemeProvider>
         </Provider>
     );
 }

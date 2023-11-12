@@ -7,17 +7,7 @@ from config import get_config
 async def connect_to_mongo():
     logging.info("Connecting to MongoDB...")
     config = get_config()
-    db_uri = (
-        "mongodb://"
-        + config.mongo_peercode_database_user
-        + ":"
-        + config.mongo_peercode_database_password
-        + "@"
-        + config.mongo_peercode_host_name
-        + ":27017/"
-        + config.mongo_peercode_database_name
-        + "?uuidRepresentation=standard"
-    )
+    db_uri = config.mongo_peercode_url
     db.client = AsyncIOMotorClient(str(db_uri))
     logging.info("MongoDB connected")
     logging.info("Creating database index")

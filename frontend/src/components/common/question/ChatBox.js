@@ -2,11 +2,8 @@ import { useCallback, useContext, useEffect } from "react";
 import { ProblemContext } from "../../../contexts/ProblemContext";
 import { Box } from "@mui/material";
 import "../../../css/chatbox.scss";
-import { FirebaseContext } from "../../../contexts/FirebaseContext";
 function ChatBox() {
     const { message } = useContext(ProblemContext);
-    const { currentName } = useContext(FirebaseContext);
-    console.log(message);
     const getMessages = useCallback(() => {
         return message.map((msg, index) => {
             if (msg.data) {
