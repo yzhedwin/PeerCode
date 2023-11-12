@@ -1,0 +1,117 @@
+name: Deploy to Amazon ECR
+
+on:
+  push:
+    branches: [ "master", "cicd" ]
+  pull_request:
+    branches: [ "master", "cicd" ]
+
+jobs:
+  deploy:
+    name: Build Image
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v2.0
+      with:
+        version: 'v1.24.0'
+      id: install
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-southeast-1
+
+    # Not sure why ECR login needs to be us-east-1 but cool
+    - name: match_service, Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: public.ecr.aws/a6n0p1z7
+        ECR_REPOSITORY: g55-peercode
+        IMAGE_TAG: latest-peercode-match-service # ${{ github.sha }}
+      run: |
+        aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
+        cd backend/match_service
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+      # docker build -t public.ecr.aws/a6n0p1z7/g55-peercode:latest-peercode-match-service .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      # docker push public.ecr.aws/a6n0p1z7/g55-peercode:latest-peercode-match-service
+
+    - name: question_service, Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: public.ecr.aws/a6n0p1z7
+        ECR_REPOSITORY: g55-peercode
+        IMAGE_TAG: latest-peercode-question-service # ${{ github.sha }}
+      run: |
+        aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
+        cd backend/question_service
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+      # docker build -t public.ecr.aws/a6n0p1z7/g55-peercode:latest-peercode-question-service .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      # docker push public.ecr.aws/a6n0p1z7/g55-peercode:latest-peercode-question-service
+
+    - name: leetcode_service, Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: public.ecr.aws/a6n0p1z7
+        ECR_REPOSITORY: g55-peercode
+        IMAGE_TAG: latest-peercode-leetcode-service # ${{ github.sha }}
+      run: |
+        aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
+        cd backend/leetcode_service
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+      # docker build -t public.ecr.aws/a6n0p1z7/g55-peercode:latest-peercode-leetcode-service .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      # docker push public.ecr.aws/a6n0p1z7/g55-peercode:latest-peercode-leetcode-service
+
+
+    - name: server, Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: public.ecr.aws/a6n0p1z7
+        ECR_REPOSITORY: g55-peercode
+        IMAGE_TAG: latest-peercode-server-service # ${{ github.sha }}
+      run: |
+        aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
+        cd backend/server
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+      # docker build -t public.ecr.aws/a6n0p1z7/g55-peercode:latest-peercode-server-service .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      # docker push public.ecr.aws/a6n0p1z7/g55-peercode:latest-peercode-server-service
+
+    - name: react, Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: public.ecr.aws/a6n0p1z7
+        ECR_REPOSITORY: g55-peercode
+        IMAGE_TAG: latest-peercode-react # ${{ github.sha }}
+      run: |
+        aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
+        cd frontend
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+      # docker build -t public.ecr.aws/a6n0p1z7/g55-peercode:latest-peercode-react .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      # docker push public.ecr.aws/a6n0p1z7/g55-peercode:latest-peercode-react
+
+    - name: Create ConfigMap from Secret
+      run: |
+        echo "$SECRET" > k8/secret.yaml
+      env:
+        SECRET: ${{ secrets.SECRET }}
+
+    - name: Update kube config
+      run: aws eks update-kubeconfig --name peercode-1
+
+    - name: Deploy to EKS
+      run: |
+        kubectl apply -f k8/config.yaml
+        kubectl apply -f k8/secret.yaml
+        kubectl apply -f k8/peercode-kafka.yaml
+        kubectl apply -f k8/peercode-zookeeper.yaml
+        kubectl apply -f k8/peercode-server.yaml
+        kubectl apply -f k8/peercode-match-service.yaml
+        kubectl apply -f k8/peercode-question-service.yaml
+        kubectl apply -f k8/peercode-leetcode-service.yaml
+        kubectl apply -f k8/peercode-react.yaml
