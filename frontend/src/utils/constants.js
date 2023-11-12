@@ -60,6 +60,11 @@ export const EDITOR_SUPPORTED_LANGUAGES = [
         raw: "python",
     },
     {
+        id: 71,
+        name: "Python3",
+        raw: "python",
+    },
+    {
         id: 72,
         name: "Ruby (2.7.0)",
         raw: "ruby",
@@ -86,8 +91,124 @@ export const EDITOR_SUPPORTED_LANGUAGES = [
     },
 ];
 
-export const EDITOR_SUPPORTED_THEMES = [];
-
 export const API_GATEWAY = "http://localhost:5000";
 
 export const MATCHMAKING_TIMEOUT = process.env.REACT_APP_MATCHMAKING_TIMEOUT;
+
+export const EDITOR_SUPPORTED_THEMES = {
+    "vs-dark": "vs-dark",
+    light: "light",
+    active4d: "Active4D",
+    "all-hallows-eve": "All Hallows Eve",
+    amy: "Amy",
+    "birds-of-paradise": "Birds of Paradise",
+    blackboard: "Blackboard",
+    "brilliance-black": "Brilliance Black",
+    "brilliance-dull": "Brilliance Dull",
+    "chrome-devtools": "Chrome DevTools",
+    "clouds-midnight": "Clouds Midnight",
+    clouds: "Clouds",
+    cobalt: "Cobalt",
+    dawn: "Dawn",
+    dreamweaver: "Dreamweaver",
+    eiffel: "Eiffel",
+    "espresso-libre": "Espresso Libre",
+    github: "GitHub",
+    idle: "IDLE",
+    katzenmilch: "Katzenmilch",
+    "kuroir-theme": "Kuroir Theme",
+    lazy: "LAZY",
+    "magicwb--amiga-": "MagicWB (Amiga)",
+    "merbivore-soft": "Merbivore Soft",
+    merbivore: "Merbivore",
+    "monokai-bright": "Monokai Bright",
+    monokai: "Monokai",
+    "night-owl": "Night Owl",
+    "oceanic-next": "Oceanic Next",
+    "pastels-on-dark": "Pastels on Dark",
+    "slush-and-poppies": "Slush and Poppies",
+    "solarized-dark": "Solarized-dark",
+    "solarized-light": "Solarized-light",
+    spacecadet: "SpaceCadet",
+    sunburst: "Sunburst",
+    "textmate--mac-classic-": "Textmate (Mac Classic)",
+    "tomorrow-night-blue": "Tomorrow-Night-Blue",
+    "tomorrow-night-bright": "Tomorrow-Night-Bright",
+    "tomorrow-night-eighties": "Tomorrow-Night-Eighties",
+    "tomorrow-night": "Tomorrow-Night",
+    tomorrow: "Tomorrow",
+    twilight: "Twilight",
+    "upstream-sunburst": "Upstream Sunburst",
+    "vibrant-ink": "Vibrant Ink",
+    "xcode-default": "Xcode_default",
+    zenburnesque: "Zenburnesque",
+    iplastic: "iPlastic",
+    idlefingers: "idleFingers",
+    krtheme: "krTheme",
+    monoindustrial: "monoindustrial",
+};
+
+export const QUESTION_STATUS = {
+    ATTEMPTED: "Attempted",
+    COMPLETED: "Completed",
+    NOT_ATTEMPTED: "Not Attempted",
+};
+
+export const JUDGE_STATUS = [
+    {
+        id: 1,
+        description: "In Queue",
+    },
+    {
+        id: 2,
+        description: "Processing",
+    },
+    {
+        id: 3,
+        description: "Accepted",
+    },
+    {
+        id: 4,
+        description: "Wrong Answer",
+    },
+    {
+        id: 5,
+        description: "Time Limit Exceeded",
+    },
+    {
+        id: 6,
+        description: "Compilation Error",
+    },
+    {
+        id: 7,
+        description: "Runtime Error (SIGSEGV)",
+    },
+    {
+        id: 8,
+        description: "Runtime Error (SIGXFSZ)",
+    },
+    {
+        id: 9,
+        description: "Runtime Error (SIGFPE)",
+    },
+    {
+        id: 10,
+        description: "Runtime Error (SIGABRT)",
+    },
+    {
+        id: 11,
+        description: "Runtime Error (NZEC)",
+    },
+    {
+        id: 12,
+        description: "Runtime Error (Other)",
+    },
+    {
+        id: 13,
+        description: "Internal Error",
+    },
+    {
+        id: 14,
+        description: "Exec Format Error",
+    },
+];

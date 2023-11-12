@@ -5,6 +5,7 @@ export const MatchContext = createContext();
 export const MatchProvider = ({ children }) => {
     const [match, setMatch] = useState();
     const [findMatch, setFindMatch] = useState(false);
+    const [quitMatch, setQuitMatch] = useState(false);
     const [hasInit, setHasInit] = useState(false);
 
     return (
@@ -13,8 +14,10 @@ export const MatchProvider = ({ children }) => {
                 match,
                 findMatch,
                 hasInit,
+                quitMatch,
                 setMatch,
                 setFindMatch,
+                setQuitMatch,
                 setHasInit,
             }}
         >

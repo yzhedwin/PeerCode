@@ -81,7 +81,6 @@ function Header() {
   const toggleColorMode = () => {
     setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
   };
-
   return (
     <AppBar position="static" color="secondary">
       <Container maxWidth="xl">
@@ -89,7 +88,7 @@ function Header() {
           <SvgIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              enable-background="new 0 0 25 25"
+              enableBackground="new 0 0 25 25"
               viewBox="0 0 25 25"
               id="leetcode"
             >
@@ -107,7 +106,7 @@ function Header() {
             variant="h6"
             noWrap
             component="a"
-            onClick={() => navigate("dashboard")}
+            onClick={() => navigate("/")}
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -167,7 +166,7 @@ function Header() {
           <SvgIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              enable-background="new 0 0 25 25"
+              enableBackground="new 0 0 25 25"
               viewBox="0 0 25 25"
               id="leetcode"
             >

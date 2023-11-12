@@ -131,6 +131,7 @@ services:
       - 3000:3000
     environment:
       REACT_APP_API_SERVER: ${API_GATEWAY_URL}
+      REACT_APP_MATCHMAKING_TIMEOUT: ${REACT_APP_MATCHMAKING_TIMEOUT}
     # volumes:
     depends_on:
       - peercode_server
