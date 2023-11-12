@@ -132,7 +132,7 @@ io.on("connection", (socket) => {
                         );
                     RabbitMQService.setConsumerID(consumer_id);
                     RabbitMQService.getChannel()
-                        ?.checkQueue("matched")
+                        ?.checkQueue(RabbitMQService.getQueue("matched"))
                         .then((status) => {
                             console.log(data, status);
                         });
