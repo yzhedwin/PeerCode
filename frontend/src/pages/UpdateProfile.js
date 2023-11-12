@@ -14,6 +14,7 @@ import FileUploader from "../components/services/FileUploader";
 import { SnackBarContext } from "../contexts/SnackBarContext";
 import { FirebaseContext } from "../contexts/FirebaseContext";
 
+
 export default function UpdateProfile() {
   const [show, setShow] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -35,7 +36,7 @@ export default function UpdateProfile() {
   }
 
   function handleFormCheck() {
-    if (name != "") {
+    if (name !== "") {
       updateUser(currentUser, isAdmin, name);
     }
     if (selectedFile) {

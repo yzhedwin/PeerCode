@@ -41,122 +41,78 @@ function Question() {
 
   const columnDefs = useMemo(
     () => [
-      { headerName: "No.", valueGetter: "node.id" },
-      {
-        field: "slugPair",
-        headerName: "Title",
-        cellRenderer: TitleCellRenderer,
-        cellRendererParams: {
-          clicked: function (field) {
-            cellClickedListener(field);
-          },
-        },
-      },
-      {
-        headerName: "Tags",
-        valueGetter: (params) => {
-          if (Array.isArray(params.data.topicTags)) {
-            return params.data.topicTags.map((tag) => tag.name).join(", ");
-          }
-          return "";
-        },
-        filter: true,
-        filterParams: {},
-      },
-      {
-        field: "difficulty",
-        headerName: "Difficulty",
-        filter: true,
-        filterParams: {},
-      },
-      {
-        field: "status",
-        headerName: "Status",
-        filter: true,
-        filterParams: {},
-      },
-      {
-        field: "titleSlug",
-        headerName: "Actions",
-        hide: !isAdmin,
-        cellRenderer: BtnCellRenderer,
-        cellRendererParams: {
-          clicked: function (event) {
-            const action = event[0];
-            const ts = event[1];
-            if (action === "e") {
-              const question = rowData.find((qn) => qn.titleSlug === ts);
-              const categories = question.topicTags.map((a) => a.name).join();
-              navigate("/edit", {
-                state: {
-                  titleSlug: question.titleSlug,
-                  title: question.title,
-                  description: question.problem,
-                  categories: categories,
-                  difficulty: question.difficulty,
+        { headerName: "No.", valueGetter: "node.id" },
+        {
+            field: "slugPair",
+            headerName: "Title",
+            cellRenderer: TitleCellRenderer,
+            cellRendererParams: {
+                clicked: function (field) {
+                    cellClickedListener(field);
                 },
             },
-            {
-                headerName: "Tags",
-                valueGetter: (params) => {
-                    if (Array.isArray(params.data.topicTags)) {
-                        return params.data.topicTags
-                            .map((tag) => tag.name)
-                            .join(", ");
+        },
+        {
+            headerName: "Tags",
+            valueGetter: (params) => {
+                if (Array.isArray(params.data.topicTags)) {
+                    return params.data.topicTags
+                        .map((tag) => tag.name)
+                        .join(", ");
+                }
+                return "";
+            },
+            filter: true,
+            filterParams: {},
+        },
+        {
+            field: "difficulty",
+            headerName: "Difficulty",
+            filter: true,
+            filterParams: {},
+        },
+        {
+            field: "status",
+            headerName: "Status",
+            filter: true,
+            filterParams: {},
+        },
+        {
+            field: "titleSlug",
+            headerName: "Actions",
+            hide: !isAdmin,
+            cellRenderer: BtnCellRenderer,
+            cellRendererParams: {
+                clicked: function (event) {
+                    const action = event[0];
+                    const ts = event[1];
+                    if (action === "e") {
+                        const question = rowData?.find(
+                            (qn) => qn.titleSlug === ts
+                        );
+                        const categories = question?.topicTags
+                            ?.map((a) => a.name)
+                            .join();
+                        navigate("/edit", {
+                            state: {
+                                titleSlug: question.titleSlug,
+                                title: question.title,
+                                description: question.problem,
+                                categories: categories,
+                                difficulty: question.difficulty,
+                            },
+                        });
+                    } else if (action === "d") {
+                        setTitleSlug(ts);
+                        handleShow();
                     }
-                    return "";
-                },
-                filter: true,
-                filterParams: {},
-            },
-            {
-                field: "difficulty",
-                headerName: "Difficulty",
-                filter: true,
-                filterParams: {},
-            },
-            {
-                field: "status",
-                headerName: "Status",
-                filter: true,
-                filterParams: {},
-            },
-            {
-                field: "titleSlug",
-                headerName: "Actions",
-                hide: !isAdmin,
-                cellRenderer: BtnCellRenderer,
-                cellRendererParams: {
-                    clicked: function (event) {
-                        const action = event[0];
-                        const ts = event[1];
-                        if (action === "e") {
-                            const question = rowData?.find(
-                                (qn) => qn.titleSlug === ts
-                            );
-                            const categories = question?.topicTags
-                                ?.map((a) => a.name)
-                                .join();
-                            navigate("/edit", {
-                                state: {
-                                    titleSlug: question.titleSlug,
-                                    title: question.title,
-                                    description: question.problem,
-                                    categories: categories,
-                                    difficulty: question.difficulty,
-                                },
-                            });
-                        } else if (action === "d") {
-                            setTitleSlug(ts);
-                            handleShow();
-                        }
-                    },
                 },
             },
-        ],
-        //eslint-disable-next-line
-        [rowData, isAdmin]
-    );
+        },
+    ],
+    //eslint-disable-next-line
+    [rowData, isAdmin]
+);
 
   // DefaultColDef sets props common to all Columns
   const defaultColDef = useMemo(
