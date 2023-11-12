@@ -1,10 +1,14 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+
 def test_signup_successful():
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(options=chrome_options)
     driver.get('http://localhost:3000/signup')
     wait = WebDriverWait(driver, 10)
 
@@ -21,8 +25,11 @@ def test_signup_successful():
         password.send_keys('testing')
         confirm_password.send_keys('testing')  # Fill in the password confirmation
 
-        # Submit the form
-        sign_up_button.click()
+        # Scroll to the element
+        driver.execute_script("arguments[0].scrollIntoView(true);", sign_up_button)
+        
+        # Simulate a click using JavaScript
+        driver.execute_script("arguments[0].click();", sign_up_button)
 
         # Wait for the success message or redirect
         WebDriverWait(driver, 10).until(EC.url_to_be('http://localhost:3000/login'))
@@ -45,7 +52,7 @@ def test_signup_successful():
         driver.quit()
 
 def test_signup_failure_email_in_use():
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(options=chrome_options)
     driver.get('http://localhost:3000/signup')
     wait = WebDriverWait(driver, 10)
 
@@ -62,8 +69,11 @@ def test_signup_failure_email_in_use():
         password.send_keys('tester')
         confirm_password.send_keys('tester')  # Fill in the password confirmation
 
-        # Submit the form
-        sign_up_button.click()
+        # Scroll to the element
+        driver.execute_script("arguments[0].scrollIntoView(true);", sign_up_button)
+        
+        # Simulate a click using JavaScript
+        driver.execute_script("arguments[0].click();", sign_up_button)
 
         snackbar = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@class='MuiSnackbar-root MuiSnackbar-anchorOriginTopCenter css-zzms1-MuiSnackbar-root']")))
         assert snackbar.text == 'Email is already in use', "Snackbar Text mismatch"
@@ -76,7 +86,7 @@ def test_signup_failure_email_in_use():
         driver.quit()
 
 def test_signup_failure_password_mismatch():
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(options=chrome_options)
     driver.get('http://localhost:3000/signup')
     wait = WebDriverWait(driver, 10)
 
@@ -93,8 +103,11 @@ def test_signup_failure_password_mismatch():
         password.send_keys('testing')
         confirm_password.send_keys('testing1')  # Fill in the password confirmation
 
-        # Submit the form
-        sign_up_button.click()
+        # Scroll to the element
+        driver.execute_script("arguments[0].scrollIntoView(true);", sign_up_button)
+        
+        # Simulate a click using JavaScript
+        driver.execute_script("arguments[0].click();", sign_up_button)
 
         snackbar = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@class='MuiSnackbar-root MuiSnackbar-anchorOriginTopCenter css-zzms1-MuiSnackbar-root']")))
         assert snackbar.text == 'Password mismatched', "Snackbar Text mismatch"
