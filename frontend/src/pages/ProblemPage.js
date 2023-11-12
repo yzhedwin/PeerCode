@@ -575,6 +575,46 @@ function ProblemPage(props) {
       .catch((error) => console.log(error));
   };
 
+  function onCodeTranslateQuery() {
+    setShowCodeTranslate(true);
+  }
+
+  function onCodeTranslateConfirmation() {
+    setLanguage(translateToLanguage);
+    setCode(translatedCode);
+    setTranslatedCode("");
+    handleClose();
+  }
+
+  function handleTranslateLanguageChange(event) {
+    setTranslateToLanguage(JSON.parse(event.target.value));
+  }
+
+  function handleTranslatedCodeChanges(translatedCode) {
+    setTranslatedCode(translatedCode);
+  }
+
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "70%",
+    height: "70%",
+    bgcolor: "white",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+  };
+
+  let theme = createTheme({
+    shape: {
+      pillRadius: 50,
+    },
+  });
+
+  const handleClose = () => setShowCodeTranslate(false);
+
   return (
     <>
       <SnackBar
@@ -583,6 +623,92 @@ function ProblemPage(props) {
         openSnackBar={openSnackBar}
         severity={sb?.severity}
       />
+
+      {showCodeTranslate && (
+        <div style={{ margin: "50%" }}>
+          <Modal
+            open={showCodeTranslate}
+            onClose={handleClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={style}>
+              <CustomSelect
+                title={"Language"}
+                list={EDITOR_SUPPORTED_LANGUAGES}
+                value={translateToLanguage}
+                handleChange={handleTranslateLanguageChange}
+              />
+              <Typography id="modal-modal-title" variant="h5" component="h2">
+                Translate your current code here from {language.name} to{" "}
+                {translateToLanguage.name}
+              </Typography>
+
+              <ThemeProvider theme={theme}>
+                <Button
+                  variant="contained"
+                  pill
+                  onClick={onCodeTranslationRequest}
+                >
+                  TRANSLATE
+                </Button>
+              </ThemeProvider>
+
+              <div className="translator-container">
+                <div className="translator-component">
+                  <h3>Original Code</h3>
+                  <Editor
+                    height="80%"
+                    language={language?.raw}
+                    theme={editorTheme?.value}
+                    value={code}
+                    onChange={handleCodeChanges}
+                    onMount={handleEditorDidMount}
+                    options={{
+                      dragAndDrop: false,
+                      inlineSuggest: true,
+                      fontSize: "16px",
+                      formatOnType: true,
+                      autoClosingBrackets: true,
+                      minimap: { scale: 10 },
+                    }}
+                  />
+                </div>
+
+                <div className="translator-component">
+                  <h3>Translated Code</h3>
+                  <Editor
+                    height="80%"
+                    language={translateToLanguage?.raw}
+                    theme={editorTheme?.value}
+                    value={translatedCode}
+                    onChange={handleTranslatedCodeChanges}
+                    onMount={handleTranslatedEditorDidMount}
+                    options={{
+                      dragAndDrop: false,
+                      inlineSuggest: true,
+                      fontSize: "16px",
+                      formatOnType: true,
+                      autoClosingBrackets: true,
+                      minimap: { scale: 10 },
+                    }}
+                  />
+                </div>
+              </div>
+              <ThemeProvider theme={theme}>
+                <Button
+                  variant="contained"
+                  pill
+                  onClick={onCodeTranslateConfirmation}
+                >
+                  CONFIRM CHANGES
+                </Button>
+              </ThemeProvider>
+            </Box>
+          </Modal>
+        </div>
+      )}
+
       <div className="problem-page-container">
         <div className="problem-tabs-container">
           <ProblemPageTabs userID={uid} question={question} />
@@ -595,18 +721,15 @@ function ProblemPage(props) {
             handleThemeChange={handleThemeChange}
           >
             {type === "coop" && (
-              <>
-                <VideoCall />
-                <ConsoleButton
-                  title={"Leave"}
-                  sx={{
-                    ml: 1,
-                    backgroundColor: "red",
-                    mb: 1,
-                  }}
-                  onClick={handleLeaveRoom}
-                />
-              </>
+              <ConsoleButton
+                title={"Leave"}
+                onClick={handleLeaveRoom}
+                sx={{
+                  ml: "auto",
+                  backgroundColor: "red",
+                  mb: 1,
+                }}
+              />
             )}
           </EditorOptions>
 

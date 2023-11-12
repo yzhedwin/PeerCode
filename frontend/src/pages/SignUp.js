@@ -33,6 +33,18 @@ function SignUp() {
       setOpenSnackBar(true);
       return;
     }
+    // check further information about password
+    else if (
+      /\d/.test(data.password) === false ||
+      /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(data.password) === false
+    ) {
+      setSB({
+        msg: "Password must have at least 1 number and 1 non-alphanumeric character",
+        severity: "error",
+      });
+      setOpenSnackBar(true);
+      return;
+    }
     // transform email string to lowercase to avoid case sensitivity issues in login
     data.email = data.email.toLowerCase();
     try {

@@ -132,8 +132,9 @@ function Question() {
       if (event) {
         console.log(event);
         const snippets = await axios.get(
-          `http://localhost:5000/api/v1/question/codesnippets?titleSlug=${event.titleSlug}`
+          `http://localhost:5000/api/v1/question/codesnippets?titleSlug=${event.data?.titleSlug}`
         );
+        console.log(snippets["data"]);
         setQuestion({
           id: event.rowIndex,
           title: event.data?.title,

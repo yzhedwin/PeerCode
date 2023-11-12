@@ -39,10 +39,6 @@ function Header() {
   const { data, isFetching } = useGetUserDetailsQuery("userDetails", {
     pollingInterval: 900000, // 15mins
   });
-  // automatically authenticate user if token is found
-  const { data, isFetching } = useGetUserDetailsQuery("userDetails", {
-    pollingInterval: 900000, // 15mins
-  });
 
   // useEffect(() => {
   //   if (data) dispatch(setCredentials(data));
@@ -54,38 +50,7 @@ function Header() {
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
 
-  const handleCloseNavMenu = (e) => {
-    navigate(e.target.textContent);
-    setAnchorElNav(null);
-  };
-  const handleCloseUserMenu = useCallback(async (setting) => {
-    setAnchorElUser(null);
-    if (typeof setting === "string") {
-      if (setting?.toLowerCase() === "get question") {
-        try {
-          await axios.post("http://localhost:5000/api/v1/question/leetcode");
-          setSB({
-            msg: "Retrieve question from Leetcode",
-            severity: "success",
-          });
-          setOpenSnackBar(true);
-        } catch (e) {
-          setSB({ msg: `Question Service: ${e.message}`, severity: "error" });
-          setOpenSnackBar(true);
-        }
-      } else {
-        navigate(setting?.toLowerCase());
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   const handleCloseNavMenu = (e) => {
     navigate(e.target.textContent);
     setAnchorElNav(null);
