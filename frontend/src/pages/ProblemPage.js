@@ -24,14 +24,18 @@ import { defineTheme } from "../utils/helper";
 import EditorOptions from "../components/common/question/EditorOptions";
 import ResizeBar from "../components/common/ResizeBar";
 import { FirebaseContext } from "../contexts/FirebaseContext";
+import VideoCall from "../components/services/VideoCall";
+import { unstable_useBlocker, useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Box, Modal, TextField, Typography, Button } from "@mui/material";
 import CustomSelect from "../components/common/question/CustomSelect";
-import { EDITOR_SUPPORTED_LANGUAGES, EDITOR_SUPPORTED_THEMES } from "./../utils/constants";
+import {
+  EDITOR_SUPPORTED_LANGUAGES,
+  EDITOR_SUPPORTED_THEMES,
+} from "./../utils/constants";
 
 var interval_id = null;
 var timeout_id = null;
-
 
 function ProblemPage(props) {
   const { type } = props;
@@ -40,7 +44,7 @@ function ProblemPage(props) {
     currentName,
   } = useContext(FirebaseContext);
   const { question } = useContext(QuestionContext);
-  const { match } = useContext(MatchContext);
+  const { match, quitMatch, setQuitMatch } = useContext(MatchContext);
   const {
     message,
     aiMessage,
@@ -77,6 +81,7 @@ function ProblemPage(props) {
   const containerRef = useRef(null);
   const interval_ids = useRef({});
   const timeout_ids = useRef({});
+  const navigate = useNavigate();
 
   const translatedEditorRef = useRef(null);
   const translatedMonacoRef = useRef(null);
@@ -93,7 +98,6 @@ function ProblemPage(props) {
     translatedEditorRef.current = editor;
     translatedMonacoRef.current = monaco;
   }
-
 
   const handleEditorDidMount = useCallback(
     (editor, monaco) => {
@@ -141,9 +145,7 @@ function ProblemPage(props) {
       .split("\n")
       .map((line) => {
         if (line?.toString().toLowerCase().indexOf("output") !== -1) {
-          return line
-            ?.substring(line.indexOf("</strong>") + 9)
-            .trim();
+          return line?.substring(line.indexOf("</strong>") + 9).trim();
         }
       })
       .filter((element) => {
@@ -193,9 +195,7 @@ function ProblemPage(props) {
     ) {
       const errorIndex = batchSubmission.findIndex(
         (feedback) =>
-          feedback.status.description
-            .toLowerCase()
-            .indexOf("error") !== -1
+          feedback.status.description.toLowerCase().indexOf("error") !== -1
       );
       const WrongIndex = batchSubmission.findIndex(
         (feedback) => feedback.status.id === 4
@@ -217,13 +217,36 @@ function ProblemPage(props) {
     }
   }, [batchSubmission]);
 
+  const onBlockNav = () => {
+    if (match) {
+      setSB({
+        msg: "Please request to leave the session",
+        severity: "error",
+      });
+
+      setOpenSnackBar(true);
+    }
+    return match;
+  };
+
+  if (type === "coop") {
+    unstable_useBlocker(onBlockNav);
+  }
+  useEffect(() => {
+    if (quitMatch) {
+      navigate("/dashboard");
+      setQuitMatch(false);
+    }
+  }, [quitMatch]);
+
   const onSubmitChat = useCallback(
     (e) => {
       if (e.keyCode === 13) {
         let date = new Date();
-        const time = `${date.getHours()}:${String(
-          date.getMinutes()
-        ).padStart(2, "0")}`;
+        const time = `${date.getHours()}:${String(date.getMinutes()).padStart(
+          2,
+          "0"
+        )}`;
         let currentMessage = [...message];
         currentMessage.push({
           user: "me",
@@ -330,17 +353,14 @@ function ProblemPage(props) {
 
   const postSubmission = useCallback(
     async (stdin, output) => {
-      return await axios.post(
-        "http://localhost:5000/api/v1/judge/submission",
-        {
-          userID: uid,
-          titleSlug: question["titleSlug"],
-          language_id: language.id,
-          source_code: btoa(code),
-          stdin: btoa(JSON.stringify(stdin)),
-          expected_output: btoa(output.toString()),
-        }
-      );
+      return await axios.post("http://localhost:5000/api/v1/judge/submission", {
+        userID: uid,
+        titleSlug: question["titleSlug"],
+        language_id: language.id,
+        source_code: btoa(code),
+        stdin: btoa(JSON.stringify(stdin)),
+        expected_output: btoa(output.toString()),
+      });
     },
     [code, language.id, question.titleSlug, uid]
   );
@@ -356,10 +376,7 @@ function ProblemPage(props) {
           },
           feedback,
         };
-        await axios.post(
-          `http://localhost:5000/api/v1/question/history`,
-          data
-        );
+        await axios.post(`http://localhost:5000/api/v1/question/history`, data);
       } catch (e) {
         console.log(e);
       }
@@ -398,10 +415,7 @@ function ProblemPage(props) {
               finished_at: data?.finished_at,
               expected_output: outputs[index],
             };
-            setBatchSubmission((prevState) => [
-              ...prevState,
-              feedback,
-            ]);
+            setBatchSubmission((prevState) => [...prevState, feedback]);
             clearInterval(interval_ids.current[index]);
             clearTimeout(timeout_ids.current[index]);
           }
@@ -422,9 +436,7 @@ function ProblemPage(props) {
       }
       setCode(
         snippets?.find((snippet) => {
-          return (
-            snippet.langSlug === JSON.parse(event.target.value).raw
-          );
+          return snippet.langSlug === JSON.parse(event.target.value).raw;
         })?.code
       );
     },
@@ -480,26 +492,30 @@ function ProblemPage(props) {
   }, [match, type]);
 
   const getDefaultTestCases = async () => {
-    const { data } = await axios.get(
-      `http://localhost:5000/api/v1/question/exampletestcase`,
-      {
-        params: { titleSlug: question?.titleSlug },
-      }
-    );
-    const testcases = data?.testCases?.map((tc) => {
-      const arr = tc.split("\n").map((param, index) => {
-        return {
-          [JSON.parse(data.metaData).params[index].name]: param,
-        };
+    try {
+      const { data } = await axios.get(
+        `http://localhost:5000/api/v1/question/exampletestcase`,
+        {
+          params: { titleSlug: question?.titleSlug },
+        }
+      );
+      const testcases = data?.testCases?.map((tc) => {
+        const arr = tc?.split("\n")?.map((param, index) => {
+          return {
+            [JSON.parse(data?.metaData)?.params[index]?.name]: param,
+          };
+        });
+        return Object.assign(...arr);
       });
-      return Object.assign(...arr);
-    });
-    const expected = getExpectedOutput();
-    testcases?.map((tc, index) => {
-      return (tc["output"] = expected[index]);
-    });
-    setDefaultTestCases(testcases);
-    setTestCase(testcases?.at(0) || {});
+      const expected = getExpectedOutput();
+      testcases?.map((tc, index) => {
+        return (tc["output"] = expected[index]);
+      });
+      setDefaultTestCases(testcases);
+      setTestCase(testcases?.at(0) || {});
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   function generateCodeTranslatePrompt(inputLanguage, outputLanguage) {
@@ -519,76 +535,46 @@ function ProblemPage(props) {
     ${inputLanguage} code:
     ${code}
 
-    ${outputLanguage} code (no \`\`\`):`
+    ${outputLanguage} code (no \`\`\`):`;
     return prompt;
   }
 
-  const onCodeTranslationRequest =
-    async (e) => {
-      if (translateToLanguage === "") {
-        setSB({ msg: "Please input a coding language to translate to!", severity: "error" });
-        setOpenSnackBar(true);
-        return;
-      }
-      let prompt = generateCodeTranslatePrompt(language.raw, translateToLanguage.raw);
-      await axios
-        .post("http://localhost:8020/ask", { prompt })
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.includes("maximum context length")) {
-              setSB({ msg: "You have exceeded the maximum prompt length, please shorten your prompt!", severity: "error" });
-              setOpenSnackBar(true);
-            } else {
-              setSB({ msg: "Translation of code successful!", severity: "success" });
-              setOpenSnackBar(true);
-              setTranslatedCode(res.data);
-            }
-          }
-        })
-        .catch((error) => console.log(error));
+  const onCodeTranslationRequest = async (e) => {
+    if (translateToLanguage === "") {
+      setSB({
+        msg: "Please input a coding language to translate to!",
+        severity: "error",
+      });
+      setOpenSnackBar(true);
+      return;
     }
-
-
-  function onCodeTranslateQuery() {
-    setShowCodeTranslate(true);
-  }
-
-  function onCodeTranslateConfirmation() {
-    setLanguage(translateToLanguage)
-    setCode(translatedCode)
-    setTranslatedCode("")
-    handleClose()
-  }
-
-  function handleTranslateLanguageChange(event) {
-    setTranslateToLanguage(JSON.parse(event.target.value));
-  }
-
-  function handleTranslatedCodeChanges(translatedCode) {
-    setTranslatedCode(translatedCode)
-  }
-
-  const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '70%',
-    height: '70%',
-    bgcolor: 'white',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
+    let prompt = generateCodeTranslatePrompt(
+      language.raw,
+      translateToLanguage.raw
+    );
+    await axios
+      .post("http://localhost:8020/ask", { prompt })
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.includes("maximum context length")) {
+            setSB({
+              msg: "You have exceeded the maximum prompt length, please shorten your prompt!",
+              severity: "error",
+            });
+            setOpenSnackBar(true);
+          } else {
+            setSB({
+              msg: "Translation of code successful!",
+              severity: "success",
+            });
+            setOpenSnackBar(true);
+            setTranslatedCode(res.data);
+          }
+        }
+      })
+      .catch((error) => console.log(error));
   };
 
-  let theme = createTheme({
-    shape: {
-      pillRadius: 50
-    }
-  });
-
-
-  const handleClose = () => setShowCodeTranslate(false);
   return (
     <>
       <SnackBar
@@ -597,82 +583,6 @@ function ProblemPage(props) {
         openSnackBar={openSnackBar}
         severity={sb?.severity}
       />
-
-      {showCodeTranslate && <div style={{ margin: '50%' }}>
-        <Modal
-          open={showCodeTranslate}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={style}>
-            <CustomSelect
-              title={"Language"}
-              list={EDITOR_SUPPORTED_LANGUAGES}
-              value={translateToLanguage}
-              handleChange={handleTranslateLanguageChange}
-            />
-            <Typography id="modal-modal-title" variant="h5" component="h2">
-              Translate your current code here from {language.name} to {translateToLanguage.name}
-            </Typography>
-
-            <ThemeProvider theme={theme}>
-              <Button variant="contained" pill onClick={onCodeTranslationRequest}>
-                TRANSLATE
-              </Button>
-            </ThemeProvider>
-
-            <div className="translator-container">
-              <div className="translator-component">
-                <h3>Original Code</h3>
-                <Editor
-                  height="80%"
-                  language={language?.raw}
-                  theme={editorTheme?.value}
-                  value={code}
-                  onChange={handleCodeChanges}
-                  onMount={handleEditorDidMount}
-                  options={{
-                    dragAndDrop: false,
-                    inlineSuggest: true,
-                    fontSize: "16px",
-                    formatOnType: true,
-                    autoClosingBrackets: true,
-                    minimap: { scale: 10 },
-                  }}
-                />
-              </div>
-
-              <div className="translator-component">
-                <h3>Translated Code</h3>
-                <Editor
-                  height="80%"
-                  language={translateToLanguage?.raw}
-                  theme={editorTheme?.value}
-                  value={translatedCode}
-                  onChange={handleTranslatedCodeChanges}
-                  onMount={handleTranslatedEditorDidMount}
-                  options={{
-                    dragAndDrop: false,
-                    inlineSuggest: true,
-                    fontSize: "16px",
-                    formatOnType: true,
-                    autoClosingBrackets: true,
-                    minimap: { scale: 10 },
-                  }}
-                />
-              </div>
-            </div>
-            <ThemeProvider theme={theme}>
-              <Button variant="contained" pill onClick={onCodeTranslateConfirmation}>
-                CONFIRM CHANGES
-              </Button>
-            </ThemeProvider>
-          </Box>
-        </Modal>
-      </div>}
-
-
       <div className="problem-page-container">
         <div className="problem-tabs-container">
           <ProblemPageTabs userID={uid} question={question} />
@@ -685,15 +595,18 @@ function ProblemPage(props) {
             handleThemeChange={handleThemeChange}
           >
             {type === "coop" && (
-              <ConsoleButton
-                title={"Leave"}
-                onClick={handleLeaveRoom}
-                sx={{
-                  ml: "auto",
-                  backgroundColor: "red",
-                  mb: 1,
-                }}
-              />
+              <>
+                <VideoCall />
+                <ConsoleButton
+                  title={"Leave"}
+                  sx={{
+                    ml: 1,
+                    backgroundColor: "red",
+                    mb: 1,
+                  }}
+                  onClick={handleLeaveRoom}
+                />
+              </>
             )}
           </EditorOptions>
 
@@ -718,10 +631,7 @@ function ProblemPage(props) {
               }}
             />
           </div>
-          <ResizeBar
-            setHeight={setChatHeight}
-            containerRef={containerRef}
-          />
+          <ResizeBar setHeight={setChatHeight} containerRef={containerRef} />
           <div
             className="console-tabs-container"
             style={{

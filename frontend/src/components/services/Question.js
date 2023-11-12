@@ -155,13 +155,17 @@ function Question() {
     try {
       const { data } = await axios.get("http://localhost:5000/api/v1/question");
       for (var i = 0; i < data.length; i++) {
-        data[i].slugPair = { title: data[i].title, slug: data[i].titleSlug };
+        data[i].slugPair = {
+          title: data[i].title,
+          slug: data[i].titleSlug,
+        };
       }
-      setRowData(data);
+      Array.isArray(data) ? setRowData(data) : setRowData([]);
     } catch (e) {
       setSB({ msg: `Question Service: ${e.message}`, severity: "error" });
       setOpenSnackBar(true);
     }
+    //eslint-disable-next-line
   }, []);
 
   return (

@@ -19,7 +19,6 @@ function Login() {
   const { sb, setSB, openSnackBar, setOpenSnackBar } =
     useContext(SnackBarContext);
   const { login } = useContext(FirebaseContext);
-
   // redirect authenticated user to profile screen
   // useEffect(() => {
   //   if (userInfo) {
