@@ -4,10 +4,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-def test_login_success():
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
+chrome_options = Options()
+chrome_options.add_argument("--headless")
 
+def test_login_success():
     driver = webdriver.Chrome(options=chrome_options)
     driver.get('http://localhost:3000/login')
     wait = WebDriverWait(driver, 10) 
@@ -28,9 +28,6 @@ def test_login_success():
         driver.quit()
 
 def test_login_failure():
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-
     driver = webdriver.Chrome(options=chrome_options)
     driver.get('http://localhost:3000/login')
     wait = WebDriverWait(driver, 10) 
@@ -55,9 +52,6 @@ def test_login_failure():
         driver.quit()
 
 def test_redirect_to_signup():
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-
     driver = webdriver.Chrome(options=chrome_options)
     driver.get('http://localhost:3000/login')
     wait = WebDriverWait(driver, 10)
