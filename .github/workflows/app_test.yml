@@ -32,17 +32,5 @@ jobs:
       - name: Install other dependencies
         run: pip install -r requirements.txt
 
-      - name: Build app
-        run: docker-compose -f docker-compose.yml build &
-
-      - name: Delay before running app
-        run: sleep 60  
-
-      - name: Run app
-        run: bash start.sh &
-
-      - name: Delay before running system tests
-        run: sleep 60
-        
-      - name: Run system tests
-        run: pytest
+      - name: Run unittest
+        run: npx jest
