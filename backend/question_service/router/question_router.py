@@ -15,6 +15,7 @@ from database.question_collection import (
     delete_all_questions,
     delete_one_question,
     create_question,
+    update_question,
 
 )
 from database.submision_collection import (
@@ -369,3 +370,7 @@ async def add_submission_to_db(submission: Submission, db: AsyncIOMotorClient = 
 @router.delete("/history")
 async def delete_all_submissions_from_db(db: AsyncIOMotorClient = Depends(get_database)):
     return await remove_all_submissions(db)
+
+@router.put("/history")
+async def update_question_status(userID: str, titleSlug: str, description: str):
+  return await update_question(userID, titleSlug, description)

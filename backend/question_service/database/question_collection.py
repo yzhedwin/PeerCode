@@ -2,6 +2,7 @@ from model.question import Question
 from .mongodb import AsyncIOMotorClient
 from config import get_config
 import re
+from constant import QUESTION_STATUS
 
 config = get_config
 COLLECTION_NAME = "questions"
@@ -50,4 +51,13 @@ async def delete_one_question(client: AsyncIOMotorClient, titleSlug):
 
 async def delete_all_questions(client: AsyncIOMotorClient):
     await client[COLLECTION_NAME].delete_many({})
+    return True
+
+async def update_question(client: AsyncIOMotorClient, titleSlug: str, description: str):
+    if description == "Completed":
+        status = QUESTION_STATUS.COMPLETED
+    else:
+        status = QUESTION_STATUS.ATTEMPTED
+
+    await client[COLLECTION_NAME].update_one({"titleSlug": titleSlug}, {"$set": {"status": status}})
     return True
