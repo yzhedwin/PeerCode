@@ -399,8 +399,8 @@ function ProblemPage(props) {
         const data = {userID: uid, titleSlug: question.titleSlug, status: description}
 
         await axios.put(
-            `http://localhost:5000/api/v1/question/history`, data)
-
+            `http://localhost:5000/api/v1/question-status`, data)
+            
         }, 
     )
 
