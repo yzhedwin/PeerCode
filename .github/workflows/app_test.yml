@@ -33,7 +33,10 @@ jobs:
         run: docker-compose -f docker-compose.yml build &
 
       - name: Run app
-        run: bash start.sh
+        run: bash start.sh &
 
+      - name: Delay before running system tests
+        run: sleep 30
+        
       - name: Run system tests
         run: pytest
