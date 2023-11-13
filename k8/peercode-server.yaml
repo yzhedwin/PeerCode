@@ -78,6 +78,7 @@ metadata:
     app: peercode-server
   name: peercode-server
 spec:
+  type: LoadBalancer
   ports:
   - name: "5000"
     port: 5000
