@@ -395,6 +395,16 @@ function ProblemPage(props) {
         }
     }, [chatHeight]);
 
+    const updateQuestionStatus = useCallback(async (description) => {
+        const data = {
+            userID: uid,
+            titleSlug: question.titleSlug,
+            description: description,
+        };
+
+        await axios.put(`http://localhost:5000/api/v1/question-status`, data);
+    });
+
     useEffect(() => {
         // Priority Error > WA > TLE > AC
         if (
@@ -417,12 +427,16 @@ function ProblemPage(props) {
 
             if (errorIndex !== -1) {
                 postHistory(batchSubmission[errorIndex]);
+                updateQuestionStatus("Error");
             } else if (WrongIndex !== -1) {
                 postHistory(batchSubmission[WrongIndex]);
+                updateQuestionStatus("Wrong Answer");
             } else if (TLEIndex !== -1) {
                 postHistory(batchSubmission[TLEIndex]);
+                updateQuestionStatus("Time Limit Exceeded");
             } else {
                 postHistory(batchSubmission[0]);
+                updateQuestionStatus("Completed");
             }
             setIsSubmitting(false);
         }
