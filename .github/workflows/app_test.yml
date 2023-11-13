@@ -35,11 +35,14 @@ jobs:
       - name: Build app
         run: docker-compose -f docker-compose.yml build &
 
+      - name: Delay before running app
+        run: sleep 60  
+
       - name: Run app
         run: bash start.sh &
 
       - name: Delay before running system tests
-        run: sleep 30
+        run: sleep 60
         
       - name: Run system tests
         run: pytest
