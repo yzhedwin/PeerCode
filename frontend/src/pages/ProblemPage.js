@@ -140,7 +140,7 @@ function ProblemPage(props) {
         (token) => {
             interval_id = setInterval(async () => {
                 const { data } = await axios.get(
-                    `http://localhost:5000/api/v1/judge/submission?token=${token}`
+                    `http://server.peercode.net:5000/api/v1/judge/submission?token=${token}`
                 );
                 if (data.status.id !== 1 && data.status.id !== 2) {
                     clearInterval(interval_id);
@@ -173,7 +173,7 @@ function ProblemPage(props) {
     const postSubmission = useCallback(
         async (stdin, output) => {
             return await axios.post(
-                "http://localhost:5000/api/v1/judge/submission",
+                "http://server.peercode.net:5000/api/v1/judge/submission",
                 {
                     userID: uid,
                     titleSlug: question["titleSlug"],
@@ -199,7 +199,7 @@ function ProblemPage(props) {
                     feedback,
                 };
                 await axios.post(
-                    `http://localhost:5000/api/v1/question/history`,
+                    `http://server.peercode.net:5000/api/v1/question/history`,
                     data
                 );
             } catch (e) {
@@ -221,7 +221,7 @@ function ProblemPage(props) {
                 }, 10000);
                 interval_ids.current[index] = setInterval(async () => {
                     const { data } = await axios.get(
-                        `http://localhost:5000/api/v1/judge/submission?token=${response.data.token}`
+                        `http://server.peercode.net:5000/api/v1/judge/submission?token=${response.data.token}`
                     );
                     if (data.status.id !== 1 && data.status.id !== 2) {
                         //if submission is ready stop polling
@@ -322,7 +322,7 @@ function ProblemPage(props) {
     const getDefaultTestCases = async () => {
         try {
             const { data } = await axios.get(
-                `http://localhost:5000/api/v1/question/exampletestcase`,
+                `http://server.peercode.net:5000/api/v1/question/exampletestcase`,
                 {
                     params: { titleSlug: question?.titleSlug },
                 }

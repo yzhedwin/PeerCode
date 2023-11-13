@@ -91,7 +91,7 @@ export const EDITOR_SUPPORTED_LANGUAGES = [
     },
 ];
 
-export const API_GATEWAY = "http://localhost:5000";
+export const API_GATEWAY = "http://server.peercode.net:5000";
 
 export const MATCHMAKING_TIMEOUT = process.env.REACT_APP_MATCHMAKING_TIMEOUT;
 

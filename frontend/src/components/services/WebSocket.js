@@ -10,7 +10,7 @@ import { FirebaseContext } from "../../contexts/FirebaseContext";
 import { QuestionContext } from "../../contexts/QuestionContext";
 import axios from "axios";
 
-const socketUrl = "http://localhost:5002";
+const socketUrl = "http://server.peercode.net:5002";
 export const socket = io(socketUrl, {
     autoConnect: false,
 });
@@ -73,10 +73,10 @@ export default function WebSocket() {
             setMatch(room);
             const [question, snippets] = await Promise.all([
                 await axios.get(
-                    `http://localhost:5000/api/v1/question/title/${titleSlug}`
+                    `http://server.peercode.net:5000/api/v1/question/title/${titleSlug}`
                 ),
                 await axios.get(
-                    `http://localhost:5000/api/v1/question/codesnippets?titleSlug=${titleSlug}`
+                    `http://server.peercode.net:5000/api/v1/question/codesnippets?titleSlug=${titleSlug}`
                 ),
             ]);
             setQuestion({

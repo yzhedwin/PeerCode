@@ -31,7 +31,7 @@ function Question() {
     const handleDelete = async () => {
         try {
             await axios.delete(
-                `http://localhost:5000/api/v1/question/title/${titleSlug}`
+                `http://server.peercode.net:5000/api/v1/question/title/${titleSlug}`
             );
             window.location.reload();
         } catch (e) {
@@ -138,10 +138,10 @@ function Question() {
             if (event.data) {
                 const [question, snippets] = await Promise.all([
                     await axios.get(
-                        `http://localhost:5000/api/v1/question/problem?titleSlug=${event.data["titleSlug"]}`
+                        `http://server.peercode.net:5000/api/v1/question/problem?titleSlug=${event.data["titleSlug"]}`
                     ),
                     await axios.get(
-                        `http://localhost:5000/api/v1/question/codesnippets?titleSlug=${event.data["titleSlug"]}`
+                        `http://server.peercode.net:5000/api/v1/question/codesnippets?titleSlug=${event.data["titleSlug"]}`
                     ),
                 ]);
                 setQuestion({
@@ -165,7 +165,7 @@ function Question() {
     const onGridReady = useCallback(async (params) => {
         try {
             const { data } = await axios.get(
-                "http://localhost:5000/api/v1/question"
+                "http://server.peercode.net:5000/api/v1/question"
             );
             for (var i = 0; i < data.length; i++) {
                 data[i].slugPair = {

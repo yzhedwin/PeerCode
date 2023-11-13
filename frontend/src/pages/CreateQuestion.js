@@ -59,7 +59,7 @@ export default function CreateQuestion() {
             // create question
             try {
                 await axios.post(
-                    "http://localhost:5000/api/v1/question/create",
+                    "http://server.peercode.net:5000/api/v1/question/create",
                     {
                         title: currQuestion.title,
                         titleSlug: titleToSlug(currQuestion.title),

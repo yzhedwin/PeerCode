@@ -7,7 +7,7 @@ function QuestionOTD() {
   const getQOTD = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:5000/api/v1/question/day"
+        "http://server.peercode.net:5000/api/v1/question/day"
       );
       setQOTD(data);
     } catch (e) {

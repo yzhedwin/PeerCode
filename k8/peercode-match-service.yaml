@@ -65,6 +65,7 @@ metadata:
     app: peercode-match-service
   name: peercode-match-service
 spec:
+  type: LoadBalancer
   ports:
   - name: "5002"
     port: 5002

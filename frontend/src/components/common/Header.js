@@ -61,7 +61,7 @@ function Header() {
     if (typeof setting === "string") {
       if (setting?.toLowerCase() === "get question") {
         try {
-          await axios.post("http://localhost:5000/api/v1/question/leetcode");
+          await axios.post("http://server.peercode.net:5000/api/v1/question/leetcode");
           setSB({
             msg: "Retrieve question from Leetcode",
             severity: "success",

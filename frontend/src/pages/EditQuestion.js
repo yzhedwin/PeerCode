@@ -61,7 +61,7 @@ export default function EditQuestion() {
             // update question
             try {
                 await axios.post(
-                    `http://localhost:5000/api/v1/question/update/${currQuestion.titleSlug}`,
+                    `http://server.peercode.net:5000/api/v1/question/update/${currQuestion.titleSlug}`,
                     {
                         title: currQuestion.title,
                         titleSlug: titleToSlug(currQuestion.title),
