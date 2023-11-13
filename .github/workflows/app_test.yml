@@ -32,4 +32,6 @@ jobs:
           pip install -r backend/requirements-dev.txt
 
       - name: Run unittest
-        run: npx jest
+        run: |
+          cd frontend
+          npx jest
