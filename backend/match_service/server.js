@@ -75,6 +75,19 @@ io.on("connection", (socket) => {
         socket.on("code-language", (room_id, language) => {
             socket.to(room_id).emit("chatroom-code-language", language);
         });
+        socket.on("callUser", (data) => {
+            console.log(`Incoming call from ${data.from}`);
+            socket.to(data.room).emit("callUser", {
+                signal: data.signalData,
+                from: data.from,
+                name: data.name,
+            });
+        });
+
+        socket.on("answerCall", (data) => {
+            console.log(`Answering call from ${data.from}`);
+            socket.to(data.room).emit("callAccepted", data.signal);
+        });
 
         // Get matched users here
         RabbitMQService.consumeMessage(
@@ -119,7 +132,7 @@ io.on("connection", (socket) => {
                         );
                     RabbitMQService.setConsumerID(consumer_id);
                     RabbitMQService.getChannel()
-                        ?.checkQueue("matched")
+                        ?.checkQueue(RabbitMQService.getQueue("matched"))
                         .then((status) => {
                             console.log(data, status);
                         });

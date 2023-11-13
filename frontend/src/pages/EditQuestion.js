@@ -44,7 +44,7 @@ export default function EditQuestion() {
             newErrors.push("Please enter a description");
         }
         const categoriesArr = currQuestion.categories.split(",");
-        const trimmedArr = categoriesArr.map((cat) => {
+        const trimmedArr = categoriesArr?.map((cat) => {
             return cat.trim();
         });
         if (trimmedArr.includes("")) {

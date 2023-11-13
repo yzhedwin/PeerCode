@@ -13,6 +13,7 @@
 }
 .problem-tabs-container {
     flex: 1;
+    width: 50%;
 }
 
 .editor-container {
@@ -20,6 +21,7 @@
     flex: 1;
     overflow: hidden;
     flex-direction: column;
+    width: 50%;
 }
 .editor-component {
     display: flex;
@@ -27,7 +29,7 @@
 .editor-options {
     display: flex;
 }
-.editor-options > div {
+.editor-options #select {
     margin-bottom: 5px;
     padding-right: 5px;
 }

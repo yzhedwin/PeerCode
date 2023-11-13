@@ -2,6 +2,11 @@ import { useSelector } from "react-redux";
 import { NavLink, Outlet } from "react-router-dom";
 import { FirebaseContext } from "../../contexts/FirebaseContext";
 import { useContext } from "react";
+import { QuestionProvider } from "../../contexts/QuestionContext";
+import { MatchProvider } from "../../contexts/MatchContext";
+import { ProblemProvider } from "../../contexts/ProblemContext";
+import Header from "../common/Header";
+import WebSocket from "../services/WebSocket";
 
 const ProtectedRoute = () => {
   const { currentUser } = useContext(FirebaseContext);
@@ -29,7 +34,17 @@ const ProtectedRoute = () => {
     );
   }
 
-  return <Outlet />;
+  return (
+    <QuestionProvider>
+      <MatchProvider>
+        <ProblemProvider>
+          <Header />
+          <WebSocket />
+          <Outlet />
+        </ProblemProvider>
+      </MatchProvider>
+    </QuestionProvider>
+  );
 };
 
 export default ProtectedRoute;

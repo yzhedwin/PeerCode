@@ -2,9 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { MatchContext } from "../contexts/MatchContext";
 
-// "undefined" means the URL will be computed from the `window.location` object
-const URL =
-	process.env.NODE_ENV === "production" ? "" : "http://localhost:3001";
+const URL = window.location.hostname + ":3001"
 
 export const socket = io(URL, {
 	autoConnect: false,
