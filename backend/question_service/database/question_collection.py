@@ -8,8 +8,7 @@ config = get_config
 COLLECTION_NAME = "questions"
 
 
-async def fetch_one_question(client: AsyncIOMotorClient, titleSlug):
-    document = await client[COLLECTION_NAME].find_one({"titleSlug": titleSlug})
+
 async def fetch_one_question(client: AsyncIOMotorClient, titleSlug):
     document = await client[COLLECTION_NAME].find_one({"titleSlug": titleSlug})
     if document:
@@ -51,13 +50,4 @@ async def delete_one_question(client: AsyncIOMotorClient, titleSlug):
 
 async def delete_all_questions(client: AsyncIOMotorClient):
     await client[COLLECTION_NAME].delete_many({})
-    return True
-
-async def update_question(client: AsyncIOMotorClient, titleSlug: str, description: str):
-    if description == "Completed":
-        status = QUESTION_STATUS.COMPLETED
-    else:
-        status = QUESTION_STATUS.ATTEMPTED
-
-    await client[COLLECTION_NAME].update_one({"titleSlug": titleSlug}, {"$set": {"status": status}})
     return True
