@@ -185,3 +185,4 @@ async def delete_all_submissions_from_db():
         return response.json()
     except Exception as e:
         return e
+    
