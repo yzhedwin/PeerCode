@@ -18,10 +18,13 @@ jobs:
         with:
           node-version: 14 
 
+      - name: Install yarn
+        run: npm install -g yarn
+
       - name: Install frontend dependencies
         run: |
           cd frontend
-          npm i
+          yarn install
 
       - name: Install backend dependencies
         run: |
