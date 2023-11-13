@@ -4,7 +4,6 @@ import requests
 from model.question import Question
 from model.judge import Submission
 from typing import Union
-from constant import QUESTION_STATUS
 
 router = APIRouter(
     prefix="/api/v1/question",
@@ -193,12 +192,7 @@ async def delete_all_submissions_from_db():
 @router.put("/history")
 async def update_question_status(userID: str, titleSlug: str, description: str):
     try:
-        if description == "Accepted":
-            status = QUESTION_STATUS.ACCEPTED
-        else:
-            status = QUESTION_STATUS.ATTEMPTED
-
-        response = requests.put(config.question_service_url + f"/history?userID={userID}&titleSlug={titleSlug}&status={status}")
+        response = requests.put(config.question_service_url + f"/history?userID={userID}&titleSlug={titleSlug}&description={description}")
         return response.json()
     
     except Exception as e:
