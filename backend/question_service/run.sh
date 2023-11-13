@@ -1,1 +1,1 @@
-uvicorn main:app --port 5001 # --host peercode-question-service
+uvicorn main:app --port 5001 --host 0.0.0.0
