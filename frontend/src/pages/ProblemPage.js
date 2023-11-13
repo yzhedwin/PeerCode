@@ -396,7 +396,7 @@ function ProblemPage(props) {
     }, [chatHeight]);
 
     const updateQuestionStatus = useCallback(async (description) => {
-        const data = {userID: {uid}, titleSlug: question.titleSlug, status: description}
+        const data = {userID: uid, titleSlug: question.titleSlug, status: description}
 
         await axios.put(
             `http://localhost:5000/api/v1/question/history`, data)
@@ -436,7 +436,7 @@ function ProblemPage(props) {
                 updateQuestionStatus("Time Limit Exceeded")
             } else {
                 postHistory(batchSubmission[0]);
-                updateQuestionStatus("Accepted")
+                updateQuestionStatus("Completed")
             }
             setIsSubmitting(false);
         }
