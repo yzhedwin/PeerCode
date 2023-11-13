@@ -399,7 +399,7 @@ function ProblemPage(props) {
         const data = {
             userID: uid,
             titleSlug: question.titleSlug,
-            status: description,
+            description: description,
         };
 
         await axios.put(`http://localhost:5000/api/v1/question-status`, data);

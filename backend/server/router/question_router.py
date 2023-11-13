@@ -186,14 +186,3 @@ async def delete_all_submissions_from_db():
     except Exception as e:
         return e
     
-
-    
-
-@router.put("/history")
-async def update_question_status(userID: str, titleSlug: str, description: str):
-    try:
-        response = requests.put(config.question_service_url + f"/history?userID={userID}&titleSlug={titleSlug}&description={description}")
-        return response.json()
-    
-    except Exception as e:
-        return e

@@ -26,3 +26,11 @@ async def update_question_status(status: QuestionStatus):
     return response.json()
   except Exception as e:
     return e
+
+@router.delete("")
+async def remove_all_question_status():
+  try:
+    response = requests.delete(config.question_service_url + "/question-status")
+    return response.json()
+  except Exception as e:
+    return e

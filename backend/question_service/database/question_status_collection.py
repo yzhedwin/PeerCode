@@ -33,5 +33,13 @@ async def update_question(client: AsyncIOMotorClient, status: QuestionStatus):
         print(e)
 
 async def add_question_status(client: AsyncIOMotorClient, status: QuestionStatus):
-    await client[COLLECTION_NAME].insert_one(status.dict())
+    newStatus = status.dict()
+    newStatus["description"] = QUESTION_STATUS["ATTEMPTED"]
+    if status.description == QUESTION_STATUS["COMPLETED"]:
+       newStatus["description"] = QUESTION_STATUS["COMPLETED"]
+    await client[COLLECTION_NAME].insert_one(newStatus)
+    return True
+
+async def delete_all_question_status(client: AsyncIOMotorClient):
+    await client[COLLECTION_NAME].delete_many({})
     return True
