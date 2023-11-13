@@ -2,9 +2,9 @@ name: Deploy to Amazon ECR
 
 on:
   push:
-    branches: [ "master", "cicd" ]
+    branches: [ "master", "cicd2" ]
   pull_request:
-    branches: [ "master", "cicd" ]
+    branches: [ "master", "cicd2" ]
 
 jobs:
   deploy:
@@ -90,6 +90,7 @@ jobs:
       run: |
         aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
         cd frontend
+        echo $FRONTEND_ENV_BASE64 | base64 --decode > .env
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
       # docker build -t public.ecr.aws/a6n0p1z7/g55-peercode:latest-peercode-react .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
@@ -97,7 +98,7 @@ jobs:
 
     - name: Create ConfigMap from Secret
       run: |
-        echo "$SECRET" > k8/secret.yaml
+        echo $SECRET | base64 --decode > k8/secret.yaml
       env:
         SECRET: ${{ secrets.SECRET }}
 
