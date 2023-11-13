@@ -25,7 +25,7 @@ jobs:
         run: npm i
 
       - name: Change directory to backend
-        run: cd ../backend
+        run: cd backend
 
       - name: Install dependencies
         run: |
