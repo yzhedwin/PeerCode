@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: peercode-leetcode-service
-        image: public.ecr.aws/a6n0p1z7/g55-peercode:${SHA}
+        image: ${ECR}:${SHA}
         imagePullPolicy: Always
         ports:
         - containerPort: 5005

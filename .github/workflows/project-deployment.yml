@@ -11,6 +11,10 @@ jobs:
     name: Build Image
     runs-on: ubuntu-latest
 
+    env:
+      ECR_REGISTRY: public.ecr.aws/a6n0p1z7
+      ECR_REPOSITORY: g55-peercode
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -46,8 +50,6 @@ jobs:
 
     - name: server; build tag push(ecr) deploy
       env:
-        ECR_REGISTRY: public.ecr.aws/a6n0p1z7
-        ECR_REPOSITORY: g55-peercode
         IMAGE_TAG: ${{ github.sha }}-peercode-server-service
       run: |
         aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
@@ -55,12 +57,10 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         cd ../..
-        SHA=$IMAGE_TAG envsubst < k8/peercode-server.yaml | kubectl apply -f -
+        ECR="$ECR_REGISTRY/$ECR_REPOSITORY" SHA=$IMAGE_TAG envsubst < k8/peercode-server.yaml | kubectl apply -f -
 
     - name: match service; build tag push(ecr) deploy
       env:
-        ECR_REGISTRY: public.ecr.aws/a6n0p1z7
-        ECR_REPOSITORY: g55-peercode
         IMAGE_TAG: ${{ github.sha }}-peercode-match-service
       run: |
         aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
@@ -68,12 +68,10 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         cd ../..
-        SHA=$IMAGE_TAG envsubst < k8/peercode-match-service.yaml | kubectl apply -f -
+        ECR="$ECR_REGISTRY/$ECR_REPOSITORY" SHA=$IMAGE_TAG envsubst < k8/peercode-match-service.yaml | kubectl apply -f -
 
     - name: question service; build tag push(ecr) deploy
       env:
-        ECR_REGISTRY: public.ecr.aws/a6n0p1z7
-        ECR_REPOSITORY: g55-peercode
         IMAGE_TAG: ${{ github.sha }}-peercode-question-service
       run: |
         aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
@@ -81,12 +79,10 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         cd ../..
-        SHA=$IMAGE_TAG envsubst < k8/peercode-question-service.yaml | kubectl apply -f -
+        ECR="$ECR_REGISTRY/$ECR_REPOSITORY" SHA=$IMAGE_TAG envsubst < k8/peercode-question-service.yaml | kubectl apply -f -
 
     - name: leetcode service; build tag push(ecr) deploy
       env:
-        ECR_REGISTRY: public.ecr.aws/a6n0p1z7
-        ECR_REPOSITORY: g55-peercode
         IMAGE_TAG: ${{ github.sha }}-peercode-leetcode-service
       run: |
         aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
@@ -94,12 +90,10 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         cd ../..
-        SHA=$IMAGE_TAG envsubst < k8/peercode-leetcode-service.yaml | kubectl apply -f -
+        ECR="$ECR_REGISTRY/$ECR_REPOSITORY" SHA=$IMAGE_TAG envsubst < k8/peercode-leetcode-service.yaml | kubectl apply -f -
 
     - name: react; build tag push(ecr) deploy
       env:
-        ECR_REGISTRY: public.ecr.aws/a6n0p1z7
-        ECR_REPOSITORY: g55-peercode
         IMAGE_TAG: ${{ github.sha }}-peercode-react
         FRONTEND_ENV_BASE64: ${{ secrets.FRONTEND_ENV_BASE64 }}
       run: |
@@ -109,4 +103,4 @@ jobs:
         docker build $(cat .env | xargs -n 1 | awk '{print "--build-arg", $1}') -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         cd ..
-        SHA=$IMAGE_TAG envsubst < k8/peercode-react.yaml | kubectl apply -f -
+        ECR="$ECR_REGISTRY/$ECR_REPOSITORY" SHA=$IMAGE_TAG envsubst < k8/peercode-react.yaml | kubectl apply -f -
