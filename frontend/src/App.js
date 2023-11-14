@@ -1,34 +1,14 @@
 import "./css/App.scss";
 import "ag-grid-enterprise";
-import Dashboard from "./pages/Dashboard";
-import Header from "./components/common/Header";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { green, grey, orange, red } from "@mui/material/colors";
-import { QuestionProvider } from "./contexts/QuestionContext";
-import ProblemPage from "./pages/ProblemPage";
-import {
-    Navigate,
-    BrowserRouter as Router,
-    RouterProvider,
-    createBrowserRouter,
-} from "react-router-dom";
-import { Route, Routes } from "react-router-dom";
-import Profile from "./pages/Profile";
-import WebSocket from "./components/services/WebSocket";
+import { RouterProvider } from "react-router-dom";
 import { SnackBarProvider } from "./contexts/SnackBarContext";
-import { MatchProvider } from "./contexts/MatchContext";
 import { ModeContext } from "./contexts/ModeContext";
 import { useContext } from "react";
-import Login from "./pages/Login";
 import { Provider } from "react-redux";
 import store from "./store";
-import ProtectedRoute from "./components/routing/ProtectedRoutes";
-import SignUp from "./pages/SignUp";
-import { ProblemProvider } from "./contexts/ProblemContext";
 import { useBeforeRender } from "./utils/helper";
-import { FirebaseProvider } from "./contexts/FirebaseContext";
-import CreateQuestion from "./pages/CreateQuestion";
-import EditQuestion from "./pages/EditQuestion";
 import { router } from "./components/routing/router";
 
 function App() {

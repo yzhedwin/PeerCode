@@ -12,8 +12,11 @@ import BatchSubmissionTabs from "./BatchSubmissionTabs";
 function ConsoleTabs(props) {
     const {
         onSubmitChat,
+        onSubmitAIChat,
         textInput,
+        aiTextInput,
         setTextInput,
+        setAITextInput,
         chatDisabled,
         defaultTestCases,
         setTestCase,
@@ -62,7 +65,8 @@ function ConsoleTabs(props) {
                 >
                     <Tab label="Testcase" {...a11yProps(0)} />
                     <Tab label="Result" {...a11yProps(1)} />
-                    <Tab label="Chat" {...a11yProps(2)} />
+                    {!chatDisabled && <Tab label="Chat" {...a11yProps(2)} />}
+                    <Tab label="AI Assistant" {...a11yProps(3)} />
                 </Tabs>
             </AppBar>
             <TabPanel value={value} index={0} dir={theme.direction}>
@@ -74,22 +78,38 @@ function ConsoleTabs(props) {
             </TabPanel>
             <TabPanel value={value} index={1} dir={theme.direction}>
                 {isBatch ? (
-                   <BatchSubmissionTabs batchSubmission={batchSubmission}/>
+                    <BatchSubmissionTabs batchSubmission={batchSubmission} />
                 ) : (
                     <Console expectedOutput={testCase?.output} />
                 )}
             </TabPanel>
-            <TabPanel value={value} index={2} dir={theme.direction}>
-                <Box
-                    className="chat-message-container"
-                    sx={{ backgroundColor: "chat.main" }}
-                >
-                    <ChatBox />
+            {!chatDisabled && (
+                <TabPanel value={value} index={2} dir={theme.direction}>
+                    <Box
+                        className="chat-message-container"
+                        sx={{ backgroundColor: "chat.main" }}
+                    >
+                        <ChatBox isAI={false} />
+                        <ChatInput
+                            onSubmitChat={onSubmitChat}
+                            textInput={textInput}
+                            setTextInput={setTextInput}
+                            disabled={chatDisabled}
+                        />
+                    </Box>
+                </TabPanel>
+            )}
+            <TabPanel
+                value={value}
+                index={chatDisabled ? 2 : 3}
+                dir={theme.direction}
+            >
+                <Box className="chat-message-container">
+                    <ChatBox isAI={true} />
                     <ChatInput
-                        onSubmitChat={onSubmitChat}
-                        textInput={textInput}
-                        setTextInput={setTextInput}
-                        disabled={chatDisabled}
+                        onSubmitChat={onSubmitAIChat}
+                        textInput={aiTextInput}
+                        setTextInput={setAITextInput}
                     />
                 </Box>
             </TabPanel>

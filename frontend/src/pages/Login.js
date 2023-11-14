@@ -1,18 +1,16 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import SnackBar from "../components/common/SnackBar";
 import LoadingIcon from "../components/common/LoadingIcon";
-import { userLogin } from "../components/auth/authActions";
 import "../css/login.scss";
 import bgimage from "../assets/PeerCode.png";
 import { SnackBarContext } from "../contexts/SnackBarContext";
 import { FirebaseContext } from "../contexts/FirebaseContext";
 
 function Login() {
-    const { loading, userInfo, error } = useSelector((state) => state.auth);
-    const dispatch = useDispatch();
+    const { loading } = useSelector((state) => state.auth);
 
     const { register, handleSubmit } = useForm();
     const navigate = useNavigate();
@@ -20,14 +18,6 @@ function Login() {
     const { sb, setSB, openSnackBar, setOpenSnackBar } =
         useContext(SnackBarContext);
     const { login } = useContext(FirebaseContext);
-    // redirect authenticated user to profile screen
-    // useEffect(() => {
-    //   if (userInfo) {
-    //     console.log(userInfo);
-    //     navigate("/dashboard");
-    //   }
-    // }, [navigate, userInfo]);
-
     const handleCloseSnackBar = (event, reason) => {
         if (reason === "clickaway") {
             return;
@@ -37,7 +27,6 @@ function Login() {
 
     const submitForm = async (data) => {
         try {
-            dispatch(userLogin(data));
             await login(data.email, data.password);
             navigate("/dashboard");
         } catch (e) {

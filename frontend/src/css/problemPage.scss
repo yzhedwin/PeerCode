@@ -16,6 +16,17 @@
     width: 50%;
 }
 
+.translator-container {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    height: 70%;
+}
+
+.translator-component {
+    flex: 1;
+}
+
 .editor-container {
     display: flex;
     flex: 1;
@@ -66,4 +77,8 @@
 .MuiTabs-flexContainer {
     min-height: 0 !important;
     height: 30px;
+}
+
+.system {
+    color: purple;
 }
