@@ -67,6 +67,7 @@ async def get_question_problem(titleSlug: str):
         return "Question not found"
     return result.get("question").get("content")
 
+
 @router.get("/solution/official")
 async def get_official_solution(titleSlug: str):
     transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
@@ -126,6 +127,7 @@ async def get_official_solution(titleSlug: str):
         return "Solution does not exist"
     return result.get("question").get("solution")
 
+
 @router.get("/solution/community/list")
 async def get_community_solutions(titleSlug: str, language: Union[str, None] = None):
     transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
@@ -183,29 +185,30 @@ async def get_community_solutions(titleSlug: str, language: Union[str, None] = N
   }
 }""")
     result = await client.execute_async(
-        query, {"languageTags": language, "topicTags": [], "questionSlug": titleSlug, "skip": 0, "first": 15, "orderBy": "hot"}
+        query, {"languageTags": language, "topicTags": [],
+                "questionSlug": titleSlug, "skip": 0, "first": 15, "orderBy": "hot"}
     )
     return result.get("questionSolutions").get("solutions")
 
+
 @router.get("/solution/community")
 async def get_community_solution(id: int):
-  try:
-    transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
-    client = Client(transport=transport, fetch_schema_from_transport=False)
-    query = gql("""query communitySolution($topicId: Int!) {
+    try:
+        transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
+        client = Client(transport=transport, fetch_schema_from_transport=False)
+        query = gql("""query communitySolution($topicId: Int!) {
   topic(id: $topicId) {
     post {
       content
     }
   }
 }""")
-    result = await client.execute_async(
-        query, {"topicId": id}
-    )
-    return result.get("topic")
-  except Exception as e:
-      return e.errors
-
+        result = await client.execute_async(
+            query, {"topicId": id}
+        )
+        return result.get("topic")
+    except Exception as e:
+        return e.errors
 
 
 @router.get("/exampletestcase")
@@ -231,8 +234,9 @@ async def get_testcase(titleSlug: str):
     )
     if result.get("question") is None:
         return "Question not found"
-    return {"testCases": result.get("question").get("exampleTestcaseList"), "metaData":result.get("question").get("metaData")}
-    
+    return {"testCases": result.get("question").get("exampleTestcaseList"), "metaData": result.get("question").get("metaData")}
+
+
 @router.get("/codesnippets")
 async def get_code_snippets(titleSlug: str) -> list:
     transport = AIOHTTPTransport(url="https://leetcode.com/graphql")
@@ -259,9 +263,17 @@ async def get_code_snippets(titleSlug: str) -> list:
     return result.get("question").get("codeSnippets")
 
 
-@router.delete("/title/{title}")
-async def delete_question(title, db: AsyncIOMotorClient = Depends(get_database)):
-    question = await fetch_one_question(db, title)
+@router.post("/update/{titleSlug}")
+async def update_question(question: Question, titleSlug, db: AsyncIOMotorClient = Depends(get_database)):
+    response = await update_one_question(db, question.dict(), titleSlug)
+    if response:
+        print("yay")
+        return "Successfully updated question"
+
+
+@router.delete("/title/{titleSlug}")
+async def delete_question(titleSlug, db: AsyncIOMotorClient = Depends(get_database)):
+    question = await fetch_one_question(db, titleSlug)
     if not question:
         raise HTTPException(400, f"Question {titleSlug} does not exist")
     response = await delete_one_question(db, titleSlug)
@@ -286,7 +298,7 @@ async def add_questions_from_leetcode():
     return "Successfully added questions from Leetcode"
 
 
-@router.post("")
+@router.post("/create")
 async def add_one_question(question: Question, db: AsyncIOMotorClient = Depends(get_database)):
     try:
         result = await create_question(db, question.dict())
@@ -346,7 +358,7 @@ async def get_submissions_from_question(userID: str, titleSlug: str, db: AsyncIO
 
 
 @router.get("/history/user")
-async def get_submissions_from_question(userID: str, db: AsyncIOMotorClient = Depends(get_database)):
+async def get_submissions_from_user(userID: str, db: AsyncIOMotorClient = Depends(get_database)):
     response = await get_all_submission_from_user(db, userID)
     return response
 
@@ -360,8 +372,8 @@ async def get_submissions(db: AsyncIOMotorClient = Depends(get_database)):
 @router.post("/history")
 async def add_submission_to_db(submission: Submission, db: AsyncIOMotorClient = Depends(get_database)):
     try:
-      response = await add_one_submission(db, submission.dict())
-      return response
+        response = await add_one_submission(db, submission.dict())
+        return response
     except Exception as e:
         print(e)
 
