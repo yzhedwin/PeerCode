@@ -48,7 +48,7 @@ spec:
                 name: secret
                 key: MONGO_PEERCODE_URL
         - name: REACT_APP_URL
-          value: http://localhost:3000
+          value: http://peercode.net
         
       restartPolicy: Always
       serviceAccountName: ""
