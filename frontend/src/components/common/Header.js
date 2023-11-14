@@ -19,6 +19,7 @@ import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { useTheme } from "@mui/material";
 import SvgIcon from "@mui/material/SvgIcon";
 import { useGetUserDetailsQuery } from "../services/Auth";
+import { API_GATEWAY } from "../../utils/constants";
 
 function Header() {
     const [anchorElNav, setAnchorElNav] = useState(null);
@@ -59,7 +60,7 @@ function Header() {
             if (setting?.toLowerCase() === "get question") {
                 try {
                     await axios.post(
-                        "http://localhost:5000/api/v1/question/leetcode"
+                        API_GATEWAY + "/api/v1/question/leetcode"
                     );
                     setSB({
                         msg: "Retrieve question from Leetcode",

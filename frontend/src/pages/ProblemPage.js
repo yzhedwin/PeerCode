@@ -29,7 +29,7 @@ import { unstable_useBlocker, useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Box, Modal, Typography, Button } from "@mui/material";
 import CustomSelect from "../components/common/question/CustomSelect";
-import { EDITOR_SUPPORTED_LANGUAGES } from "./../utils/constants";
+import { API_GATEWAY, EDITOR_SUPPORTED_LANGUAGES } from "./../utils/constants";
 
 var interval_id = null;
 var timeout_id = null;
@@ -199,7 +199,7 @@ function ProblemPage(props) {
             };
 
             await axios.put(
-                `http://localhost:5000/api/v1/question-status`,
+                API_GATEWAY + `/api/v1/question-status`,
                 data
             );
         },
@@ -330,7 +330,7 @@ function ProblemPage(props) {
         (token) => {
             interval_id = setInterval(async () => {
                 const { data } = await axios.get(
-                    `http://localhost:5000/api/v1/judge/submission?token=${token}`
+                    API_GATEWAY + `/api/v1/judge/submission?token=${token}`
                 );
                 if (data.status.id !== 1 && data.status.id !== 2) {
                     clearInterval(interval_id);
@@ -363,7 +363,7 @@ function ProblemPage(props) {
     const postSubmission = useCallback(
         async (stdin, output) => {
             return await axios.post(
-                "http://localhost:5000/api/v1/judge/submission",
+                API_GATEWAY + "/api/v1/judge/submission",
                 {
                     userID: uid,
                     titleSlug: question["titleSlug"],
@@ -389,7 +389,7 @@ function ProblemPage(props) {
                     feedback,
                 };
                 await axios.post(
-                    `http://localhost:5000/api/v1/question/history`,
+                    API_GATEWAY + `/api/v1/question/history`,
                     data
                 );
             } catch (e) {
@@ -412,7 +412,7 @@ function ProblemPage(props) {
                 }, 10000);
                 interval_ids.current[index] = setInterval(async () => {
                     const { data } = await axios.get(
-                        `http://localhost:5000/api/v1/judge/submission?token=${response.data.token}`
+                        API_GATEWAY + `/api/v1/judge/submission?token=${response.data.token}`
                     );
                     if (data.status.id !== 1 && data.status.id !== 2) {
                         //if submission is ready stop polling
@@ -514,7 +514,7 @@ function ProblemPage(props) {
     const getDefaultTestCases = async () => {
         try {
             const { data } = await axios.get(
-                `http://localhost:5000/api/v1/question/exampletestcase`,
+                API_GATEWAY + `/api/v1/question/exampletestcase`,
                 {
                     params: { titleSlug: question?.titleSlug },
                 }

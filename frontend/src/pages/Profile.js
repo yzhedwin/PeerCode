@@ -7,6 +7,7 @@ import UpdateProfile from "./UpdateProfile";
 import { SnackBarContext } from "../contexts/SnackBarContext";
 import { FirebaseContext } from "../contexts/FirebaseContext";
 import { PersonFill, EnvelopeFill } from "react-bootstrap-icons";
+import { API_GATEWAY } from "../utils/constants";
 
 import axios from "axios";
 
@@ -22,13 +23,13 @@ const Profile = () => {
         checkDetails(currentUser); //.then(setLoading(false));
         axios
             .get(
-                `http://localhost:5000/api/v1/question/history/user?userID=${currentUser.uid}`
+                API_GATEWAY + `/api/v1/question/history/user?userID=${currentUser.uid}`
             )
             .then((res) => setSubmissions(res.data))
             .catch((e) => console.log("Submissions not found"));
 
         axios
-            .get("http://localhost:5000/api/v1/question")
+            .get(API_GATEWAY + "/api/v1/question")
             .then((res) => setRowData(res.data));
     }, []);
 
