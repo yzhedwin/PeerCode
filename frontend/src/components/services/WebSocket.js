@@ -10,7 +10,7 @@ import { FirebaseContext } from "../../contexts/FirebaseContext";
 import { QuestionContext } from "../../contexts/QuestionContext";
 import axios from "axios";
 
-const socketUrl = "http://server.peercode.net:5002";
+const socketUrl = "http://match.peercode.net:5002";
 export const socket = io(socketUrl, {
     autoConnect: false,
 });
