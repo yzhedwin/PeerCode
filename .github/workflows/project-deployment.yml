@@ -44,20 +44,6 @@ jobs:
         kubectl apply -f k8/peercode-kafka.yaml
         kubectl apply -f k8/peercode-zookeeper.yaml
 
-    - name: match service; build tag push(ecr) deploy
-      env:
-        ECR_REGISTRY: public.ecr.aws/a6n0p1z7
-        ECR_REPOSITORY: g55-peercode
-        IMAGE_TAG: ${{ github.sha }}-peercode-match-service
-      run: |
-        aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
-        cd backend/match_service
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        cd ../..
-        SHA=$IMAGE_TAG envsubst < k8/peercode-match-service.yaml > k8/peercode-match-service_env.yaml
-        kubectl apply -f k8/peercode-match-service_env.yaml
-
     - name: server; build tag push(ecr) deploy
       env:
         ECR_REGISTRY: public.ecr.aws/a6n0p1z7
@@ -71,6 +57,20 @@ jobs:
         cd ../..
         SHA=$IMAGE_TAG envsubst < k8/peercode-server.yaml > k8/peercode-server_env.yaml
         kubectl apply -f k8/peercode-server_env.yaml
+
+    - name: match service; build tag push(ecr) deploy
+      env:
+        ECR_REGISTRY: public.ecr.aws/a6n0p1z7
+        ECR_REPOSITORY: g55-peercode
+        IMAGE_TAG: ${{ github.sha }}-peercode-match-service
+      run: |
+        aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
+        cd backend/match_service
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        cd ../..
+        SHA=$IMAGE_TAG envsubst < k8/peercode-match-service.yaml > k8/peercode-match-service_env.yaml
+        kubectl apply -f k8/peercode-match-service_env.yaml
 
     - name: question service; build tag push(ecr) deploy
       env:
