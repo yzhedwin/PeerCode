@@ -77,15 +77,13 @@ jobs:
       env:
         ECR_REGISTRY: public.ecr.aws/a6n0p1z7
         ECR_REPOSITORY: g55-peercode
-        IMAGE_TAG: latest-peercode-react-0 # ${{ github.sha }}
+        IMAGE_TAG: latest-peercode-react # ${{ github.sha }}
         FRONTEND_ENV_BASE64: ${{ secrets.FRONTEND_ENV_BASE64 }}
       run: |
         aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
         cd frontend
         echo $FRONTEND_ENV_BASE64 | base64 --decode > .env
-        echo $FRONTEND_ENV_BASE64
-        echo $FRONTEND_ENV_BASE64 | base64 --decode
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker build $(cat .env | xargs -n 1 | awk '{print "--build-arg", $1}') -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
     - name: Create ConfigMap from Secret
