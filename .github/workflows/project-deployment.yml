@@ -55,8 +55,7 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         cd ../..
-        SHA=$IMAGE_TAG envsubst < k8/peercode-server.yaml > k8/peercode-server_env.yaml
-        kubectl apply -f k8/peercode-server_env.yaml
+        SHA=$IMAGE_TAG envsubst < k8/peercode-server.yaml | kubectl apply -f -
 
     - name: match service; build tag push(ecr) deploy
       env:
@@ -69,8 +68,7 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         cd ../..
-        SHA=$IMAGE_TAG envsubst < k8/peercode-match-service.yaml > k8/peercode-match-service_env.yaml
-        kubectl apply -f k8/peercode-match-service_env.yaml
+        SHA=$IMAGE_TAG envsubst < k8/peercode-match-service.yaml | kubectl apply -f -
 
     - name: question service; build tag push(ecr) deploy
       env:
@@ -83,8 +81,7 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         cd ../..
-        SHA=$IMAGE_TAG envsubst < k8/peercode-question-service.yaml > k8/peercode-question-service_env.yaml
-        kubectl apply -f k8/peercode-question-service_env.yaml
+        SHA=$IMAGE_TAG envsubst < k8/peercode-question-service.yaml | kubectl apply -f -
 
     - name: leetcode service; build tag push(ecr) deploy
       env:
@@ -97,8 +94,7 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         cd ../..
-        SHA=$IMAGE_TAG envsubst < k8/peercode-leetcode-service.yaml > k8/peercode-leetcode-service_env.yaml
-        kubectl apply -f k8/peercode-leetcode-service_env.yaml
+        SHA=$IMAGE_TAG envsubst < k8/peercode-leetcode-service.yaml | kubectl apply -f -
 
     - name: react; build tag push(ecr) deploy
       env:
@@ -113,5 +109,4 @@ jobs:
         docker build $(cat .env | xargs -n 1 | awk '{print "--build-arg", $1}') -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         cd ..
-        SHA=$IMAGE_TAG envsubst < k8/peercode-react.yaml > k8/peercode-react_env.yaml
-        kubectl apply -f k8/peercode-react_env.yaml
+        SHA=$IMAGE_TAG envsubst < k8/peercode-react.yaml | kubectl apply -f -
