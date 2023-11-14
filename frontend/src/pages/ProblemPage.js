@@ -26,8 +26,14 @@ import ResizeBar from "../components/common/ResizeBar";
 import { FirebaseContext } from "../contexts/FirebaseContext";
 import VideoCall from "../components/services/VideoCall";
 import { unstable_useBlocker, useNavigate } from "react-router-dom";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Box, Modal, Typography, Button } from "@mui/material";
+import CustomSelect from "../components/common/question/CustomSelect";
+import { EDITOR_SUPPORTED_LANGUAGES } from "./../utils/constants";
+
 var interval_id = null;
 var timeout_id = null;
+
 function ProblemPage(props) {
     const { type } = props;
     const {
@@ -38,11 +44,13 @@ function ProblemPage(props) {
     const { match, quitMatch, setQuitMatch } = useContext(MatchContext);
     const {
         message,
+        aiMessage,
         code,
         language,
         snippets,
         setLanguage,
         setCode,
+        setAIMessage,
         setMessage,
         setConsoleResult,
     } = useContext(ProblemContext);
@@ -50,6 +58,9 @@ function ProblemPage(props) {
         useContext(SnackBarContext);
     const [hide, setHide] = useState(true);
     const [textInput, setTextInput] = useState("");
+    const [aiTextInput, setAITextInput] = useState("");
+    //eslint-disable-next-line
+    const [aiLoading, setAILoading] = useState(false);
     const [chatHeight, setChatHeight] = useState(100);
     const [editorTheme, setEditorTheme] = useState({
         name: "vs-dark",
@@ -70,6 +81,22 @@ function ProblemPage(props) {
     const timeout_ids = useRef({});
     const navigate = useNavigate();
 
+    const translatedEditorRef = useRef(null);
+    const translatedMonacoRef = useRef(null);
+
+    const [showCodeTranslate, setShowCodeTranslate] = useState(false);
+    const [translatedCode, setTranslatedCode] = useState("");
+    const [translateToLanguage, setTranslateToLanguage] = useState({
+        id: 63,
+        name: "JavaScript (Node.js 12.14.0)",
+        raw: "javascript",
+    });
+
+    function handleTranslatedEditorDidMount(editor, monaco) {
+        translatedEditorRef.current = editor;
+        translatedMonacoRef.current = monaco;
+    }
+
     const handleEditorDidMount = useCallback(
         (editor, monaco) => {
             editorRef.current = editor;
@@ -78,18 +105,21 @@ function ProblemPage(props) {
                 editorRef.current.getModel().updateOptions({
                     tabSize: 8,
                 });
-                setCode(
-                    snippets?.find((snippet) => {
-                        return snippet?.langSlug === language.raw;
-                    })?.code
-                );
             } catch (e) {
                 console.log(e);
             }
         },
         //eslint-disable-next-line
-        [snippets, language.raw]
+        []
     );
+    useEffect(() => {
+        setCode(
+            snippets?.find((snippet) => {
+                return snippet?.langSlug === language.raw;
+            })?.code
+        );
+        //eslint-disable-next-line
+    }, []);
 
     const handleCloseSnackBar = useCallback((event, reason) => {
         if (reason === "clickaway") {
@@ -111,6 +141,132 @@ function ProblemPage(props) {
         setChatHeight(60);
     }, []);
 
+    const getExpectedOutput = useCallback(() => {
+        return question?.problem
+            .split("\n")
+            .map((line) => {
+                if (line?.toString().toLowerCase().indexOf("output") !== -1) {
+                    return line
+                        ?.substring(line.indexOf("</strong>") + 9)
+                        .trim();
+                }
+                return null;
+            })
+            .filter((element) => {
+                return element !== undefined;
+            });
+    }, [question.problem]);
+
+    useEffect(() => {
+        //get Test case here once
+        getDefaultTestCases();
+        return () => {
+            clearInterval(interval_id);
+            clearTimeout(timeout_id);
+        };
+        //eslint-disable-next-line
+    }, []);
+    useEffect(() => {
+        try {
+            if (testCase) {
+                const arr = Object.keys(testCase)
+                    ?.filter((key) => key !== "output")
+                    ?.map((key) => {
+                        return { [key]: testCase[key] };
+                    });
+                if (arr.length > 0) {
+                    const obj = Object.assign(...arr);
+                    setStdin(obj);
+                }
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }, [testCase]);
+
+    useEffect(() => {
+        if (chatHeight >= 100) {
+            setHide(true);
+        }
+    }, [chatHeight]);
+
+    const updateQuestionStatus = useCallback(
+        async (description) => {
+            const data = {
+                userID: uid,
+                titleSlug: question.titleSlug,
+                description: description,
+            };
+
+            await axios.put(
+                `http://localhost:5000/api/v1/question-status`,
+                data
+            );
+        },
+        [question.titleSlug, uid]
+    );
+
+    useEffect(() => {
+        // Priority Error > WA > TLE > AC
+        if (
+            batchSubmission.length === defaultTestCases.length &&
+            batchSubmission.length > 0 &&
+            isSubmitting
+        ) {
+            const errorIndex = batchSubmission.findIndex(
+                (feedback) =>
+                    feedback.status.description
+                        .toLowerCase()
+                        .indexOf("error") !== -1
+            );
+            const WrongIndex = batchSubmission.findIndex(
+                (feedback) => feedback.status.id === 4
+            );
+            const TLEIndex = batchSubmission.findIndex(
+                (feedback) => feedback.status.id === 5
+            );
+
+            if (errorIndex !== -1) {
+                postHistory(batchSubmission[errorIndex]);
+                updateQuestionStatus("Error");
+            } else if (WrongIndex !== -1) {
+                postHistory(batchSubmission[WrongIndex]);
+                updateQuestionStatus("Wrong Answer");
+            } else if (TLEIndex !== -1) {
+                postHistory(batchSubmission[TLEIndex]);
+                updateQuestionStatus("Time Limit Exceeded");
+            } else {
+                postHistory(batchSubmission[0]);
+                updateQuestionStatus("Completed");
+            }
+            setIsSubmitting(false);
+        }
+        //eslint-disable-next-line
+    }, [batchSubmission]);
+
+    const onBlockNav = () => {
+        if (match) {
+            setSB({
+                msg: "Please request to leave the session",
+                severity: "error",
+            });
+
+            setOpenSnackBar(true);
+        }
+        return match;
+    };
+
+    if (type === "coop") {
+        unstable_useBlocker(onBlockNav);
+    }
+    useEffect(() => {
+        if (quitMatch) {
+            navigate("/dashboard");
+            setQuitMatch(false);
+        }
+        //eslint-disable-next-line
+    }, [quitMatch]);
+
     const onSubmitChat = useCallback(
         (e) => {
             if (e.keyCode === 13) {
@@ -126,7 +282,7 @@ function ProblemPage(props) {
                 });
                 setMessage(currentMessage);
                 socket.emit("room-message", match, {
-                    user: currentName, //change to username
+                    user: currentName,
                     data: e.target.value,
                     time: time,
                 });
@@ -136,6 +292,40 @@ function ProblemPage(props) {
         //eslint-disable-next-line
         [message, match]
     );
+
+    const onSubmitAIChat = useCallback(
+        async (e) => {
+            if (e.keyCode === 13) {
+                setAILoading(true);
+                let currentMessage = [...aiMessage];
+                const prompt = e.target.value;
+                currentMessage.push({
+                    role: "user",
+                    content: prompt,
+                });
+                setAIMessage(currentMessage);
+                setAITextInput("AI is replying...");
+                await axios
+                    .post("http://localhost:8020/ask", { prompt })
+                    .then((res) => {
+                        let result = res.data;
+                        for (var i = 0; i < 2; i++) {
+                            result = result.replace("\n", "");
+                        }
+                        currentMessage.push({
+                            role: "system",
+                            content: result,
+                        });
+                    })
+                    .catch((error) => console.log(error));
+                setAIMessage(currentMessage);
+                setAITextInput("");
+                setAILoading(false);
+            }
+        },
+        [aiMessage, setAIMessage]
+    );
+
     const getSubmission = useCallback(
         (token) => {
             interval_id = setInterval(async () => {
@@ -180,11 +370,11 @@ function ProblemPage(props) {
                     language_id: language.id,
                     source_code: btoa(code),
                     stdin: btoa(JSON.stringify(stdin)),
-                    expected_output: btoa(output.toString()),
+                    expected_output: btoa(output?.toString()),
                 }
             );
         },
-        [code, language.id, question.titleSlug, uid]
+        [code, language.id, question, uid]
     );
     const postHistory = useCallback(
         async (feedback) => {
@@ -206,15 +396,16 @@ function ProblemPage(props) {
                 console.log(e);
             }
         },
-        [code, language.id, question.titleSlug, uid]
+        [code, language.id, question, uid]
     );
+    //Submit Button to run against all default test cases
     //Submit Button to run against all default test cases
     const onSubmit = () => {
         try {
             setBatchSubmission([]);
             setConsoleResult("");
             const outputs = getExpectedOutput();
-            defaultTestCases.forEach(async (tc, index) => {
+            defaultTestCases?.forEach(async (tc, index) => {
                 const response = await postSubmission(tc, outputs[index]); //post submission to judge0 and poll 10s for feedback
                 timeout_ids.current[index] = setTimeout(() => {
                     clearInterval(interval_ids.current[index]);
@@ -254,24 +445,6 @@ function ProblemPage(props) {
             console.log(e.message);
         }
     };
-    //Run button to run against user selected testcase
-    const onRun = useCallback(async () => {
-        try {
-            const { data } = await postSubmission(stdin, testCase?.output);
-            setIsRunning(true);
-            timeout_id = setTimeout(() => {
-                clearInterval(interval_id);
-                setSB({ msg: "Submission timedout", severity: "error" });
-                setOpenSnackBar(true);
-                setIsRunning(false);
-            }, 10000);
-            setIsBatch(false);
-            getSubmission(data.token);
-        } catch (e) {
-            console.log(e.message);
-        }
-        //eslint-disable-next-line
-    }, [stdin, testCase, code, language.id, question.titleSlug, uid]);
 
     const handleLanguageChange = useCallback(
         (event) => {
@@ -298,6 +471,25 @@ function ProblemPage(props) {
             defineTheme(theme.value).then((_) => setEditorTheme(theme));
         }
     }, []);
+
+    //Run button to run against user selected testcase
+    const onRun = useCallback(async () => {
+        try {
+            const { data } = await postSubmission(stdin, testCase?.output);
+            setIsRunning(true);
+            timeout_id = setTimeout(() => {
+                clearInterval(interval_id);
+                setSB({ msg: "Submission timedout", severity: "error" });
+                setOpenSnackBar(true);
+                setIsRunning(false);
+            }, 10000);
+            setIsBatch(false);
+            getSubmission(data.token);
+        } catch (e) {
+            console.log(e.message);
+        }
+        //eslint-disable-next-line
+    }, [stdin, testCase, code, language.id, question.titleSlug, uid]);
 
     const handleCodeChanges = useCallback(
         (code) => {
@@ -347,121 +539,102 @@ function ProblemPage(props) {
         }
     };
 
-    const getExpectedOutput = useCallback(() => {
-        return question?.problem
-            .split("\n")
-            ?.map((line) => {
-                if (line?.toString().toLowerCase().indexOf("output") !== -1) {
-                    return line
-                        ?.substring(line.indexOf("</strong>") + 9)
-                        .trim();
-                }
-            })
-            .filter((element) => {
-                return element !== undefined;
-            });
-    }, [question.problem]);
+    function generateCodeTranslatePrompt(inputLanguage, outputLanguage) {
+        let prompt = `You are an expert programmer in all programming languages. Translate the "${inputLanguage}" code to "${outputLanguage}" code. Do not include \`\`\`.
+  
+    Example translating from JavaScript to Python:
 
-    useEffect(() => {
-        //get Test case here once
-        getDefaultTestCases();
-        return () => {
-            clearInterval(interval_id);
-            clearTimeout(timeout_id);
-        };
-        //eslint-disable-next-line
-    }, []);
-    useEffect(() => {
-        try {
-            if (testCase) {
-                const arr = Object.keys(testCase)
-                    ?.filter((key) => key !== "output")
-                    ?.map((key) => {
-                        return { [key]: testCase[key] };
-                    });
-                if (arr.length > 0) {
-                    const obj = Object.assign(...arr);
-                    setStdin(obj);
-                }
-            }
-        } catch (e) {
-            console.log(e);
-        }
-    }, [testCase]);
+    JavaScript code:
+    for (let i = 0; i < 10; i++) {
+      console.log(i);
+    }
 
-    useEffect(() => {
-        if (chatHeight >= 100) {
-            setHide(true);
-        }
-    }, [chatHeight]);
+    Python code:
+    for i in range(10):
+      print(i)
+    
+    ${inputLanguage} code:
+    ${code}
 
-    const updateQuestionStatus = useCallback(async (description) => {
-        const data = {
-            userID: uid,
-            titleSlug: question.titleSlug,
-            description: description,
-        };
+    ${outputLanguage} code (no \`\`\`):`;
+        return prompt;
+    }
 
-        await axios.put(`http://localhost:5000/api/v1/question-status`, data);
-    });
-
-    useEffect(() => {
-        // Priority Error > WA > TLE > AC
-        if (
-            batchSubmission.length === defaultTestCases.length &&
-            batchSubmission.length > 0 &&
-            isSubmitting
-        ) {
-            const errorIndex = batchSubmission.findIndex(
-                (feedback) =>
-                    feedback.status.description
-                        .toLowerCase()
-                        .indexOf("error") !== -1
-            );
-            const WrongIndex = batchSubmission.findIndex(
-                (feedback) => feedback.status.id === 4
-            );
-            const TLEIndex = batchSubmission.findIndex(
-                (feedback) => feedback.status.id === 5
-            );
-
-            if (errorIndex !== -1) {
-                postHistory(batchSubmission[errorIndex]);
-                updateQuestionStatus("Error");
-            } else if (WrongIndex !== -1) {
-                postHistory(batchSubmission[WrongIndex]);
-                updateQuestionStatus("Wrong Answer");
-            } else if (TLEIndex !== -1) {
-                postHistory(batchSubmission[TLEIndex]);
-                updateQuestionStatus("Time Limit Exceeded");
-            } else {
-                postHistory(batchSubmission[0]);
-                updateQuestionStatus("Completed");
-            }
-            setIsSubmitting(false);
-        }
-    }, [batchSubmission]);
-    const onBlockNav = () => {
-        if (match) {
+    const onCodeTranslationRequest = async (e) => {
+        if (translateToLanguage === "") {
             setSB({
-                msg: "Please request to leave the session",
+                msg: "Please input a coding language to translate to!",
                 severity: "error",
             });
-
             setOpenSnackBar(true);
+            return;
         }
-        return match;
+        let prompt = generateCodeTranslatePrompt(
+            language.raw,
+            translateToLanguage.raw
+        );
+        await axios
+            .post("http://localhost:8020/ask", { prompt })
+            .then((res) => {
+                if (res.status === 200) {
+                    if (res.data.includes("maximum context length")) {
+                        setSB({
+                            msg: "You have exceeded the maximum prompt length, please shorten your prompt!",
+                            severity: "error",
+                        });
+                        setOpenSnackBar(true);
+                    } else {
+                        setSB({
+                            msg: "Translation of code successful!",
+                            severity: "success",
+                        });
+                        setOpenSnackBar(true);
+                        setTranslatedCode(res.data);
+                    }
+                }
+            })
+            .catch((error) => console.log(error));
     };
 
-    if (type === "coop") {
-        unstable_useBlocker(onBlockNav);
+    function onCodeTranslateQuery() {
+        setShowCodeTranslate(true);
     }
-    useEffect(() => {
-        if (quitMatch) {
-            navigate("/dashboard");
-            setQuitMatch(false);
-        }
-    }, [quitMatch]);
+
+    function onCodeTranslateConfirmation() {
+        setLanguage(translateToLanguage);
+        setCode(translatedCode);
+        setTranslatedCode("");
+        handleClose();
+    }
+
+    function handleTranslateLanguageChange(event) {
+        setTranslateToLanguage(JSON.parse(event.target.value));
+    }
+
+    function handleTranslatedCodeChanges(translatedCode) {
+        setTranslatedCode(translatedCode);
+    }
+
+    const style = {
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: "70%",
+        height: "70%",
+        bgcolor: "white",
+        border: "2px solid #000",
+        boxShadow: 24,
+        p: 2,
+    };
+
+    let theme = createTheme({
+        shape: {
+            pillRadius: 50,
+        },
+    });
+
+    const handleClose = () => setShowCodeTranslate(false);
 
     return (
         <>
@@ -471,6 +644,95 @@ function ProblemPage(props) {
                 openSnackBar={openSnackBar}
                 severity={sb?.severity}
             />
+
+            {showCodeTranslate && (
+                <Modal
+                    open={showCodeTranslate}
+                    onClose={handleClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                >
+                    <Box sx={style}>
+                        <CustomSelect
+                            title={"Language"}
+                            list={EDITOR_SUPPORTED_LANGUAGES}
+                            value={translateToLanguage}
+                            handleChange={handleTranslateLanguageChange}
+                        />
+                        <Typography
+                            id="modal-modal-title"
+                            variant="body1"
+                            component="h5"
+                            sx={{ marginTop: 1, marginBottom: 1 }}
+                        >
+                            Translate your current code here from{" "}
+                            {language.name} to {translateToLanguage.name}
+                        </Typography>
+
+                        <ThemeProvider theme={theme}>
+                            <Button
+                                variant="contained"
+                                pill
+                                onClick={onCodeTranslationRequest}
+                            >
+                                TRANSLATE
+                            </Button>
+                        </ThemeProvider>
+
+                        <div className="translator-container">
+                            <div className="translator-component">
+                                <h3>Original Code</h3>
+                                <Editor
+                                    height="80%"
+                                    language={language?.raw}
+                                    theme={editorTheme?.value}
+                                    value={code}
+                                    onChange={handleCodeChanges}
+                                    onMount={handleEditorDidMount}
+                                    options={{
+                                        dragAndDrop: false,
+                                        inlineSuggest: true,
+                                        fontSize: "16px",
+                                        formatOnType: true,
+                                        autoClosingBrackets: true,
+                                        minimap: { scale: 10 },
+                                    }}
+                                />
+                            </div>
+
+                            <div className="translator-component">
+                                <h3>Translated Code</h3>
+                                <Editor
+                                    height="80%"
+                                    language={translateToLanguage?.raw}
+                                    theme={editorTheme?.value}
+                                    value={translatedCode}
+                                    onChange={handleTranslatedCodeChanges}
+                                    onMount={handleTranslatedEditorDidMount}
+                                    options={{
+                                        dragAndDrop: false,
+                                        inlineSuggest: true,
+                                        fontSize: "16px",
+                                        formatOnType: true,
+                                        autoClosingBrackets: true,
+                                        minimap: { scale: 10 },
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <ThemeProvider theme={theme}>
+                            <Button
+                                variant="contained"
+                                pill
+                                onClick={onCodeTranslateConfirmation}
+                            >
+                                CONFIRM CHANGES
+                            </Button>
+                        </ThemeProvider>
+                    </Box>
+                </Modal>
+            )}
+
             <div className="problem-page-container">
                 <div className="problem-tabs-container">
                     <ProblemPageTabs userID={uid} question={question} />
@@ -487,12 +749,12 @@ function ProblemPage(props) {
                                 <VideoCall />
                                 <ConsoleButton
                                     title={"Leave"}
+                                    onClick={handleLeaveRoom}
                                     sx={{
                                         ml: 1,
                                         backgroundColor: "red",
                                         mb: 1,
                                     }}
-                                    onClick={handleLeaveRoom}
                                 />
                             </>
                         )}
@@ -533,8 +795,11 @@ function ProblemPage(props) {
                     >
                         <ConsoleTabs
                             onSubmitChat={onSubmitChat}
+                            onSubmitAIChat={onSubmitAIChat}
                             setTextInput={setTextInput}
                             textInput={textInput}
+                            aiTextInput={aiTextInput}
+                            setAITextInput={setAITextInput}
                             chatDisabled={type !== "coop"}
                             defaultTestCases={defaultTestCases}
                             setTestCase={setTestCase}
@@ -557,6 +822,13 @@ function ProblemPage(props) {
                                 title={"Console"}
                             />
                         )}
+
+                        <ConsoleButton
+                            onClick={onCodeTranslateQuery}
+                            title={"AI Code Translation Tool"}
+                            sx={{ ml: "auto", mr: 1 }}
+                        />
+
                         <ConsoleButton
                             onClick={onRun}
                             title={"Run"}

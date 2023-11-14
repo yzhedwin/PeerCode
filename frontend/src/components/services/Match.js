@@ -5,7 +5,6 @@ import { MatchContext } from "../../contexts/MatchContext";
 import { Box } from "@mui/material";
 import CoolButton from "../common/CoolButton";
 import { ProblemContext } from "../../contexts/ProblemContext";
-import { useNavigate } from "react-router-dom";
 import { MATCHMAKING_TIMEOUT } from "../../utils/constants";
 
 var timeout_id = null;
@@ -15,7 +14,6 @@ function Match() {
     const { match, findMatch, hasInit, setFindMatch } =
         useContext(MatchContext);
     const { setMessage } = useContext(ProblemContext);
-    const navigate = useNavigate();
 
     const getMatch = (difficulty) => {
         socket.emit("match", socket.id, difficulty.toLowerCase());
