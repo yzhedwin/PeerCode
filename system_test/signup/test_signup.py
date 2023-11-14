@@ -166,10 +166,10 @@ def test_signup_failure_insecure_pwd():
         sign_up_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Sign Up']")))
 
         # Fill in the registration form
-        username.send_keys('testing')
-        email.send_keys('test@test.com')
-        password.send_keys('testing1!')
-        confirm_password.send_keys('testing1!')  # Fill in the password confirmation
+        username.send_keys('invalid')
+        email.send_keys('invalid@invalid.com')
+        password.send_keys('test')
+        confirm_password.send_keys('test')  # Fill in the password confirmation
 
         # Scroll to the element
         driver.execute_script("arguments[0].scrollIntoView(true);", sign_up_button)
