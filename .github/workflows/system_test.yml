@@ -9,6 +9,18 @@ jobs:
     name: System test
     runs-on: ubuntu-latest
 
+    services:
+      - name: selenium-hub
+        image: selenium/hub:3.141.59
+        ports:
+          - "4444:4444"
+
+      - name: selenium-node-chrome
+        image: selenium/node-chrome:3.141.59
+        depends-on:
+          - selenium-hub
+
+
     steps:
     - name: Checkout
       uses: actions/checkout@v2
