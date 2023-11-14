@@ -1,10 +1,5 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata:
-  annotations:
-    kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert -f docker-compose-resolved.yaml
-    kompose.version: 1.21.0 (992df58d8)
-  creationTimestamp: null
   labels:
     app: peercode-match-service
   name: peercode-match-service
@@ -14,18 +9,13 @@ spec:
     matchLabels:
       app: peercode-match-service
   template:
-    metadata:
-      annotations:
-        kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert -f docker-compose-resolved.yaml
-        kompose.version: 1.21.0 (992df58d8)
-      creationTimestamp: null
       labels:
         io.kompose.network/network: "true"
         app: peercode-match-service
     spec:
       containers:
       - name: peercode-match-service
-        image: public.ecr.aws/a6n0p1z7/g55-peercode:latest-peercode-match-service
+        image: public.ecr.aws/a6n0p1z7/g55-peercode:${SHA}-peercode-match-service
         imagePullPolicy: Always
         ports:
         - containerPort: 5002
@@ -56,11 +46,6 @@ spec:
 ---
 apiVersion: v1
 kind: Service
-metadata:
-  annotations:
-    kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert -f docker-compose-resolved.yaml
-    kompose.version: 1.21.0 (992df58d8)
-  creationTimestamp: null
   labels:
     app: peercode-match-service
   name: peercode-match-service
