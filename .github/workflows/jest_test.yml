@@ -1,4 +1,4 @@
-name: Build and Deploy React App
+name: Unit test and Integration test
 
 on:
   pull_request:
@@ -31,7 +31,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r backend/requirements-dev.txt
 
-      - name: Run unittest
+      - name: Run jest
         run: |
           cd frontend
           npx jest
