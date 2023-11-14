@@ -65,8 +65,6 @@ spec:
           value: http://peercode-question-service:5001/api/v1/question
         - name: SERVER_PORT
           value: "5000"
-        - name: USER_SERVICE_URL
-          value: http://peercode-user-service:5003/api/v1/user
       restartPolicy: Always
       serviceAccountName: ""
       volumes: null
