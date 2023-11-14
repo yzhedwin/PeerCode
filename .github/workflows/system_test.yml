@@ -10,31 +10,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - name: Checking out repo
+      uses: actions/checkout@v3
+  
+    - name: Setting up Python
+      uses: actions/setup-python@v4
       with:
-        python-version: 3.8
-
-    - name: Upgrade urllib3
-      run: pip install --upgrade urllib3
+        python-version: '3.9'
+        
+    - name: Installing package list
+      run: apt list --installed    
       
-
-    - name: Install Chrome and ChromeDriver
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y google-chrome-stable
-        LATEST_CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE)
-        wget "https://chromedriver.storage.googleapis.com/$LATEST_CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
-        unzip chromedriver_linux64.zip -d /usr/local/bin
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pytest
+    - name: Removing previous chrome instances on runner 
+      run: sudo apt purge google-chrome-stable  
+        
+    - name: Installing all necessary packages
+      run: pip install chromedriver-autoinstaller selenium
 
     - name: Run tests
       run: |
