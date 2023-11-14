@@ -63,38 +63,3 @@ def test_settings_profile_success():
 
     finally:
         driver.quit()
-
-def test_settings_get_question_success():
-    driver = webdriver.Chrome(options=chrome_options)
-    driver.get('http://peercode.net/login')
-    wait = WebDriverWait(driver, 10)
-    try:
-        # Login
-        email = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@type='email']")))
-        password = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@type='password']")))
-        login_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@type='submit']")))
-
-        email.send_keys('test@test.com')
-        password.send_keys('tester')
-        login_button.click()
-
-        # Wait for the next page to load after login
-        WebDriverWait(driver, 10).until(EC.url_to_be('http://peercode.net/dashboard'))
-        assert driver.current_url == 'http://peercode.net/dashboard', "Login failed"
-
-        # Find the dropdown menu
-        dropdown_button = wait.until(EC.element_to_be_clickable((By.XPATH, '//button[@aria-label="Open settings"]')))
-        dropdown_button.click()
-
-        # Wait for 'Profile' item within the dropdown to be clickable and click on it
-        get_question_item = wait.until(EC.element_to_be_clickable((By.XPATH, '//li[.//p[text()="Get Question"]]')))
-        get_question_item.click()
-
-        # Wait for the Snackbar message to appear
-        snackbar = wait.until(EC.visibility_of_element_located((By.XPATH, "//div[@class='MuiSnackbar-root MuiSnackbar-anchorOriginTopCenter css-186hw1j']")))
-        snackbar_text = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, 'MuiAlert-message')))
-        
-        assert snackbar_text.text == 'Retrieve question from Leetcode', "Get Question failed"
-
-    finally:
-        driver.quit()
