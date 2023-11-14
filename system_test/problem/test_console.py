@@ -1,11 +1,15 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+
 def test_console_language_panel_success():
-    driver = webdriver.Chrome()
-    driver.get('http://localhost:3000/login')
+    driver = webdriver.Chrome(options=chrome_options)
+    driver.get('http://peercode.net/login')
     wait = WebDriverWait(driver, 10)
     try:
         # Login
@@ -18,16 +22,16 @@ def test_console_language_panel_success():
         login_button.click()
 
         # Wait for the next page to load after login
-        WebDriverWait(driver, 10).until(EC.url_to_be('http://localhost:3000/'))
-        assert driver.current_url == 'http://localhost:3000/', "Login failed"
+        WebDriverWait(driver, 10).until(EC.url_to_be('http://peercode.net/dashboard'))
+        assert driver.current_url == 'http://peercode.net/dashboard', "Login failed"
 
         # Find and click the 'Two Sum' element
         two_sum_element = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@class='title-div' and text()='Two Sum']")))
         two_sum_element.click()
 
         # Wait for redirection to /problem
-        WebDriverWait(driver, 10).until(EC.url_to_be('http://localhost:3000/problem'))
-        assert driver.current_url == 'http://localhost:3000/problem', "Navigation to /problem failed"
+        WebDriverWait(driver, 10).until(EC.url_to_be('http://peercode.net/problem'))
+        assert driver.current_url == 'http://peercode.net/problem', "Navigation to /problem failed"
 
         # Find and select language
         select_language_element = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@title='Select Language']")))
@@ -44,8 +48,8 @@ def test_console_language_panel_success():
         driver.quit()
 
 def test_console_theme_panel_success():
-    driver = webdriver.Chrome()
-    driver.get('http://localhost:3000/login')
+    driver = webdriver.Chrome(options=chrome_options)
+    driver.get('http://peercode.net/login')
     wait = WebDriverWait(driver, 10)
     try:
         # Login
@@ -58,16 +62,16 @@ def test_console_theme_panel_success():
         login_button.click()
 
         # Wait for the next page to load after login
-        WebDriverWait(driver, 10).until(EC.url_to_be('http://localhost:3000/'))
-        assert driver.current_url == 'http://localhost:3000/', "Login failed"
+        WebDriverWait(driver, 10).until(EC.url_to_be('http://peercode.net/dashboard'))
+        assert driver.current_url == 'http://peercode.net/dashboard', "Login failed"
 
         # Find and click the 'Two Sum' element
         two_sum_element = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@class='title-div' and text()='Two Sum']")))
         two_sum_element.click()
 
         # Wait for redirection to /problem
-        WebDriverWait(driver, 10).until(EC.url_to_be('http://localhost:3000/problem'))
-        assert driver.current_url == 'http://localhost:3000/problem', "Navigation to /problem failed"
+        WebDriverWait(driver, 10).until(EC.url_to_be('http://peercode.net/problem'))
+        assert driver.current_url == 'http://peercode.net/problem', "Navigation to /problem failed"
 
         # Find and select language
         select_theme_element = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@title='Select Theme']")))
@@ -84,8 +88,8 @@ def test_console_theme_panel_success():
         driver.quit()
 
 def test_console_run_button_success():
-    driver = webdriver.Chrome()
-    driver.get('http://localhost:3000/login')
+    driver = webdriver.Chrome(options=chrome_options)
+    driver.get('http://peercode.net/login')
     wait = WebDriverWait(driver, 10)
     try:
         # Login
@@ -98,16 +102,16 @@ def test_console_run_button_success():
         login_button.click()
 
         # Wait for the next page to load after login
-        WebDriverWait(driver, 10).until(EC.url_to_be('http://localhost:3000/'))
-        assert driver.current_url == 'http://localhost:3000/', "Login failed"
+        WebDriverWait(driver, 10).until(EC.url_to_be('http://peercode.net/dashboard'))
+        assert driver.current_url == 'http://peercode.net/dashboard', "Login failed"
 
         # Find and click the 'Two Sum' element
         two_sum_element = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@class='title-div' and text()='Two Sum']")))
         two_sum_element.click()
 
         # Wait for redirection to /problem
-        WebDriverWait(driver, 10).until(EC.url_to_be('http://localhost:3000/problem'))
-        assert driver.current_url == 'http://localhost:3000/problem', "Navigation to /problem failed"
+        WebDriverWait(driver, 10).until(EC.url_to_be('http://peercode.net/problem'))
+        assert driver.current_url == 'http://peercode.net/problem', "Navigation to /problem failed"
 
         # Add delay
         import time
@@ -118,7 +122,7 @@ def test_console_run_button_success():
         #run_button_element = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[@id='root']/div/div[2]/div[5]/button[2]")))
         run_button_element.click()
 
-        snackbar = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@class='MuiAlert-message css-1pxa9xg-MuiAlert-message']")))
+        snackbar = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@class='MuiSnackbar-root MuiSnackbar-anchorOriginTopCenter css-186hw1j']")))
         assert snackbar.text == 'Code Submitted', "Running of code failed"
     
     finally:
