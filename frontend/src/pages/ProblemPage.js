@@ -27,12 +27,9 @@ import { FirebaseContext } from "../contexts/FirebaseContext";
 import VideoCall from "../components/services/VideoCall";
 import { unstable_useBlocker, useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Box, Modal, TextField, Typography, Button } from "@mui/material";
+import { Box, Modal, Typography, Button } from "@mui/material";
 import CustomSelect from "../components/common/question/CustomSelect";
-import {
-    EDITOR_SUPPORTED_LANGUAGES,
-    EDITOR_SUPPORTED_THEMES,
-} from "./../utils/constants";
+import { EDITOR_SUPPORTED_LANGUAGES } from "./../utils/constants";
 
 var interval_id = null;
 var timeout_id = null;
@@ -62,6 +59,7 @@ function ProblemPage(props) {
     const [hide, setHide] = useState(true);
     const [textInput, setTextInput] = useState("");
     const [aiTextInput, setAITextInput] = useState("");
+    //eslint-disable-next-line
     const [aiLoading, setAILoading] = useState(false);
     const [chatHeight, setChatHeight] = useState(100);
     const [editorTheme, setEditorTheme] = useState({
@@ -120,6 +118,7 @@ function ProblemPage(props) {
                 return snippet?.langSlug === language.raw;
             })?.code
         );
+        //eslint-disable-next-line
     }, []);
 
     const handleCloseSnackBar = useCallback((event, reason) => {
@@ -151,6 +150,7 @@ function ProblemPage(props) {
                         ?.substring(line.indexOf("</strong>") + 9)
                         .trim();
                 }
+                return null;
             })
             .filter((element) => {
                 return element !== undefined;
@@ -190,15 +190,21 @@ function ProblemPage(props) {
         }
     }, [chatHeight]);
 
-    const updateQuestionStatus = useCallback(async (description) => {
-        const data = {
-            userID: uid,
-            titleSlug: question.titleSlug,
-            description: description,
-        };
+    const updateQuestionStatus = useCallback(
+        async (description) => {
+            const data = {
+                userID: uid,
+                titleSlug: question.titleSlug,
+                description: description,
+            };
 
-        await axios.put(`http://localhost:5000/api/v1/question-status`, data);
-    });
+            await axios.put(
+                `http://localhost:5000/api/v1/question-status`,
+                data
+            );
+        },
+        [question.titleSlug, uid]
+    );
 
     useEffect(() => {
         // Priority Error > WA > TLE > AC
@@ -235,6 +241,7 @@ function ProblemPage(props) {
             }
             setIsSubmitting(false);
         }
+        //eslint-disable-next-line
     }, [batchSubmission]);
 
     const onBlockNav = () => {
@@ -257,6 +264,7 @@ function ProblemPage(props) {
             navigate("/dashboard");
             setQuitMatch(false);
         }
+        //eslint-disable-next-line
     }, [quitMatch]);
 
     const onSubmitChat = useCallback(
@@ -310,24 +318,6 @@ function ProblemPage(props) {
                         });
                     })
                     .catch((error) => console.log(error));
-
-                // Below is the "correct" implementation with chat persistence. However, it is very slow,
-                // even when using the Turbo model. Hence, the initial implementation without chat persistence
-                // might be more practical.
-
-                // await axios
-                //   .post("http://localhost:8020/chat", { currentMessage })
-                //   .then((res) => {
-                //     let result = res.data.content;
-                //     for (var i = 0; i < 2; i++) {
-                //       result = result.replace("\n", "");
-                //     }
-                //     currentMessage.push({
-                //       role: "system",
-                //       content: result,
-                //     });
-                //   })
-                //   .catch((error) => console.log(error));
                 setAIMessage(currentMessage);
                 setAITextInput("");
                 setAILoading(false);
@@ -380,11 +370,11 @@ function ProblemPage(props) {
                     language_id: language.id,
                     source_code: btoa(code),
                     stdin: btoa(JSON.stringify(stdin)),
-                    expected_output: btoa(output.toString()),
+                    expected_output: btoa(output?.toString()),
                 }
             );
         },
-        [code, language.id, question.titleSlug, uid]
+        [code, language.id, question, uid]
     );
     const postHistory = useCallback(
         async (feedback) => {
@@ -406,7 +396,7 @@ function ProblemPage(props) {
                 console.log(e);
             }
         },
-        [code, language.id, question.titleSlug, uid]
+        [code, language.id, question, uid]
     );
     //Submit Button to run against all default test cases
     //Submit Button to run against all default test cases
@@ -415,7 +405,7 @@ function ProblemPage(props) {
             setBatchSubmission([]);
             setConsoleResult("");
             const outputs = getExpectedOutput();
-            defaultTestCases.forEach(async (tc, index) => {
+            defaultTestCases?.forEach(async (tc, index) => {
                 const response = await postSubmission(tc, outputs[index]); //post submission to judge0 and poll 10s for feedback
                 timeout_ids.current[index] = setTimeout(() => {
                     clearInterval(interval_ids.current[index]);
@@ -755,15 +745,18 @@ function ProblemPage(props) {
                         handleThemeChange={handleThemeChange}
                     >
                         {type === "coop" && (
-                            <ConsoleButton
-                                title={"Leave"}
-                                onClick={handleLeaveRoom}
-                                sx={{
-                                    ml: "auto",
-                                    backgroundColor: "red",
-                                    mb: 1,
-                                }}
-                            />
+                            <>
+                                <VideoCall />
+                                <ConsoleButton
+                                    title={"Leave"}
+                                    onClick={handleLeaveRoom}
+                                    sx={{
+                                        ml: 1,
+                                        backgroundColor: "red",
+                                        mb: 1,
+                                    }}
+                                />
+                            </>
                         )}
                     </EditorOptions>
 
