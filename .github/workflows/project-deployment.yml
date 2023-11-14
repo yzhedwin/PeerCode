@@ -54,6 +54,7 @@ jobs:
         cd backend/match_service
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        cd ../..
         SHA=$IMAGE_TAG envsubst < k8/peercode-match-service.yaml | kubectl apply -f -
 
     - name: server; build tag push(ecr) deploy
@@ -66,6 +67,7 @@ jobs:
         cd backend/server
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        cd ../..
         SHA=$IMAGE_TAG envsubst < k8/peercode-server.yaml | kubectl apply -f -
 
     - name: question service; build tag push(ecr) deploy
@@ -78,6 +80,7 @@ jobs:
         cd backend/question_service
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        cd ../..
         SHA=$IMAGE_TAG envsubst < k8/peercode-question-service.yaml | kubectl apply -f -
 
     - name: leetcode service; build tag push(ecr) deploy
@@ -90,6 +93,7 @@ jobs:
         cd backend/leetcode_service
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        cd ../..
         SHA=$IMAGE_TAG envsubst < k8/peercode-leetcode-service.yaml | kubectl apply -f -
 
     - name: react; build tag push(ecr) deploy
@@ -104,4 +108,5 @@ jobs:
         echo $FRONTEND_ENV_BASE64 | base64 --decode > .env
         docker build $(cat .env | xargs -n 1 | awk '{print "--build-arg", $1}') -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        cd ..
         SHA=$IMAGE_TAG envsubst < k8/peercode-react.yaml | kubectl apply -f -
