@@ -199,7 +199,7 @@ function ProblemPage(props) {
             };
 
             await axios.put(
-                `http://localhost:5000/api/v1/question-status`,
+                `http://server.peercode.net:5000/api/v1/question-status`,
                 data
             );
         },

@@ -25,13 +25,13 @@ const Profile = () => {
     checkDetails(currentUser); //.then(setLoading(false));
     axios
       .get(
-        `http://localhost:5000/api/v1/question/history/user?userID=${currentUser.uid}`
+        `http://server.peercode.net:5000/api/v1/question/history/user?userID=${currentUser.uid}`
       )
       .then((res) => setSubmissions(res.data))
       .catch((e) => console.log("Submissions not found"));
 
     axios
-      .get("http://localhost:5000/api/v1/question")
+      .get("http://server.peercode.net:5000/api/v1/question")
       .then((res) => setRowData(res.data));
   }, []);
 

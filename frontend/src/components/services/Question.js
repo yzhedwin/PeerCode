@@ -126,9 +126,9 @@ function Question() {
     const onGridReady = useCallback(async (params) => {
         try {
             const [questions, status] = await Promise.all([
-                axios.get("http://localhost:5000/api/v1/question"),
+                axios.get("http://server.peercode.net:5000/api/v1/question"),
                 axios.get(
-                    `http://localhost:5000/api/v1/question-status?userID=${currentUser?.uid}`
+                    `http://server.peercode.net:5000/api/v1/question-status?userID=${currentUser?.uid}`
                 ),
             ]);
             const { data } = questions;

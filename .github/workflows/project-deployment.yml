@@ -77,7 +77,7 @@ jobs:
       env:
         ECR_REGISTRY: public.ecr.aws/a6n0p1z7
         ECR_REPOSITORY: g55-peercode
-        IMAGE_TAG: latest-peercode-react # ${{ github.sha }}
+        IMAGE_TAG: latest-peercode-react-0 # ${{ github.sha }}
         FRONTEND_ENV_BASE64: ${{ secrets.FRONTEND_ENV_BASE64 }}
       run: |
         aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTRY
