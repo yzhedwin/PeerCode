@@ -17,7 +17,7 @@ function Question() {
     const { setSnippets } = useContext(ProblemContext);
     const { setQuestion } = useContext(QuestionContext);
     const { setSB, setOpenSnackBar } = useContext(SnackBarContext);
-    const { isAdmin } = useContext(FirebaseContext);
+    const { isAdmin, currentUser } = useContext(FirebaseContext);
     const [show, setShow] = useState(false);
     const [titleSlug, setTitleSlug] = useState("");
     const [rowData, setRowData] = useState();
@@ -56,8 +56,8 @@ function Question() {
                 headerName: "Tags",
                 valueGetter: (params) => {
                     if (Array.isArray(params.data.topicTags)) {
-                        return params?.data?.topicTags
-                            ?.map((tag) => tag.name)
+                        return params.data.topicTags
+                            .map((tag) => tag.name)
                             .join(", ");
                     }
                     return "";
@@ -87,7 +87,7 @@ function Question() {
                         const action = event[0];
                         const ts = event[1];
                         if (action === "e") {
-                            const question = rowData.find(
+                            const question = rowData?.find(
                                 (qn) => qn.titleSlug === ts
                             );
                             const categories = question?.topicTags
@@ -123,6 +123,36 @@ function Question() {
         []
     );
     const rowClass = "question-not-completed";
+    const onGridReady = useCallback(async (params) => {
+        try {
+            const [questions, status] = await Promise.all([
+                axios.get("http://localhost:5000/api/v1/question"),
+                axios.get(
+                    `http://localhost:5000/api/v1/question-status?userID=${currentUser?.uid}`
+                ),
+            ]);
+            const { data } = questions;
+            for (let i = 0; i < data.length; i++) {
+                const currentTitleSlug = data[i]?.titleSlug;
+                const s = status.data.find((s) => {
+                    return s.titleSlug === currentTitleSlug;
+                });
+                if (s) {
+                    data[i].status = s.description;
+                }
+                data[i].slugPair = {
+                    title: data[i].title,
+                    slug: data[i].titleSlug,
+                };
+            }
+
+            Array.isArray(data) ? setRowData(data) : setRowData([]);
+        } catch (e) {
+            setSB({ msg: `Question Service: ${e.message}`, severity: "error" });
+            setOpenSnackBar(true);
+        }
+        //eslint-disable-next-line
+    }, []);
 
     // all even rows assigned 'my-shaded-effect'
     const getRowClass = (params) => {
@@ -135,45 +165,23 @@ function Question() {
 
     const cellClickedListener = useCallback(async (event) => {
         try {
-            if (event.data) {
-                const [question, snippets] = await Promise.all([
-                    await axios.get(
-                        `http://server.peercode.net:5000/api/v1/question/problem?titleSlug=${event.data["titleSlug"]}`
-                    ),
-                    await axios.get(
-                        `http://server.peercode.net:5000/api/v1/question/codesnippets?titleSlug=${event.data["titleSlug"]}`
-                    ),
-                ]);
+            if (event) {
+                console.log(event);
+                const snippets = await axios.get(
+                    `http://server.peercode.net:5000/api/v1/question/codesnippets?titleSlug=${event.data?.titleSlug}`
+                );
+                console.log(snippets["data"]);
                 setQuestion({
                     id: event.rowIndex,
                     title: event.data?.title,
                     titleSlug: event.data?.titleSlug,
                     difficulty: event.data?.difficulty,
                     status: event.data?.status,
-                    problem: question?.data,
+                    problem: event.data?.problem,
                 });
                 setSnippets(snippets["data"]);
                 navigate("/problem");
             }
-        } catch (e) {
-            setSB({ msg: `Question Service: ${e.message}`, severity: "error" });
-            setOpenSnackBar(true);
-        }
-        //eslint-disable-next-line
-    }, []);
-
-    const onGridReady = useCallback(async (params) => {
-        try {
-            const { data } = await axios.get(
-                "http://server.peercode.net:5000/api/v1/question"
-            );
-            for (var i = 0; i < data.length; i++) {
-                data[i].slugPair = {
-                    title: data[i].title,
-                    slug: data[i].titleSlug,
-                };
-            }
-            Array.isArray(data) ? setRowData(data) : setRowData([]);
         } catch (e) {
             setSB({ msg: `Question Service: ${e.message}`, severity: "error" });
             setOpenSnackBar(true);
@@ -210,7 +218,7 @@ function Question() {
                     defaultColDef={defaultColDef} // Default Column Properties
                     animateRows={true} // Optional - set to 'true' to have rows animate when sorted
                     rowSelection="single" // Options - allows click selection of rows
-                    onCellClicked={cellClickedListener} // Optional - registering for Grid Event
+                    //onCellClicked={cellClickedListener} // Optional - registering for Grid Event
                     rowClass={rowClass}
                     getRowClass={getRowClass}
                     pagination={true}

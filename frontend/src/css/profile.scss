@@ -18,7 +18,7 @@ thead, tbody, tr {
 
 tbody {
     display: block;
-    max-height: 25vh;
+    max-height: 45vh;
     overflow: auto;
 }
 
@@ -37,7 +37,19 @@ td{
 }
 
 .left-content {
-    margin: 5% 10%;
+    margin: 2% 5%;
+}
+
+.left-box {
+    align-items: center;
+    padding-top: 18%;
+    margin-left: 10%;
+    display: flex;
+}
+
+.user-element {
+    padding-bottom: 2vh;
+    display: flex;
 }
 
 .edit-icon {
@@ -60,18 +72,28 @@ td{
 }
 
 .display-pic {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+    margin-right: 5%;
     margin-bottom: 3%;
     height: 25vh;
     width: 30vh;
-    border-radius: 45%;
+    border-radius: 40%;
     object-fit: cover;
     border: 2px solid black;
 }
 
+.header-pic {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 3%;
+    height: 5vh;
+    width: 5vh;
+    border-radius: 100%;
+    object-fit: cover;
+}
+
 .username {
+    padding-left: 2vh;
     text-align: center;
 }
 
@@ -82,8 +104,14 @@ td{
     text-align: left;
 }
 
+.recent-no-sub {
+    padding-top: 27vh;
+    text-align: center;
+    height:55vh;
+}
+
 #top-container {
-    height: 40vh;
+    height: 65vh;
     display: flex;
     margin-bottom: 3%;
     gap: 5%;

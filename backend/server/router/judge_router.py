@@ -23,7 +23,8 @@ async def add_submission(data: JudgeInput):
             format_tc += (str(tc[key]) + "\\n")
         formatInput = data.dict()
         formatInput["stdin"] = base64.b64encode(format_tc.encode("utf-8"))
-        response = requests.post(config.judge_service_url + "/submissions?base64_encoded=true&wait=false&fields=stdout,time,memory,stderr,token,compile_output,message,status,finished_at", data=formatInput)
+        response = requests.post(
+            config.judge_service_url + "/submissions?base64_encoded=true&wait=false&fields=stdout,time,memory,stderr,token,compile_output,message,status,finished_at", data=formatInput)
         return response.json()
     except Exception as e:
         print(e)
@@ -32,7 +33,8 @@ async def add_submission(data: JudgeInput):
 @router.get("/submission")
 async def get_submission(token: str):
     try:
-        response = requests.get(config.judge_service_url + f"/submissions/{token}?base64_encoded=true&fields=stdout,time,memory,stderr,token,compile_output,message,status,finished_at")
+        response = requests.get(
+            config.judge_service_url + f"/submissions/{token}?base64_encoded=true&fields=stdout,time,memory,stderr,token,compile_output,message,status,finished_at")
         jo = JudgeOutput(**response.json())
         return jo
     except Exception as e:
