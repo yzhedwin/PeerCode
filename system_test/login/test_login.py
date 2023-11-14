@@ -6,6 +6,8 @@ from selenium.webdriver.support import expected_conditions as EC
 
 chrome_options = Options()
 chrome_options.add_argument("--headless")
+chrome_options.addArguments("--no-sandbox");
+chrome_options.addArguments("--disable-dev-shm-usage");
 
 def test_login_success():
     driver = webdriver.Chrome(options=chrome_options)
