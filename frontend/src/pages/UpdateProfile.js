@@ -1,18 +1,9 @@
-import React, { useContext, useRef, useState } from "react";
-import {
-  Button,
-  Row,
-  Container,
-  Card,
-  Form,
-  Alert,
-  Modal,
-} from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
-import SnackBar from "../components/common/SnackBar";
+import React, { useContext, useState } from "react";
+import { Button, Form, Modal } from "react-bootstrap";
 import FileUploader from "../components/services/FileUploader";
 import { SnackBarContext } from "../contexts/SnackBarContext";
 import { FirebaseContext } from "../contexts/FirebaseContext";
+import { PencilFill } from "react-bootstrap-icons";
 
 export default function UpdateProfile() {
   const [show, setShow] = useState(false);
@@ -35,7 +26,7 @@ export default function UpdateProfile() {
   }
 
   function handleFormCheck() {
-    if (name != "") {
+    if (name !== "") {
       updateUser(currentUser, isAdmin, name);
     }
     if (selectedFile) {
@@ -59,7 +50,9 @@ export default function UpdateProfile() {
   return (
     <div>
       <div>
-        <div onClick={handleShow}>Edit</div>
+        <div onClick={handleShow}>
+          <PencilFill size={20}></PencilFill>
+        </div>
 
         <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton>
