@@ -8,7 +8,7 @@ import UpdateProfile from "./UpdateProfile";
 import { SnackBarContext } from "../contexts/SnackBarContext";
 import { FirebaseContext } from "../contexts/FirebaseContext";
 import { PersonFill, EnvelopeFill } from "react-bootstrap-icons";
-import { API_GATEWAY } from "../../utils/constants";
+import { API_GATEWAY } from "../utils/constants";
 
 import axios from "axios";
 
