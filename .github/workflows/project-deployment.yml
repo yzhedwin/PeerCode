@@ -2,9 +2,7 @@ name: Deploy to Amazon EKS
 
 on:
   push:
-    branches: [ "master", "cicd2" ]
-  pull_request:
-    branches: [ "master", "cicd2" ]
+    branches: [ "master" ]
 
 jobs:
   deploy:
