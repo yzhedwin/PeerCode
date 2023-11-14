@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert -f docker-compose-resolved.yaml
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    app: peercode-match-service
+  name: peercode-match-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: peercode-match-service
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert -f docker-compose-resolved.yaml
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/network: "true"
+        app: peercode-match-service
+    spec:
+      containers:
+      - name: peercode-match-service
+        image: ${ECR}:${SHA}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5002
+        env:
+        - name: MATCH_SERVICE_PORT
+          value: "5002"
+        - name: MATCH_TIMEOUT
+          valueFrom:
+              configMapKeyRef:
+                name: config
+                key: MATCH_TIMEOUT
+        - name: RABBITMQ_URL
+          valueFrom:
+              secretKeyRef:
+                name: secret
+                key: RABBITMQ_URL
+        - name: MONGO_PEERCODE_URL
+          valueFrom:
+              secretKeyRef:
+                name: secret
+                key: MONGO_PEERCODE_URL
+        - name: REACT_APP_URL
+          value: http://peercode.net
+        
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert -f docker-compose-resolved.yaml
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    app: peercode-match-service
+  name: peercode-match-service
+spec:
+  type: LoadBalancer
+  ports:
+  - name: "5002"
+    port: 5002
+    targetPort: 5002
+  selector:
+    app: peercode-match-service
+status:

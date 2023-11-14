@@ -1,5 +1,6 @@
 import { Box, Button } from "@mui/material";
 import { useEffect, useState } from "react";
+import { API_GATEWAY } from "../../utils/constants";
 
 import axios from "axios";
 function QuestionOTD() {
@@ -7,7 +8,7 @@ function QuestionOTD() {
   const getQOTD = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:5000/api/v1/question/day"
+        API_GATEWAY + "/api/v1/question/day"
       );
       setQOTD(data);
     } catch (e) {
