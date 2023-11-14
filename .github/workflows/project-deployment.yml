@@ -56,7 +56,7 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         cd ../..
         SHA=$IMAGE_TAG envsubst < k8/peercode-match-service.yaml > k8/peercode-match-service.yaml
-        eksctl apply -f k8/peercode-match-service.yaml
+        kubectl apply -f k8/peercode-match-service.yaml
 
     - name: server; build tag push(ecr) deploy
       env:
@@ -70,7 +70,7 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         cd ../..
         SHA=$IMAGE_TAG envsubst < k8/peercode-server.yaml > k8/peercode-server.yaml
-        eksctl apply -f k8/peercode-server.yaml
+        kubectl apply -f k8/peercode-server.yaml
 
     - name: question service; build tag push(ecr) deploy
       env:
@@ -84,7 +84,7 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         cd ../..
         SHA=$IMAGE_TAG envsubst < k8/peercode-question-service.yaml > k8/peercode-question-service.yaml
-        eksctl apply -f k8/peercode-question-service.yaml
+        kubectl apply -f k8/peercode-question-service.yaml
 
     - name: leetcode service; build tag push(ecr) deploy
       env:
@@ -98,7 +98,7 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         cd ../..
         SHA=$IMAGE_TAG envsubst < k8/peercode-leetcode-service.yaml > k8/peercode-leetcode-service.yaml
-        eksctl apply -f k8/peercode-leetcode-service.yaml
+        kubectl apply -f k8/peercode-leetcode-service.yaml
 
     - name: react; build tag push(ecr) deploy
       env:
@@ -114,4 +114,4 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         cd ..
         SHA=$IMAGE_TAG envsubst < k8/peercode-react.yaml > k8/peercode-react.yaml
-        eksctl apply -f k8/peercode-react.yaml
+        kubectl apply -f k8/peercode-react.yaml
