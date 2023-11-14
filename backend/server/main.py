@@ -2,7 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from confluent_kafka.admin import AdminClient, NewTopic, KafkaError
 from config import get_config
+
 from router import question_router, judge_router
+
 app = FastAPI()
 config = get_config()
 
@@ -16,7 +18,6 @@ app.add_middleware(
 
 app.include_router(question_router.router)
 app.include_router(judge_router.router)
-
 
 @app.on_event("startup")
 async def startup_event():

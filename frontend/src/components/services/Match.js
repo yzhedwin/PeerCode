@@ -6,6 +6,7 @@ import { Box } from "@mui/material";
 import CoolButton from "../common/CoolButton";
 import { ProblemContext } from "../../contexts/ProblemContext";
 import { useNavigate } from "react-router-dom";
+import { MATCHMAKING_TIMEOUT } from "../../utils/constants";
 
 var timeout_id = null;
 
@@ -28,7 +29,7 @@ function Match() {
             setFindMatch(false);
             setSB({ msg: "You are alone", severity: "error" });
             setOpenSnackBar(true);
-        }, 5000);
+        }, MATCHMAKING_TIMEOUT);
     };
 
     useEffect(() => {

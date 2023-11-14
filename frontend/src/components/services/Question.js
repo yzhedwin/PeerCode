@@ -1,6 +1,6 @@
 import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import { AgGridReact } from "ag-grid-react"; // the AG Grid React Component
-import axios from "axios";
+import axios, { toFormData } from "axios";
 import { QuestionContext } from "../../contexts/QuestionContext";
 import { useNavigate } from "react-router-dom";
 import { SnackBarContext } from "../../contexts/SnackBarContext";
@@ -117,6 +117,35 @@ function Question() {
     []
   );
   const rowClass = "question-not-completed";
+  const onGridReady = useCallback(async (params) => {
+    try {
+      const [questions, status] = await Promise.all([
+        axios.get("http://localhost:5000/api/v1/question"),
+        axios.get(
+          `http://localhost:5000/api/v1/question-status?userID=${currentUser?.uid}`
+        ),
+      ]);
+      const { data } = questions;
+      for (var i = 0; i < data.length; i++) {
+        const s = status.data.find((s) => {
+          return s.titleSlug === data[i].titleSlug;
+        });
+        if (s) {
+          data[i].status = s.description;
+        }
+        data[i].slugPair = {
+          title: data[i].title,
+          slug: data[i].titleSlug,
+        };
+      }
+
+      Array.isArray(data) ? setRowData(data) : setRowData([]);
+    } catch (e) {
+      setSB({ msg: `Question Service: ${e.message}`, severity: "error" });
+      setOpenSnackBar(true);
+    }
+    //eslint-disable-next-line
+  }, []);
 
   // all even rows assigned 'my-shaded-effect'
   const getRowClass = (params) => {
@@ -150,23 +179,6 @@ function Question() {
       setSB({ msg: `Question Service: ${e.message}`, severity: "error" });
       setOpenSnackBar(true);
     }
-  }, []);
-
-  const onGridReady = useCallback(async (params) => {
-    try {
-      const { data } = await axios.get("http://localhost:5000/api/v1/question");
-      for (var i = 0; i < data.length; i++) {
-        data[i].slugPair = {
-          title: data[i].title,
-          slug: data[i].titleSlug,
-        };
-      }
-      Array.isArray(data) ? setRowData(data) : setRowData([]);
-    } catch (e) {
-      setSB({ msg: `Question Service: ${e.message}`, severity: "error" });
-      setOpenSnackBar(true);
-    }
-    //eslint-disable-next-line
   }, []);
 
   return (

@@ -1,5 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import RabbitMQService from '../message-queue/rabbitmq'; // Import the RabbitMQ service
+import rabbitmq from '../message-queue/rabbitmq';
 
 export function initializeSocketHandlers(io: Server) {
   io.on('connection', (socket: Socket) => {
@@ -56,7 +57,7 @@ export function initializeSocketHandlers(io: Server) {
               .emit('matchSuccess', room_id);
             RabbitMQService.setConsumerID(consumer_id);
             RabbitMQService.getChannel()
-              ?.checkQueue('matched')
+              ?.checkQueue(rabbitmq.getQueue('matched'))
               .then((status) => {
                 console.log(data, status);
               });
@@ -64,11 +65,5 @@ export function initializeSocketHandlers(io: Server) {
         }
       );
     });
-
-    // Handle other WebSocket events as needed
-    // ...
-
-    // Example of sending a message to the client
-    // socket.emit('message', 'Hello, client!');
   });
 }

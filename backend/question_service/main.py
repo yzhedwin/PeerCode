@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config import get_config
-from router import question_router
+from router import question_router,question_status_router
 from database.mongodb_utils import connect_to_mongo, close_mongo_connection
 import asyncio
 from leetcode_service import question_bank_consume, question_bank_consumer
@@ -18,6 +18,7 @@ app.add_middleware(
 )
 
 app.include_router(question_router.router)
+app.include_router(question_status_router.router)
         
 @app.on_event("startup")
 async def startup_event():

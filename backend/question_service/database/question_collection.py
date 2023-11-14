@@ -2,13 +2,13 @@ from model.question import Question
 from .mongodb import AsyncIOMotorClient
 from config import get_config
 import re
+from constant import QUESTION_STATUS
 
 config = get_config
 COLLECTION_NAME = "questions"
 
 
-async def fetch_one_question(client: AsyncIOMotorClient, titleSlug):
-    document = await client[COLLECTION_NAME].find_one({"titleSlug": titleSlug})
+
 async def fetch_one_question(client: AsyncIOMotorClient, titleSlug):
     document = await client[COLLECTION_NAME].find_one({"titleSlug": titleSlug})
     if document:
