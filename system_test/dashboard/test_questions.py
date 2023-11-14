@@ -1,11 +1,15 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+
 def test_question_two_sum_redirect_success():
-    driver = webdriver.Chrome()
-    driver.get('http://localhost:3000/login')
+    driver = webdriver.Chrome(options=chrome_options)
+    driver.get('http://peercode.net/login')
     wait = WebDriverWait(driver, 10)
     try:
         # Login
@@ -18,23 +22,23 @@ def test_question_two_sum_redirect_success():
         login_button.click()
 
         # Wait for the next page to load after login
-        WebDriverWait(driver, 10).until(EC.url_to_be('http://localhost:3000/'))
-        assert driver.current_url == 'http://localhost:3000/', "Login failed"
+        WebDriverWait(driver, 10).until(EC.url_to_be('http://peercode.net/dashboard'))
+        assert driver.current_url == 'http://peercode.net/dashboard', "Login failed"
 
         # Find and click the 'Two Sum' element
         two_sum_element = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@class='title-div' and text()='Two Sum']")))
         two_sum_element.click()
 
         # Wait for redirection to /problem
-        WebDriverWait(driver, 10).until(EC.url_to_be('http://localhost:3000/problem'))
-        assert driver.current_url == 'http://localhost:3000/problem', "Navigation to /problem failed"
+        WebDriverWait(driver, 10).until(EC.url_to_be('http://peercode.net/problem'))
+        assert driver.current_url == 'http://peercode.net/problem', "Navigation to /problem failed"
 
     finally:
         driver.quit()
 
 def test_question_next_page_success():
-    driver = webdriver.Chrome()
-    driver.get('http://localhost:3000/login')
+    driver = webdriver.Chrome(options=chrome_options)
+    driver.get('http://peercode.net/login')
     wait = WebDriverWait(driver, 10)
     try:
         # Login
@@ -47,8 +51,8 @@ def test_question_next_page_success():
         login_button.click()
 
         # Wait for the next page to load after login
-        WebDriverWait(driver, 10).until(EC.url_to_be('http://localhost:3000/'))
-        assert driver.current_url == 'http://localhost:3000/', "Login failed"
+        WebDriverWait(driver, 10).until(EC.url_to_be('http://peercode.net/dashboard'))
+        assert driver.current_url == 'http://peercode.net/dashboard', "Login failed"
 
         # Find and click the 'Two Sum' element (Purpose to add delay due to dynamic loading of content)
         two_sum_element = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@class='title-div' and text()='Two Sum']")))
@@ -61,7 +65,12 @@ def test_question_next_page_success():
 
         # Find the 'Next Page' element using the class name
         next_page_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@ref='btNext']")))
-        next_page_button.click()
+
+        # Scroll to the element
+        driver.execute_script("arguments[0].scrollIntoView(true);", next_page_button)
+        
+        # Simulate a click using JavaScript
+        driver.execute_script("arguments[0].click();", next_page_button)
 
         # Wait for the element and assert its value
         current_page_element = wait.until(EC.presence_of_element_located((By.XPATH, "//span[@ref='lbCurrent']")))
