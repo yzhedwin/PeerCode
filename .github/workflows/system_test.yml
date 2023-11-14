@@ -9,18 +9,6 @@ jobs:
     name: System test
     runs-on: ubuntu-latest
 
-    services:
-      - name: selenium-hub
-        image: selenium/hub:3.141.59
-        ports:
-          - "4444:4444"
-
-      - name: selenium-node-chrome
-        image: selenium/node-chrome:3.141.59
-        depends-on:
-          - selenium-hub
-
-
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -29,6 +17,11 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
+
+    - name: Install Google Chrome 
+      run: |
+        chmod +x ./scripts/InstallChrome.sh
+        ./scripts/InstallChrome.sh 
 
     - name: Install dependencies
       run: |
