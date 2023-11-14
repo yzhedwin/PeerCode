@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { QUESTION_STATUS } from "../utils/constants";
+import { API_GATEWAY, QUESTION_STATUS } from "../utils/constants";
 
 export default function CreateQuestion() {
     const [currQuestion, setCurrQuestion] = useState({
@@ -59,7 +59,7 @@ export default function CreateQuestion() {
             // create question
             try {
                 await axios.post(
-                    "http://server.peercode.net:5000/api/v1/question/create",
+                    API_GATEWAY + "/api/v1/question/create",
                     {
                         title: currQuestion.title,
                         titleSlug: titleToSlug(currQuestion.title),

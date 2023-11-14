@@ -10,7 +10,7 @@ import { TitleCellRenderer } from "./TitleCellRenderer";
 import { BtnCellRenderer } from "./BtnCellRenderer";
 import { Modal, Button } from "react-bootstrap";
 import "../../css/question.scss";
-import { QUESTION_STATUS } from "../../utils/constants";
+import { API_GATEWAY, QUESTION_STATUS } from "../../utils/constants";
 
 function Question() {
     const navigate = useNavigate();
@@ -31,7 +31,7 @@ function Question() {
     const handleDelete = async () => {
         try {
             await axios.delete(
-                `http://server.peercode.net:5000/api/v1/question/title/${titleSlug}`
+                API_GATEWAY + `/api/v1/question/title/${titleSlug}`
             );
             window.location.reload();
         } catch (e) {
@@ -126,9 +126,9 @@ function Question() {
     const onGridReady = useCallback(async (params) => {
         try {
             const [questions, status] = await Promise.all([
-                axios.get("http://server.peercode.net:5000/api/v1/question"),
+                axios.get(API_GATEWAY + "/api/v1/question"),
                 axios.get(
-                    `http://server.peercode.net:5000/api/v1/question-status?userID=${currentUser?.uid}`
+                    API_GATEWAY + `/api/v1/question-status?userID=${currentUser?.uid}`
                 ),
             ]);
             const { data } = questions;
@@ -168,7 +168,7 @@ function Question() {
             if (event) {
                 console.log(event);
                 const snippets = await axios.get(
-                    `http://server.peercode.net:5000/api/v1/question/codesnippets?titleSlug=${event.data?.titleSlug}`
+                    API_GATEWAY + `/api/v1/question/codesnippets?titleSlug=${event.data?.titleSlug}`
                 );
                 console.log(snippets["data"]);
                 setQuestion({

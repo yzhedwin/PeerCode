@@ -4,22 +4,8 @@ metadata:
   name: config
 data:
   SERVER_PORT: "5000"
-  REACT_APP_MATCHMAKING_TIMEOUT: "5000"
+  REACT_APP_MATCHMAKING_TIMEOUT: "30000" #30s
+  MATCH_TIMEOUT: "30" #30s
   NODE_ENV: "production"
-  MATCH_TIMEOUT: "5"
-  # REACT_APP_BACKEND_URL: as5-socket-backend:30001
-  # Kafka details
-  # KAFKA_SERVER_NAME: localhost:19092  # localhost:19092 for dev, otherwise peercode_kafka:9092
-  # KAFKA_GROUP_SERVER: kafka_group_server 
-  # KAFKA_GROUP_QUESTION_SERVICE: kafka_group_question_service
-  # KAFKA_GROUP_LEETCODE_SERVICE: kafka_group_leetcode_service
-  # # Kafka topics
-  # KAFKA_TOPIC_USERS: users
-  # KAFKA_TOPIC_QUESTION_BANK: question_bank
-  # KAFKA_TOPIC_QUESTION_OF_THE_DAY: question_of_the_day
-  # KAFKA_TOPIC_QUESTION_SERVICE: question_service
-  # KAFKA_TOPIC_ERRORS: errors
-  # # compiled list of topics, delimited by comma
-  # KAFKA_TOPICS: ${KAFKA_TOPIC_ERRORS},${KAFKA_TOPIC_USERS},${KAFKA_TOPIC_QUESTION_SERVICE},${KAFKA_TOPIC_QUESTION_BANK},${KAFKA_TOPIC_QUESTION_OF_THE_DAY}
-
-
+  REACT_APP_API_GATEWAY: "http://server.peercode.net:5000"
+  REACT_APP_SOCKET_URL: "http://match.peercode.net:5002"

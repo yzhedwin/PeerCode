@@ -9,9 +9,9 @@ import { useNavigate } from "react-router-dom";
 import { FirebaseContext } from "../../contexts/FirebaseContext";
 import { QuestionContext } from "../../contexts/QuestionContext";
 import axios from "axios";
+import { API_GATEWAY, SOCKET_URL } from "../../utils/constants";
 
-const socketUrl = "http://match.peercode.net:5002";
-export const socket = io(socketUrl, {
+export const socket = io(SOCKET_URL, {
     autoConnect: false,
 });
 
@@ -73,10 +73,10 @@ export default function WebSocket() {
             setMatch(room);
             const [question, snippets] = await Promise.all([
                 await axios.get(
-                    `http://server.peercode.net:5000/api/v1/question/title/${titleSlug}`
+                    API_GATEWAY + `/api/v1/question/title/${titleSlug}`
                 ),
                 await axios.get(
-                    `http://server.peercode.net:5000/api/v1/question/codesnippets?titleSlug=${titleSlug}`
+                    API_GATEWAY + `/api/v1/question/codesnippets?titleSlug=${titleSlug}`
                 ),
             ]);
             setQuestion({

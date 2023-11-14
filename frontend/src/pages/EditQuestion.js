@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import { QUESTION_STATUS } from "../utils/constants";
+import { API_GATEWAY, QUESTION_STATUS } from "../utils/constants";
 
 export default function EditQuestion() {
     const location = useLocation();
@@ -61,7 +61,7 @@ export default function EditQuestion() {
             // update question
             try {
                 await axios.post(
-                    `http://server.peercode.net:5000/api/v1/question/update/${currQuestion.titleSlug}`,
+                    API_GATEWAY + `/api/v1/question/update/${currQuestion.titleSlug}`,
                     {
                         title: currQuestion.title,
                         titleSlug: titleToSlug(currQuestion.title),
