@@ -84,9 +84,9 @@ metadata:
   annotations:
     # Note that the backend talks over HTTP.
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
-    service.beta.kubernetes.io/aws-load-balancer-tls-cert: arn:aws:acm:ap-southeast-1:585416986583:certificate/ae5381a8-a0a2-4e1b-987e-d7aa63a52596
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:ap-southeast-1:585416986583:certificate/09a35668-2046-4667-91db-4feec1c7b3f5
     # Only run TLS on the port named "https" below.
-    service.beta.kubernetes.io/aws-load-balancer-tls-ports: "https"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
 spec:
   type: LoadBalancer
   selector:
