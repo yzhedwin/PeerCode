@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: peercode-react
-          image: public.ecr.aws/a6n0p1z7/g55-peercode:1057ee49b7e6d54371dbce7fb122d727cbaae7ee-peercode-react
+          image: ${ECR}:${SHA}
           imagePullPolicy: Always
           ports:
             - containerPort: 80
