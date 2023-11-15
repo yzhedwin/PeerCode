@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { ProblemContext } from "../../../contexts/ProblemContext";
 import { Box } from "@mui/material";
 import { outputStatus } from "../../../utils/helper";
+import React from "react";
 
 function Console({ expectedOutput }) {
     const { consoleResult } = useContext(ProblemContext);

@@ -37,7 +37,7 @@ function CoolButton(props) {
                 }}
             >
                 {loading ? (
-                    <div style={{ display: "flex" }}>
+                    <div style={{ display: "flex" }} data-testid="loading-icon" >
                         <LoadingIcon text={text} />
                     </div>
                 ) : (
