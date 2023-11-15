@@ -306,7 +306,7 @@ function ProblemPage(props) {
                 setAIMessage(currentMessage);
                 setAITextInput("AI is replying...");
                 await axios
-                    .post(SOCKET_URL.slice(0, -4) + ":8020/ask", { prompt })
+                    .post(SOCKET_URL.slice(0, -4) + "8020/ask", { prompt })
                     .then((res) => {
                         let result = res.data;
                         for (var i = 0; i < 2; i++) {
@@ -574,7 +574,7 @@ function ProblemPage(props) {
             translateToLanguage.raw
         );
         await axios
-            .post(SOCKET_URL.slice(0, -4) + ":8020/ask", { prompt })
+            .post(SOCKET_URL.slice(0, -4) + "8020/ask", { prompt })
             .then((res) => {
                 if (res.status === 200) {
                     if (res.data.includes("maximum context length")) {
