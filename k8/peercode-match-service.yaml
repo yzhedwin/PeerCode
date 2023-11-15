@@ -54,7 +54,7 @@ spec:
                 name: secret
                 key: OPENAI_API_KEY
         - name: REACT_APP_URL
-          value: http://peercode.net
+          value: https://peercode.net
         
       restartPolicy: Always
       serviceAccountName: ""
@@ -66,7 +66,7 @@ metadata:
   annotations:
     kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert -f docker-compose-resolved.yaml
     kompose.version: 1.21.0 (992df58d8)
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:ap-southeast-1:585416986583:certificate/09a35668-2046-4667-91db-4feec1c7b3f5
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:ap-southeast-1:585416986583:certificate/46fd89a8-aef9-4edd-9a48-1c6ac225de89
   creationTimestamp: null
   labels:
     app: peercode-match-service

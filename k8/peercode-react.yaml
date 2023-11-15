@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: peercode-react
-          image: ${ECR}:${SHA}
+          image: public.ecr.aws/a6n0p1z7/g55-peercode:1057ee49b7e6d54371dbce7fb122d727cbaae7ee-peercode-react
           imagePullPolicy: Always
           ports:
             - containerPort: 80
@@ -84,7 +84,7 @@ metadata:
   annotations:
     # Note that the backend talks over HTTP.
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:ap-southeast-1:585416986583:certificate/09a35668-2046-4667-91db-4feec1c7b3f5
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:ap-southeast-1:585416986583:certificate/2814ddc2-ad71-4f5a-bb09-f693f8307a0e
     # Only run TLS on the port named "https" below.
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
 spec:
