@@ -48,6 +48,11 @@ spec:
               secretKeyRef:
                 name: secret
                 key: MONGO_PEERCODE_URL
+        - name: OPENAI_API_KEY
+          valueFrom:
+              secretKeyRef:
+                name: secret
+                key: OPENAI_API_KEY
         - name: REACT_APP_URL
           value: http://peercode.net
         
