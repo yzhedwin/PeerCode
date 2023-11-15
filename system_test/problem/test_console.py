@@ -81,7 +81,7 @@ def test_console_theme_panel_success():
         twilight_element = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[@id='menu-']/div[3]/ul/li[42]")))
         twilight_element.click()
 
-        theme_element = wait.until(EC.element_to_be_clickable((By.XPATH,"/html/body/div[1]/div/div[2]/div[1]/div[2]/div/div/div")))
+        theme_element = wait.until(EC.element_to_be_clickable((By.XPATH,"//div[@class='MuiSelect-select MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall css-1y7k1sw' and text()='Twilight']")))
         assert theme_element.text == 'Twilight', "Theme doesn't match 'Twilight'"
 
     finally:
