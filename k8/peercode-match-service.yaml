@@ -29,6 +29,7 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 5002
+        - containerPort: 8020
         env:
         - name: MATCH_SERVICE_PORT
           value: "5002"
@@ -70,6 +71,9 @@ spec:
   - name: "5002"
     port: 5002
     targetPort: 5002
+  - name: "8020"
+    port: 8020
+    targetPort: 8020
   selector:
     app: peercode-match-service
 status:
