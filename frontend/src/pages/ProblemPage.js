@@ -29,7 +29,7 @@ import { unstable_useBlocker, useNavigate } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Box, Modal, Typography, Button } from "@mui/material";
 import CustomSelect from "../components/common/question/CustomSelect";
-import { API_GATEWAY, EDITOR_SUPPORTED_LANGUAGES } from "./../utils/constants";
+import { API_GATEWAY, EDITOR_SUPPORTED_LANGUAGES, SOCKET_URL } from "./../utils/constants";
 
 var interval_id = null;
 var timeout_id = null;
@@ -306,7 +306,7 @@ function ProblemPage(props) {
                 setAIMessage(currentMessage);
                 setAITextInput("AI is replying...");
                 await axios
-                    .post("http://localhost:8020/ask", { prompt })
+                    .post(SOCKET_URL.slice(0, -4) + "8020/ask", { prompt })
                     .then((res) => {
                         let result = res.data;
                         for (var i = 0; i < 2; i++) {
@@ -574,7 +574,7 @@ function ProblemPage(props) {
             translateToLanguage.raw
         );
         await axios
-            .post("http://localhost:8020/ask", { prompt })
+            .post(SOCKET_URL.slice(0, -4) + "8020/ask", { prompt })
             .then((res) => {
                 if (res.status === 200) {
                     if (res.data.includes("maximum context length")) {

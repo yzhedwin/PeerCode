@@ -81,11 +81,22 @@ apiVersion: v1
 kind: Service
 metadata:
   name: peercode-react
+  annotations:
+    # Note that the backend talks over HTTP.
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:ap-southeast-1:585416986583:certificate/2814ddc2-ad71-4f5a-bb09-f693f8307a0e
+    # Only run TLS on the port named "https" below.
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
 spec:
   type: LoadBalancer
   selector:
     app: peercode-react
   ports:
-    - protocol: TCP
+    - name: http 
+      protocol: TCP
       port: 80
       targetPort: 80
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 443

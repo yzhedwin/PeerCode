@@ -75,6 +75,9 @@ metadata:
   labels:
     app: peercode-server
   name: peercode-server
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:ap-southeast-1:585416986583:certificate/a6970a4f-6c21-461d-9ebb-5dc0b6750279
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "5000"
 spec:
   type: LoadBalancer
   ports:

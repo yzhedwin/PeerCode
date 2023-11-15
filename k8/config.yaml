@@ -7,5 +7,5 @@ data:
   REACT_APP_MATCHMAKING_TIMEOUT: "30000" #30s
   MATCH_TIMEOUT: "30" #30s
   NODE_ENV: "production"
-  REACT_APP_API_GATEWAY: "http://server.peercode.net:5000"
-  REACT_APP_SOCKET_URL: "http://match.peercode.net:5002"
+  REACT_APP_API_GATEWAY: "https://server.peercode.net:5000"
+  REACT_APP_SOCKET_URL: "https://match.peercode.net:5002"

@@ -29,6 +29,7 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 5002
+        - containerPort: 8020
         env:
         - name: MATCH_SERVICE_PORT
           value: "5002"
@@ -47,8 +48,13 @@ spec:
               secretKeyRef:
                 name: secret
                 key: MONGO_PEERCODE_URL
+        - name: OPENAI_API_KEY
+          valueFrom:
+              secretKeyRef:
+                name: secret
+                key: OPENAI_API_KEY
         - name: REACT_APP_URL
-          value: http://peercode.net
+          value: https://peercode.net
         
       restartPolicy: Always
       serviceAccountName: ""
@@ -60,6 +66,7 @@ metadata:
   annotations:
     kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert -f docker-compose-resolved.yaml
     kompose.version: 1.21.0 (992df58d8)
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:ap-southeast-1:585416986583:certificate/46fd89a8-aef9-4edd-9a48-1c6ac225de89
   creationTimestamp: null
   labels:
     app: peercode-match-service
@@ -70,6 +77,9 @@ spec:
   - name: "5002"
     port: 5002
     targetPort: 5002
+  - name: "8020"
+    port: 8020
+    targetPort: 8020
   selector:
     app: peercode-match-service
 status:
