@@ -112,9 +112,9 @@ export default function CreateQuestion() {
                     />
                 </Form.Group>
                 <Form.Group className="mb-3">
-                    <Form.Label>Complexity</Form.Label>
+                    <Form.Label>Difficulty</Form.Label>
                     <Form.Control
-                        name="complexity"
+                        name="difficulty"
                         as="select"
                         onChange={onValChange}
                     >
