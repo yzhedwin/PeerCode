@@ -23,6 +23,7 @@ export default function Signup() {
   };
 
   async function handleSubmit(e) {
+    setMessage("");
     setError("");
     e.preventDefault();
 
@@ -30,16 +31,14 @@ export default function Signup() {
       return setError("Passwords do not match!");
     }
     try {
-      setError();
+      setError("");
       setLoading(true);
       await signup(emailRef.current.value, passwordRef.current.value);
-    } catch (e) {
+    } catch (err) {
       setLoading(false);
-      return setError(parseError(e.message));
+      return setError(parseError(err.message));
     }
-    if (error === "") {
-      setMessage("Your account has been created successfully!");
-    }
+    setMessage("Your account has been created successfully!");
     setLoading(false);
   }
   return (
