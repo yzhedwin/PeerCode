@@ -38,7 +38,6 @@ function updateSQL(stringQuery) {
   });
   db.query(stringQuery, (err, dbres) => {
     try {
-      console.log(dbres);
       if (err) {
         db.destroy();
         throw err;
@@ -68,8 +67,9 @@ app.post("/insert", (req, res) => {
         db.destroy();
         throw err;
       }
+      res.status(200).send("Successful Insert")
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      res.status(400).send(err.message);
     }
   });
   db.end();
@@ -89,10 +89,9 @@ app.post("/read", (req, res) => {
         db.destroy();
         throw err;
       }
-      console.log(dbres);
       res.status(200).send(dbres[0][0]);
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      res.status(400).send(err.message);
     }
   });
   db.end();
@@ -115,9 +114,9 @@ app.post("/update", (req, res) => {
         db.destroy();
         throw err;
       }
-      console.log(res);
+      res.status(200).send("Successful Update")
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      res.status(400).send(err.message);
     }
   });
 
@@ -138,11 +137,38 @@ app.post("/delete", (req, res) => {
         db.destroy();
         throw err;
       }
-      console.log(res);
+      res.status(200).send("Successful Delete")
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      res.status(400).send(err.message);
     }
   });
 
   db.end();
 });
+
+// const stringQuery = callStoredProcQuery(
+//   "peerPrepAssignment.InsertUserProfile",
+//   "woobt123@gmail.com",
+//   "Woo Bo Tuan",
+//   "Bobowoo2468",
+//   "Beginner"
+// );
+
+// const stringQuery2 = callStoredProcQuery(
+//   "peerPrepAssignment.InsertUserProfile",
+//   "sample@gmail.com",
+//   "Woo Bo Tuan",
+//   "Bobowoo2468",
+//   "Beginner"
+// );
+
+// const stringQuery3 = callStoredProcQuery(
+//   "peerPrepAssignment.DeleteUserProfile",
+//   "sample@gmail.com"
+// )
+
+// const stringQuery4 = "ALTER TABLE users ADD UNIQUE (Username);"
+// updateSQL(stringQuery3)
+
+// updateSQL(stringQuery2)
+// updateSQL("SELECT * FROM users;")
